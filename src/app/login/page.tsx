@@ -1,15 +1,25 @@
 "use client";
 
+import { createClient } from "@/lib/supabase";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 
 export default function LoginPage() {
+  const supabase = createClient();
+
+  function handleGitHubLogin() {
+    supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: `${window.location.origin}/admin`,
+      },
+    });
+  }
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F8FA] px-4 font-sans transition-colors duration-300 dark:bg-[#0B0E14]">
-      {/* formas ambiente, só decoração no fundo */}
       <div className="pointer-events-none absolute -left-24 -top-32 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/10" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl dark:bg-indigo-500/10" />
-
 
       <div className="relative w-full max-w-md rounded-2xl border border-neutral-200/70 bg-white/80 px-8 py-10 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40">
         <div className="text-center">
@@ -27,7 +37,10 @@ export default function LoginPage() {
             Google
           </button>
 
-          <button className="flex flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100">
+          <button
+            onClick={handleGitHubLogin}
+            className="flex flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+          >
             <FaGithub className="text-xl" />
             GitHub
           </button>
