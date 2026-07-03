@@ -11,7 +11,7 @@ export default function LoginPage() {
     supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/admin`,
+        redirectTo: `${window.location.origin}/api/user`,
       },
     });
   }

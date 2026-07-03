@@ -13,9 +13,13 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
+  const formatEmail = (email: string) => {
+    return email.substring(0, email.indexOf("@"));
+  };
+
   return (
     <div>
-      <h1>Bem vindo {user.email}</h1>
+      <h1>Bem vindo {user.email ? formatEmail(user.email) : "Admin"}</h1>
     </div>
   );
 }
