@@ -21,7 +21,7 @@ export default async function AdminPage() {
   return (
     <div>
       <h1>Bem vindo {user.email ? formatEmail(user.email) : "Admin"}</h1>
-      
+
       <br />
 
       <div>
@@ -56,12 +56,18 @@ export default async function AdminPage() {
               Upload feito em: {formatDate(project.created_at) || Date.now()}
             </p>
 
-            <form action={deleteProject}>
-              <input type="hidden" name="id" value={project.id} />
-              <button type="submit" className="cursor-pointer">
-                Excluir projeto
-              </button>
-            </form>
+            <div>
+              <form action={deleteProject}>
+                <input type="hidden" name="id" value={project.id} />
+                <button type="submit" className="cursor-pointer">
+                  Excluir Projeto
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <Link href={`/admin/edit/${project.id}`}>Editar Projeto</Link>
+            </div>
 
             <br />
           </div>
