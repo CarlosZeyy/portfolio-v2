@@ -2,6 +2,7 @@ import { formatDate, formatEmail } from "@/components/formats";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { deleteProject } from "./actions";
 
 export default async function AdminPage() {
   const supabase = await createServerSupabase();
@@ -20,10 +21,14 @@ export default async function AdminPage() {
   return (
     <div>
       <h1>Bem vindo {user.email ? formatEmail(user.email) : "Admin"}</h1>
+      
+      <br />
 
       <div>
         <h2>Lista de projetos</h2>
       </div>
+
+      <br />
 
       {projects.data?.length === 0 ? (
         <p>Você não possui nenhum projeto cadastrado.</p>
@@ -50,11 +55,22 @@ export default async function AdminPage() {
             <p>
               Upload feito em: {formatDate(project.created_at) || Date.now()}
             </p>
+
+            <form action={deleteProject}>
+              <input type="hidden" name="id" value={project.id} />
+              <button type="submit" className="cursor-pointer">
+                Excluir projeto
+              </button>
+            </form>
+
+            <br />
           </div>
         ))
       )}
 
-      <Link href={"/admin/new"} className="border-2">Adicionar um novo projeto</Link>
+      <Link href={"/admin/new"} className="border-2">
+        Adicionar um novo projeto
+      </Link>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { projectSchema } from "@/lib/projectSchema";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -20,15 +21,45 @@ export async function addProject(formData: FormData) {
         .filter(Boolean)
     : [];
 
-  await supabase.from("projects").insert({
+  const schema = projectSchema.safeParse({
     title: title,
     description: desc,
-    thumbnail_url: thumb,
+    thumbnail: thumb,
     stacks: stacksList,
-    repo_url: repoUrl,
+    repoUrl: repoUrl,
+  });
+
+  if (!schema.success) {
+    console.error(schema.error);
+    return;
+  }
+
+  await supabase.from("projects").insert({
+    title: schema.data?.title,
+    description: schema.data?.description,
+    thumbnail_url: schema.data?.thumbnail,
+    stacks: schema.data?.stacks,
+    repo_url: schema.data?.repoUrl,
+    deploy_url: schema.data?.deployUrl,
+    video_url: schema.data?.videoUrl,
   });
 
   revalidatePath("/admin");
 
   return redirect("/admin");
+}
+
+export async function deleteProject(formData: FormData) {
+  const supabase = await createServerSupabase();
+
+  const id = formData.get("id") as string;
+
+  if (!id) {
+    console.error("Id not found")
+    return;
+  }
+
+  await supabase.from("projects").delete().eq("id", id)
+
+  revalidatePath("/admin");
 }
