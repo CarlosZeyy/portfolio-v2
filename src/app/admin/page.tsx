@@ -1,6 +1,7 @@
 import { formatDate, formatEmail } from "@/components/formats";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function AdminPage() {
   const supabase = await createServerSupabase();
@@ -52,6 +53,8 @@ export default async function AdminPage() {
           </div>
         ))
       )}
+
+      <Link href={"/admin/new"} className="border-2">Adicionar um novo projeto</Link>
     </div>
   );
 }
