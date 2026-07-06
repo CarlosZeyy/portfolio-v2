@@ -1,5 +1,6 @@
 import { FaGithub, FaArrowUpRightFromSquare, FaPlay } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
+import { stackIcons } from "@/lib/stackIcons";
 
 export function ProjectCard({
   project,
@@ -12,7 +13,7 @@ export function ProjectCard({
 
   return (
     <article
-      className="group animate-fade-in-up overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
+      className="flex flex-col h-full group animate-fade-in-up overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
       style={{ animationDelay: `${index * 80}ms` }}
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
@@ -32,7 +33,7 @@ export function ProjectCard({
         )}
       </div>
 
-      <div className="p-6">
+      <div className="p-6 flex flex-col grow">
         <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white">
           {project.title}
         </h3>
@@ -42,18 +43,22 @@ export function ProjectCard({
 
         {stacks.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
-            {stacks.map((stack) => (
-              <span
-                key={stack}
-                className="rounded-full border border-neutral-200 bg-neutral-100/60 px-2.5 py-1 font-mono text-[11px] text-neutral-600 dark:border-neutral-800 dark:bg-white/5 dark:text-neutral-300"
-              >
-                {stack}
-              </span>
-            ))}
+            {stacks.map((stack) => {
+              const Icon = stackIcons[stack];
+              return (
+                <span
+                  key={stack}
+                  className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100/60 px-2.5 py-1 font-mono text-[11px] text-neutral-600 dark:border-neutral-800 dark:bg-white/5 dark:text-neutral-300"
+                >
+                  {Icon && <Icon className="text-sm" />}
+                  {stack}
+                </span>
+              );
+            })}
           </div>
         )}
 
-        <div className="mt-5 flex items-center gap-2 border-t border-neutral-200/70 pt-4 dark:border-neutral-800">
+        <div className="mt-auto flex items-center gap-2 border-t border-neutral-200/70 pt-4 dark:border-neutral-800">
           {project.repoUrl && (
             <a
               href={project.repoUrl}
