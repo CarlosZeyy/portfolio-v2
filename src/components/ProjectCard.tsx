@@ -18,7 +18,7 @@ export function ProjectCard({
     <motion.article
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: index * 0.15 }}
+      transition={{ duration: 1, delay: 1.5 + index * 0.75 }}
       className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
@@ -49,13 +49,18 @@ export function ProjectCard({
         {stacks.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
             {stacks.map((stack) => {
-              const Icon = stackIcons[stack];
+              const stackData = stackIcons[stack];
+
+              const ComponentIcon = stackData?.icon;
+              const Bg = stackData?.bg;
+
               return (
                 <span
                   key={stack}
-                  className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100/60 px-2.5 py-1 font-mono text-[11px] text-neutral-600 dark:border-neutral-800 dark:bg-white/5 dark:text-neutral-300"
+                  style={{ backgroundColor: Bg }}
+                  className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[11px] font-semibold text-neutral-600 dark:border-neutral-800 dark:text-neutral-300"
                 >
-                  {Icon && <Icon className="text-sm" />}
+                  {ComponentIcon && <ComponentIcon className="text-sm" />}
                   {stack}
                 </span>
               );
