@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { FaGithub, FaArrowUpRightFromSquare, FaPlay } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
@@ -12,9 +15,11 @@ export function ProjectCard({
   const stacks = project.stacks ?? [];
 
   return (
-    <article
-      className="flex flex-col h-full group animate-fade-in-up overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
-      style={{ animationDelay: `${index * 80}ms` }}
+    <motion.article
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: index * 0.15 }}
+      className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {project.thumbnail ? (
@@ -96,6 +101,6 @@ export function ProjectCard({
           )}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
