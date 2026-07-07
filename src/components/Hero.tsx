@@ -44,7 +44,7 @@ export function Hero() {
       </motion.h1>
 
       <motion.p
-        className="mt-4 max-w-xl text-base font-light text-neutral-500 dark:text-neutral-400"
+        className="mt-4 max-w-xl text-base font-normal text-neutral-500 dark:text-gray-300"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 1.7 }}

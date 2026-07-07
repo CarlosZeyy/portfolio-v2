@@ -5,6 +5,7 @@ import { StarBackground } from "@/components/StarBackground";
 import { Hero } from "@/components/Hero";
 import { Header } from "@/components/Header";
 import { ProjectText } from "@/components/ProjectText";
+import { SpaceBackground } from "@/components/SpaceBackground";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -26,7 +27,8 @@ export default async function Home() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F7F8FA] font-sans transition-colors duration-300 dark:bg-[#0B0E14]">
-      <StarBackground />
+      {/* <StarBackground /> */}
+      <SpaceBackground/>
 
       {/* Blobs ambiente, ecoando a tela de login */}
       <div className="pointer-events-none absolute -left-24 -top-32 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/10" />
