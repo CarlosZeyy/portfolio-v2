@@ -26,8 +26,19 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
+        <div className="min-h-screen flex flex-col lg:flex-row">
+          
+          <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:h-screen sticky top-0 border-r border-neutral-200/50 dark:border-neutral-800/50">
+            <div className="p-8 font-mono text-sm">Barra Lateral</div>
+          </aside>
+          
+          <main className="flex-1">{children}</main>
+          
+        </div>
+      </body>
     </html>
   );
 }
