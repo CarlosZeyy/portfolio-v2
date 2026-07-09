@@ -6,6 +6,7 @@ import { Hero } from "@/components/Hero";
 import { Header } from "@/components/Header";
 import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";
+import { About } from "@/components/About";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -71,6 +72,9 @@ export default async function Home() {
             )}
           </div>
         </section>
+
+        {/* About */}
+        <About/>
       </div>
     </div>
   );
