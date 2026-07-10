@@ -1,4 +1,4 @@
-import { formatDate, formatEmail } from "@/components/formats";
+import { formatDate, formatEmail } from "@/lib/formats";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
