@@ -36,7 +36,7 @@ import {
   SiGithubcopilot,
   SiGooglegemini
 } from "react-icons/si";
-import { FaJava, FaLinux, FaGit, FaGithub, FaAws, FaSass } from "react-icons/fa6";
+import { FaJava, FaLinux, FaGitAlt, FaGithub, FaAws, FaSass } from "react-icons/fa6";
 import { TbApi } from "react-icons/tb";
 import { VscLayers, VscAzure, VscVscode, VscOpenai } from "react-icons/vsc";
 import { DiRedis, DiJenkins, DiNginx } from 'react-icons/di';
@@ -96,7 +96,7 @@ export const stackIcons: Record<string, Icon> = {
 
   // Tools
   "Linux":  {icon: FaLinux, bg: `#FCC62466`},
-  "Git":  {icon: FaGit, bg: `#F03C2E66`},
+  "Git":  {icon: FaGitAlt, bg: `#F03C2E66`},
   "GitHub":  {icon: FaGithub, bg: `#18171766`},
   "Jira":  {icon: SiJira, bg: `#0052CC66`},
   "Insomnia":  {icon: SiInsomnia, bg: `#4000BF66`},
