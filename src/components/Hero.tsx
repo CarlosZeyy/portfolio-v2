@@ -69,7 +69,15 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 1.5 }}
           >
             Olá, sou o{" "}
-            <motion.span className="bg-clip-text">Carlos</motion.span>.
+            <motion.span
+              className="text-nowrap bg-linear-to-r from-white via-white to-teal-400 dark:via-white dark:to-teal-400 bg-clip-text text-transparent"
+              style={{ backgroundSize: "200% 100%" }}
+              animate={{ backgroundPosition: ["200% 0%", "-200% 0%"] }}
+              transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
+            >
+              Carlos Moises
+            </motion.span>
+            .
           </motion.h1>
 
           <motion.p
@@ -124,7 +132,7 @@ export function Hero() {
         <motion.div
           className="flex gap-12 items-center w-max py-30 text-4xl text-neutral-400 dark:text-neutral-600"
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ repeat: Infinity, ease: "linear", duration: 45 }}
+          transition={{ repeat: Infinity, ease: "linear", duration: 50 }}
         >
           {[...stacks, ...stacks].map((stack, index) => (
             <div
