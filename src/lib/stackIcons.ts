@@ -6,7 +6,6 @@ import {
   SiSpringboot,
   SiDocker,
   SiHtml5,
-  SiCss,
   SiJavascript,
   SiVite,
   SiTailwindcss,
@@ -43,6 +42,7 @@ import {
   FaGithub,
   FaAws,
   FaSass,
+  FaCss3Alt,
 } from "react-icons/fa6";
 import { TbApi } from "react-icons/tb";
 import { VscLayers, VscAzure, VscVscode, VscOpenai } from "react-icons/vsc";
@@ -53,7 +53,7 @@ import { Zustand } from "../../public/svg/zustand";
 
 export const stackIcons: Record<string, Icon> = {
   // Front:
-  CSS: { icon: SiCss, bg: `#1572B666` },
+  CSS: { icon: FaCss3Alt, bg: `#1572B666` },
   HTML: { icon: SiHtml5, bg: `#E34F2666` },
   JavaScript: { icon: SiJavascript, bg: `#F7DF1E66` },
   TypeScript: { icon: SiTypescript, bg: `#3178C666` },

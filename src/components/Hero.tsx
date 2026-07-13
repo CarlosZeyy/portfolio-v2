@@ -65,7 +65,8 @@ export function Hero() {
           <motion.h1
             className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl dark:text-white"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 1.5 }}
           >
             Olá, sou o{" "}
@@ -83,7 +84,8 @@ export function Hero() {
           <motion.p
             className="mt-4 max-w-xl text-base font-normal text-neutral-500 dark:text-gray-300"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 1.7 }}
           >
             Desenvolvedor full stack — do banco de dados à interface. Trabalho
@@ -94,7 +96,8 @@ export function Hero() {
           <motion.div
             className="mt-8 flex flex-wrap gap-3"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 1.9 }}
           >
             <motion.a
@@ -118,7 +121,8 @@ export function Hero() {
         <motion.div
           className="aspect-square bg-white/5"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 1.6 }}
         ></motion.div>
       </div>
@@ -126,7 +130,8 @@ export function Hero() {
       <motion.div
         className="w-full overflow-hidden relative mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] py-10"
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.5, delay: 1.8 }}
       >
         <motion.div
