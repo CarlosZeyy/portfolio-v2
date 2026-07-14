@@ -2,19 +2,68 @@
 
 import { createClient } from "@/lib/supabase";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+import { FaEye, FaGithub } from "react-icons/fa";
+import { useState } from "react";
+import { redirect } from "next/navigation";
+import { FaEyeSlash } from "react-icons/fa6";
 
 export default function LoginPage() {
   const supabase = createClient();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleGitHubLogin() {
-    supabase.auth.signInWithOAuth({
+  async function handleDefaultLogin(e: React.FormEvent) {
+    e.preventDefault();
+
+    setIsLoading(true);
+    setErrorMsg("");
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.error("Erro ao fazer login: ", error);
+      setErrorMsg("E-mail ou senha incorretos. Tente novamente.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!data.user) {
+      console.error("Erro ao fazer login: ", error);
+      setErrorMsg("E-mail ou senha incorretos. Tente novamente.");
+      setIsLoading(false);
+      return;
+    }
+
+    redirect(`/admin`);
+  }
+
+  async function handleGitHubLogin() {
+    await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
         redirectTo: `${window.location.origin}/api/user`,
       },
     });
   }
+
+  async function handleGoogleLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/api/user`,
+      },
+    });
+  }
+
+  const changeVisibility = (): void => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F8FA] px-4 font-sans transition-colors duration-300 dark:bg-[#0B0E14]">
@@ -32,7 +81,10 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-3">
-          <button className="flex flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:border-neutral-600">
+          <button
+            onClick={handleGoogleLogin}
+            className="flex flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:border-neutral-600"
+          >
             <FcGoogle className="text-xl" />
             Google
           </button>
@@ -54,7 +106,7 @@ export default function LoginPage() {
           <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
         </div>
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleDefaultLogin}>
           <div className="space-y-1.5 text-left">
             <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
               E-mail
@@ -62,8 +114,11 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
             />
+            {errorMsg && <div className="text-red-500">{errorMsg}</div>}
           </div>
 
           <div className="space-y-1.5 text-left">
@@ -72,18 +127,31 @@ export default function LoginPage() {
                 Senha
               </label>
             </div>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
-            />
+            <div className="relative w-full">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder="Senh@12345"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+              />
+              <div
+                onClick={changeVisibility}
+                className="absolute right-4 top-2 translate-y-[50%] cursor-pointer"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+            </div>
+            {errorMsg && <div className="text-red-500">{errorMsg}</div>}
           </div>
 
           <button
             type="submit"
             className="w-full cursor-pointer rounded-lg bg-teal-600 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
+            disabled={isLoading}
           >
-            Entrar
+            {isLoading ? "Entrando..." : "Entrar"}
           </button>
         </form>
       </div>

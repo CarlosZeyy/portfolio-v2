@@ -1,4 +1,4 @@
-import { formatDate, formatEmail } from "@/lib/formats";
+import { formatDate } from "@/lib/formats";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <h1>Bem vindo {user.email ? formatEmail(user.email) : "Admin"}</h1>
+      <h1>Bem vindo {user ? user.user_metadata?.full_name || user.user_metadata?.name : "Admin"}</h1>
 
       <br />
 
