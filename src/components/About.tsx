@@ -96,10 +96,12 @@ export function About() {
           </motion.p>
 
           <motion.a
-            href="#"
+            href="/cv/Carlos_Moises_Mariano_Lopes_Ferreira_Desenvolvedor_Fullstack.pdf"
             download={
-              "../../public/cv/Carlos_Moises_Mariano_Lopes_Ferreira_Desenvolvedor_Fullstack.pdf"
+              "Curriculo_Carlos_Moises_Desenvolvedor_Fullstack.pdf"
             }
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
