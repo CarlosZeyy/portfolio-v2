@@ -53,7 +53,7 @@ import { Zustand } from "../../public/svg/zustand";
 
 export const stackIcons: Record<string, Icon> = {
   // Front:
-  CSS: { icon: FaCss3Alt, bg: `#1572B666` },
+  "CSS": { icon: FaCss3Alt, bg: `#1572B666` },
   HTML: { icon: SiHtml5, bg: `#E34F2666` },
   JavaScript: { icon: SiJavascript, bg: `#F7DF1E66` },
   TypeScript: { icon: SiTypescript, bg: `#3178C666` },
