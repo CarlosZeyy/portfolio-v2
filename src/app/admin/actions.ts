@@ -10,7 +10,7 @@ export async function addProject(formData: FormData) {
 
   const title = formData.get("title") as string;
   const desc = formData.get("description") as string;
-  const thumb = formData.get("thumbnail_url") as string;
+  const imageFile = formData.get("thumbnail_url") as File;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
 
@@ -21,10 +21,36 @@ export async function addProject(formData: FormData) {
         .filter(Boolean)
     : [];
 
+  if (!imageFile || imageFile.size === 0) {
+    console.error("Erro: Nenhum arquivo foi recebido no backend");
+  }
+
+  const fileBuffer = await imageFile.arrayBuffer();
+
+  const uniqueName = `${Date.now()}-${imageFile.name}`;
+
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from("portfolio-media")
+    .upload(uniqueName, fileBuffer, {
+      contentType: imageFile.type,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    console.error("Erro ao fazer upload da imagem: ", uploadError.message);
+    return;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("portfolio-media")
+    .getPublicUrl(uniqueName);
+
+  const finalImageUrl = publicUrlData.publicUrl;
+
   const schema = projectSchema.safeParse({
     title: title,
     description: desc,
-    thumbnail: thumb,
+    thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
   });
@@ -55,7 +81,7 @@ export async function updateProject(formData: FormData) {
   const id = formData.get("id") as string;
   const title = formData.get("title") as string;
   const desc = formData.get("description") as string;
-  const thumb = formData.get("thumbnail_url") as string;
+  const imageFile = formData.get("thumbnail_url") as File;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
 
@@ -66,10 +92,36 @@ export async function updateProject(formData: FormData) {
         .filter(Boolean)
     : [];
 
+  if (!imageFile || imageFile.size === 0) {
+    console.error("Erro: Nenhum arquivo foi recebido no backend");
+  }
+
+  const fileBuffer = await imageFile.arrayBuffer();
+
+  const uniqueName = `${Date.now()}-${imageFile.name}`;
+
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from("portfolio-media")
+    .upload(uniqueName, fileBuffer, {
+      contentType: imageFile.type,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    console.error("Erro ao fazer upload da imagem: ", uploadError.message);
+    return;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("portfolio-media")
+    .getPublicUrl(uniqueName);
+
+  const finalImageUrl = publicUrlData.publicUrl;
+
   const schema = projectSchema.safeParse({
     title: title,
     description: desc,
-    thumbnail: thumb,
+    thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
   });

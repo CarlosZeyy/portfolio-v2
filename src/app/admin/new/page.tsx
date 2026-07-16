@@ -9,12 +9,12 @@ const addProjectPage = () => {
         <form action={addProject} className="flex flex-col" encType="multipart/form-data">
           <label>Titulo do projeto:</label>
           <input type="text" name="title" />
-
+ 
           <label>Descrição do projeto:</label>
           <input type="text" name="description" />
 
           <label>Thumbnail do projeto:</label>
-          <input type="text" name="thumbnail_url" />
+          <input type="file" name="thumbnail_url" />
 
           <label>Stacks do projeto:</label>
           <input type="text" name="stacks" />
