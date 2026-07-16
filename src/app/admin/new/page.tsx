@@ -6,7 +6,7 @@ const addProjectPage = () => {
       <h1>Adicionar Projeto</h1>
 
       <div className="flex">
-        <form action={addProject} className="flex flex-col">
+        <form action={addProject} className="flex flex-col" encType="multipart/form-data">
           <label>Titulo do projeto:</label>
           <input type="text" name="title" />
 

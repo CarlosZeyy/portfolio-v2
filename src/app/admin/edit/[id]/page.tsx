@@ -26,7 +26,7 @@ export default async function editProjectPage({
         <h1>Editando projeto de ID: {id} </h1>
 
         <div className="flex">
-          <form action={updateProject} className="flex flex-col">
+          <form action={updateProject} className="flex flex-col" encType="multipart/form-data">
             <input type="hidden" name="id" value={id} />
 
             <label>Titulo do projeto:</label>
@@ -41,9 +41,9 @@ export default async function editProjectPage({
 
             <label>Thumbnail do projeto:</label>
             <input
-              type="text"
+              type="file"
+              accept="image/*"
               name="thumbnail_url"
-              defaultValue={project.thumbnail_url}
             />
 
             <label>Stacks do projeto:</label>
