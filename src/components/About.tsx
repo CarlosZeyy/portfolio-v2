@@ -22,7 +22,7 @@ export function About() {
     "Git",
     "GitHub Actions",
     "Jest",
-    "Postgre SQL",
+    "PostgreSQL",
     "Supabase",
     "MySQL",
     "MongoDB",

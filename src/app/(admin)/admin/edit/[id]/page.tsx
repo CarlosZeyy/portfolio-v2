@@ -26,21 +26,22 @@ export default async function editProjectPage({
   return (
     <>
       <div className="min-h-screen bg-neutral-950 text-white text p-8 flex flex-col items-center pt-24">
-        <h1 className="text-xl font-semibold mb-2">Editando projeto de ID: {id} </h1>
+        <h1 className="text-xl font-semibold mb-2">
+          Editando projeto de ID: {id}{" "}
+        </h1>
 
         <Link
-          href={`/admin/new/`}
+          href={`/admin/`}
           className="w-fit flex justify-center items-center gap-2 cursor-pointer rounded-lg bg-teal-600 py-3 px-5 my-2 text-xl font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
         >
           <BiArrowBack className="shadow-lg hover:text-shadow-md hover:text-shadow-teal-400" />{" "}
-          Voltar para pagina anterior
+          Voltar para pagina de projetos
         </Link>
 
         <div className="min-w-3xl translate-x-10">
           <form
             className="bg-white/5 border border-neutral-800 backdrop-blur-md rounded-xl p-8 shadow-xl flex flex-col gap-6 w-full max-w-2xl mt-8"
             action={updateProject}
-            encType="multipart/form-data"
           >
             <input type="hidden" name="id" value={id} />
 
@@ -72,7 +73,12 @@ export default async function editProjectPage({
                 Thumbnail do projeto:
               </label>
 
-              <input type="file" id="file-upload" className="hidden" />
+              <input
+                type="file"
+                id="file-upload"
+                name="thumbnail_url"
+                className="hidden"
+              />
 
               <label
                 htmlFor="file-upload"

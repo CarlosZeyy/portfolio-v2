@@ -1,7 +1,9 @@
 "use client";
 
-import { addProject } from "@/app/admin/actions";
+import { addProject } from "@/app/(admin)/admin/actions";
+import Link from "next/link";
 import { ChangeEvent, useState } from "react";
+import { BiArrowBack } from "react-icons/bi";
 import { FiUpload } from "react-icons/fi";
 
 const addProjectPage = () => {
@@ -22,11 +24,18 @@ const addProjectPage = () => {
     <div className="min-h-screen bg-neutral-950 text-white p-8 flex flex-col items-center justify-center pt-24">
       <h1 className="text-xl font-semibold mb-2">Adicionar Novo Projeto</h1>
 
+      <Link
+        href={`/admin/`}
+        className="w-fit flex justify-center items-center gap-2 cursor-pointer rounded-lg bg-teal-600 py-3 px-5 my-2 text-xl font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
+      >
+        <BiArrowBack className="shadow-lg hover:text-shadow-md hover:text-shadow-teal-400" />{" "}
+        Voltar para pagina de projetos
+      </Link>
+
       <div className="min-w-3xl translate-x-10">
         <form
           className="bg-white/5 border border-neutral-800 backdrop-blur-md rounded-xl p-8 shadow-xl flex flex-col gap-6 w-full max-w-2xl mt-8"
           action={addProject}
-          encType="multipart/form-data"
         >
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-neutral-300">

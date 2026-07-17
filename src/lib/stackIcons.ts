@@ -97,7 +97,7 @@ export const stackIcons: Record<string, Icon> = {
   "Jenkins": { icon: DiJenkins, bg: `#D2493966` },
 
   // DB:
-  "Postgre SQL": { icon: SiPostgresql, bg: `#4169E166` },
+  "PostgreSQL": { icon: SiPostgresql, bg: `#4169E166` },
   "MySQL": { icon: SiMysql, bg: `#4479A166` },
   "MongoDB": { icon: SiMongodb, bg: `#47A24866` },
   "SQLite": { icon: SiSqlite, bg: `#003B5766` },

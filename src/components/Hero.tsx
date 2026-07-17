@@ -36,10 +36,10 @@ export function Hero() {
     "Vercel",
     "Railway",
     "Jest",
-    "Postgre SQL",
+    "PostgreSQL",
+    "Supabase",
     "MySQL",
     "MongoDB",
-    "Supabase",
   ];
 
   const stacks = destaques.map((name) => ({
