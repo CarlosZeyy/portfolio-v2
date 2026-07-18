@@ -66,7 +66,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F8FA] px-4 font-sans transition-colors duration-300 dark:bg-[#0B0E14]">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 font-sans transition-colors duration-300">
       <div className="pointer-events-none absolute -left-24 -top-32 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/10" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl dark:bg-indigo-500/10" />
 

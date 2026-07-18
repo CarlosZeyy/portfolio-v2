@@ -67,7 +67,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 1.5 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
           >
             Olá, sou o{" "}
             <motion.span
@@ -86,7 +86,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 1.7 }}
+            transition={{ duration: 0.5, delay: 1.3 }}
           >
             Desenvolvedor full stack — do banco de dados à interface. Trabalho
             com React, Next.js e Node.js no dia a dia, além de Java com Spring
@@ -98,7 +98,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 1.9 }}
+            transition={{ duration: 0.5, delay: 1.5 }}
           >
             <motion.a
               href="#projetos"
@@ -123,7 +123,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.5, delay: 1.6 }}
+          transition={{ duration: 0.5, delay: 1.7 }}
         ></motion.div>
       </div>
 
