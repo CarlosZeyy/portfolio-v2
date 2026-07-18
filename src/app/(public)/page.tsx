@@ -39,7 +39,7 @@ export default async function Home() {
         <Hero />
 
         {/* Projetos */}
-        <section id="projetos" className="scroll-mt-8 pb-24">
+        <section id="projects" className="scroll-mt-8 pb-24">
           <ProjectText />
 
           <div className="mt-8">

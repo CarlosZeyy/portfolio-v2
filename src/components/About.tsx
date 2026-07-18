@@ -48,6 +48,7 @@ export function About() {
 
   return (
     <motion.section
+      id="about"
       className="py-16 sm:py-24 min-h-screen flex flex-col justify-center"
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: false, amount: 0.2 }}
@@ -97,9 +98,7 @@ export function About() {
 
           <motion.a
             href="/cv/Carlos_Moises_Mariano_Lopes_Ferreira_Desenvolvedor_Fullstack.pdf"
-            download={
-              "Curriculo_Carlos_Moises_Desenvolvedor_Fullstack.pdf"
-            }
+            download={"Curriculo_Carlos_Moises_Desenvolvedor_Fullstack.pdf"}
             target="_blank"
             rel="noopener noreferrer"
             initial={{ opacity: 0, y: 20 }}

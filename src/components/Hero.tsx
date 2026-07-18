@@ -48,7 +48,9 @@ export function Hero() {
   }));
 
   return (
-    <motion.section className="py-16 sm:py-24 min-h-screen flex flex-col justify-center">
+    <motion.section 
+    id="top"
+    className="py-16 sm:py-24 min-h-screen flex flex-col justify-center">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <p className="font-mono text-sm text-teal-600 dark:text-teal-400 min-h-5">
@@ -78,7 +80,6 @@ export function Hero() {
             >
               Carlos Moises
             </motion.span>
-            .
           </motion.h1>
 
           <motion.p

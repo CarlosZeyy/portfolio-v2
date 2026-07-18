@@ -12,6 +12,7 @@ export function MenuOverlay() {
     <AnimatePresence>
       {isMenuOpen && (
         <motion.div
+          key={"menu-overlay"}
           className="fixed inset-0 z-60 bg-[#0B0E14]/95 backdrop-blur-2xl flex flex-col"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -36,6 +37,7 @@ export function MenuOverlay() {
           <motion.div className="flex-1 flex flex-col items-center justify-center gap-8">
             <motion.a
               href="#top"
+              onClick={closeMenu}
               className="text-4xl font-semibold text-white hover:text-teal-400 hover:drop-shadow-[0_0_7px_rgba(45,212,191,0.8)] transition-colors"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -46,16 +48,18 @@ export function MenuOverlay() {
 
             <motion.a
               href="#about"
+              onClick={closeMenu}
               className="text-4xl font-semibold text-white hover:text-teal-400 hover:drop-shadow-[0_0_7px_rgba(45,212,191,0.8)] transition-colors"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 1.2 }}
             >
-              Sobre mim
+              Sobre Mim
             </motion.a>
 
             <motion.a
               href="#projects"
+              onClick={closeMenu}
               className="text-4xl font-semibold text-white hover:text-teal-400 hover:drop-shadow-[0_0_7px_rgba(45,212,191,0.8)] transition-colors"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,6 +70,7 @@ export function MenuOverlay() {
 
             <motion.a
               href="#contact"
+              onClick={closeMenu}
               className="text-4xl font-semibold text-white hover:text-teal-400 hover:drop-shadow-[0_0_7px_rgba(45,212,191,0.8)] transition-colors"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
