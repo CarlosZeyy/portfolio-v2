@@ -34,9 +34,10 @@ export default function PublicLayout({
       <body className="min-h-full flex flex-col bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
         <div className="min-h-screen flex flex-col lg:flex-row">
           <aside className="hidden lg:flex lg:flex-col lg:w-20 lg:h-screen sticky top-0 border-r border-neutral-200/50 dark:border-neutral-800/50">
-          <Sidebar/>
+            <Sidebar />
           </aside>
-          <MenuOverlay/>
+          <MenuOverlay />
+          <MobileHeader />
 
           <main className="flex-1">{children}</main>
         </div>
