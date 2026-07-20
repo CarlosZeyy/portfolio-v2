@@ -52,7 +52,7 @@ export default async function Home() {
                   Nenhum projeto publicado ainda.
                 </p>
                 <p className="mt-1 text-sm font-light text-neutral-500 dark:text-neutral-400">
-                  Os primeiros commits estão a caminho — volte em breve.
+                  Os primeiros commits estão a caminho! volte em breve.
                 </p>
               </div>
             ) : (

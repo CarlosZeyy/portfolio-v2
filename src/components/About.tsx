@@ -88,7 +88,7 @@ export function About() {
             o valor inegociável da precisão, do capricho com os detalhes e do
             compromisso com os prazos do cliente. Hoje, aplico essa mesma
             mentalidade na Engenharia de Software. O meu foco é arquitetar
-            soluções que resolvam problemas reais — como o sistema automatizado
+            soluções que resolvam problemas reais, como o sistema automatizado
             de orçamentos que desenvolvi para modernizar o atendimento. Acredito
             fortemente no código como ferramenta de colaboração, o que me
             motivou a atuar como Mentor Voluntário na faculdade, guiando
