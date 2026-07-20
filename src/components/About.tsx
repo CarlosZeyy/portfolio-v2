@@ -61,7 +61,7 @@ export function About() {
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.5, delay: 1 }}
       >
-        ~/sobre-mim
+        ~/sobre mim
       </motion.p>
 
       <motion.div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-20">
