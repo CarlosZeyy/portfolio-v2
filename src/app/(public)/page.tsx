@@ -38,6 +38,9 @@ export default async function Home() {
         {/* Hero */}
         <Hero />
 
+        {/* About */}
+        <About />
+
         {/* Projetos */}
         <section id="projects" className="scroll-mt-8 pb-24">
           <ProjectText />
@@ -68,9 +71,6 @@ export default async function Home() {
             )}
           </div>
         </section>
-
-        {/* About */}
-        <About />
       </div>
     </div>
   );
