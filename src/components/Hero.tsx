@@ -133,7 +133,7 @@ export function Hero() {
             loop
             muted
             playsInline
-            poster="/avatar/profile.jpeg"
+            poster="/avatar/avatar-hero.jpeg"
             className="w-full h-full object-cover rounded-2xl border border-neutral-800/50 shadow-2xl"
           ></video>
         </motion.div>
