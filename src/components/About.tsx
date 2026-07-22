@@ -91,9 +91,9 @@ export function About() {
             soluções que resolvam problemas reais, como o sistema automatizado
             de orçamentos que desenvolvi para modernizar o atendimento. Acredito
             fortemente no código como ferramenta de colaboração, o que me
-            motivou a atuar como Mentor Voluntário na faculdade, guiando
-            iniciantes sem experiência nos seus primeiros passos no
-            desenvolvimento web.
+            motivou a atuar como Mentor Voluntário na faculdade Estácio, guiando
+            alunos e pessoas de fora da instituição iniciantes sem experiência
+            nos seus primeiros passos no desenvolvimento web.
           </motion.p>
 
           <motion.a
