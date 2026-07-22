@@ -48,9 +48,10 @@ export function Hero() {
   }));
 
   return (
-    <motion.section 
-    id="top"
-    className="py-16 sm:py-24 min-h-screen flex flex-col justify-center">
+    <motion.section
+      id="top"
+      className="py-16 sm:py-24 min-h-screen flex flex-col justify-center"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <p className="font-mono text-sm text-teal-600 dark:text-teal-400 min-h-5">
@@ -120,12 +121,22 @@ export function Hero() {
         </div>
 
         <motion.div
-          className="aspect-square bg-white/5"
+          className="aspect-square bg-white/5 rounded-2xl"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 1.7 }}
-        ></motion.div>
+        >
+          <video
+            src="/avatar/avatar-portfolio.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/avatar/profile.jpeg"
+            className="w-full h-full object-cover rounded-2xl border border-neutral-800/50 shadow-2xl"
+          ></video>
+        </motion.div>
       </div>
 
       <motion.div
