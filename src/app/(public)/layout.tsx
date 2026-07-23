@@ -4,6 +4,7 @@ import "../globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileHeader } from "@/components/MobileHeader";
 import { MenuOverlay } from "@/components/MenuOverlay";
+import { SocialDock } from "@/components/SocialDock";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function PublicLayout({
           </aside>
           <MenuOverlay />
           <MobileHeader />
+          <SocialDock/>
 
           <main className="flex-1">{children}</main>
         </div>
