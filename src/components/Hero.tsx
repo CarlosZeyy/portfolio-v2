@@ -103,7 +103,7 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 1.5 }}
           >
             <motion.a
-              href="#projetos"
+              href="#projects"
               className="rounded-lg bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
             >
               Ver projetos
