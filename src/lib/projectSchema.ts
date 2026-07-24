@@ -9,6 +9,7 @@ export const projectSchema = z.object({
   repoUrl: z.string().url("URL do repositório é obrigatório"),
   deployUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  isFeatured: z.boolean().default(false).optional(),
 });
 
 export type Project = z.infer<typeof projectSchema>;

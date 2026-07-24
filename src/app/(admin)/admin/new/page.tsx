@@ -68,6 +68,7 @@ const addProjectPage = () => {
               type="file"
               id="file-upload"
               className="hidden"
+              name="thumbnail_url"
               onChange={handleFileChange}
             />
 
@@ -110,6 +111,43 @@ const addProjectPage = () => {
               name="repo_url"
               className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
             />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              URL do Deploy (Opcional):
+            </label>
+            <input
+              type="text"
+              name="deploy_url"
+              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              URL do Vídeo (Opcional):
+            </label>
+            <input
+              type="text"
+              name="video_url"
+              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+            />
+          </div>
+
+          <div className="flex items-center gap-3 py-2">
+            <input
+              type="checkbox"
+              id="is_featured"
+              name="is_featured"
+              className="w-5 h-5 rounded border-neutral-700 bg-neutral-900 accent-teal-500 cursor-pointer transition-all"
+            />
+            <label
+              htmlFor="is_featured"
+              className="text-sm font-medium text-neutral-300 cursor-pointer select-none"
+            >
+              Destacar este projeto na página inicial
+            </label>
           </div>
 
           <button

@@ -40,6 +40,7 @@ export function Hero() {
     "Supabase",
     "MySQL",
     "MongoDB",
+    "Jira",
   ];
 
   const stacks = destaques.map((name) => ({

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deleteProject } from "./actions";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
+import { TbArrowBack } from "react-icons/tb";
 
 export default async function AdminPage() {
   const supabase = await createServerSupabase();
@@ -49,7 +50,7 @@ export default async function AdminPage() {
               className="flex flex-col bg-white/5 border border-neutral-800 backdrop-blur-md rounded-xl overflow-hidden shadow-xl"
             >
               <img
-                src={project.thumbnail_url}
+                src={project.thumbnail_url || "/fallback-thumb.jpeg"}
                 alt={project.title}
                 className="w-full aspect-video object-cover bg-neutral-900"
               />
@@ -109,12 +110,21 @@ export default async function AdminPage() {
         )}
       </div>
 
-      <Link
-        href={"/admin/new"}
-        className={`mt-10 flex gap-3 justify-center items-center w-max py-4 px-4 cursor-pointer rounded-lg bg-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"`}
-      >
-        Adicionar Novo Projeto <FaPlus />
-      </Link>
+      <div className="flex gap-10">
+        <Link
+          href={"/"}
+          className={`mt-10 flex gap-3 justify-center items-center w-max py-4 px-4 cursor-pointer rounded-lg bg-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"`}
+        >
+          Retornar ao Portfolio <TbArrowBack className="text-xl" />
+        </Link>
+
+        <Link
+          href={"/admin/new"}
+          className={`mt-10 flex gap-3 justify-center items-center w-max py-4 px-4 cursor-pointer rounded-lg bg-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"`}
+        >
+          Adicionar Novo Projeto <FaPlus className="text-md" />
+        </Link>
+      </div>
     </div>
   );
 }

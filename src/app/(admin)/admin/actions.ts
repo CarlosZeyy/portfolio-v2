@@ -13,6 +13,7 @@ export async function addProject(formData: FormData) {
   const imageFile = formData.get("thumbnail_url") as File;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
+  const isFeatured = formData.get("is_featured") === "on";
 
   const stacksList: string[] = stacks
     ? stacks
@@ -23,6 +24,7 @@ export async function addProject(formData: FormData) {
 
   if (!imageFile || imageFile.size === 0) {
     console.error("Erro: Nenhum arquivo foi recebido no backend");
+    return;
   }
 
   const fileBuffer = await imageFile.arrayBuffer();
@@ -53,6 +55,7 @@ export async function addProject(formData: FormData) {
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
+    isFeatured: isFeatured,
   });
 
   if (!schema.success) {
@@ -68,6 +71,7 @@ export async function addProject(formData: FormData) {
     repo_url: schema.data?.repoUrl,
     deploy_url: schema.data?.deployUrl,
     video_url: schema.data?.videoUrl,
+    is_featured: schema.data?.isFeatured,
   });
 
   revalidatePath("/admin");
@@ -85,6 +89,7 @@ export async function updateProject(formData: FormData) {
   const existingThumb = formData.get("existing_thumbnail") as string;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
+  const isFeatured = formData.get("is_featured") === "on";
 
   const stacksList: string[] = stacks
     ? stacks
@@ -128,6 +133,7 @@ export async function updateProject(formData: FormData) {
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
+    isFeatured: isFeatured,
   });
 
   if (!schema.success) {
@@ -145,6 +151,7 @@ export async function updateProject(formData: FormData) {
       repo_url: schema.data?.repoUrl,
       deploy_url: schema.data?.deployUrl,
       video_url: schema.data?.videoUrl,
+      is_featured: schema.data?.isFeatured,
     })
     .eq("id", id);
 

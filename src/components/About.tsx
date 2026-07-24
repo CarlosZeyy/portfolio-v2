@@ -26,6 +26,7 @@ export function About() {
     "Supabase",
     "MySQL",
     "MongoDB",
+    "Jira",
   ];
 
   const softSkills = [
@@ -222,7 +223,7 @@ export function About() {
               {hardSkill.map((stack, index) => (
                 <motion.div
                   key={index}
-                  className="rounded-full flex gap-2 bg-white/5 border border-neutral-800 px-3 py-1 text-sm text-neutral-300"
+                  className="rounded-full flex gap-2 bg-white/5 border border-neutral-800 backdrop-blur-xs px-3 py-1 text-sm text-neutral-300"
                 >
                   <stack.icon className="text-xl" />
                   {stack.name}
@@ -250,7 +251,7 @@ export function About() {
               {softSkill.map((skill, index) => (
                 <motion.div
                   key={index}
-                  className="rounded-full flex gap-2 bg-white/5 border border-neutral-800 px-3 py-1 text-sm text-neutral-300"
+                  className="rounded-full flex gap-2 bg-white/5 border border-neutral-800 backdrop-blur-xs px-3 py-1 text-sm text-neutral-300"
                 >
                   {skill.name}
                 </motion.div>

@@ -22,19 +22,16 @@ export function ProjectCard({
       className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-        {project.thumbnail ? (
+        {project.thumbnail && (
           <img
-            src={project.thumbnail}
+            src={project.thumbnail || "/fallback-thumb.jpeg"}
+            onError={(e) => {
+              e.currentTarget.src = "/fallback-thumb.jpeg";
+            }}
             alt={`Preview do projeto ${project.title}`}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <span className="font-mono text-xs text-neutral-400 dark:text-neutral-600">
-              sem preview
-            </span>
-          </div>
         )}
       </div>
 
@@ -57,7 +54,9 @@ export function ProjectCard({
                   key={stack}
                   className="flex items-center shrink-0 whitespace-nowrap gap-1.5 rounded-full border border-neutral-200 bg-neutral-100/60 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-600 transition-colors hover:bg-neutral-200/60 dark:border-neutral-800 dark:bg-white/5 dark:text-neutral-300 dark:hover:bg-white/10"
                 >
-                  {ComponentIcon && <ComponentIcon className="text-sm opacity-70" />}
+                  {ComponentIcon && (
+                    <ComponentIcon className="text-sm opacity-70" />
+                  )}
                   {stack}
                 </span>
               );
