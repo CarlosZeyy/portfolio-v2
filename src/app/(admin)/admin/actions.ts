@@ -13,6 +13,8 @@ export async function addProject(formData: FormData) {
   const imageFile = formData.get("thumbnail_url") as File;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
+  const deployUrl = formData.get("deploy_url") as string;
+  const videoUrl = formData.get("video_url") as string;
   const isFeatured = formData.get("is_featured") === "on";
 
   const stacksList: string[] = stacks
@@ -55,6 +57,8 @@ export async function addProject(formData: FormData) {
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
+    deployUrl: deployUrl,
+    videoUrl: videoUrl,
     isFeatured: isFeatured,
   });
 
@@ -89,6 +93,8 @@ export async function updateProject(formData: FormData) {
   const existingThumb = formData.get("existing_thumbnail") as string;
   const stacks = formData.get("stacks") as string;
   const repoUrl = formData.get("repo_url") as string;
+  const deployUrl = formData.get("deploy_url") as string;
+  const videoUrl = formData.get("video_url") as string;
   const isFeatured = formData.get("is_featured") === "on";
 
   const stacksList: string[] = stacks
@@ -133,6 +139,8 @@ export async function updateProject(formData: FormData) {
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
+    deployUrl: deployUrl,
+    videoUrl: videoUrl,
     isFeatured: isFeatured,
   });
 

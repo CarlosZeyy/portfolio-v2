@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import { FaGithub, FaArrowUpRightFromSquare, FaPlay } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
@@ -14,24 +15,51 @@ export function ProjectCard({
 }) {
   const stacks = project.stacks ?? [];
 
+  const cardRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const isInView = useInView(cardRef, { amount: 0.5 });
+
+  useEffect(() => {
+    if (!project.isFeatured || !videoRef.current) return;
+
+    if (isInView) {
+      videoRef.current.play();
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isInView, project.isFeatured]);
+
   return (
     <motion.article
+      ref={cardRef}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: 1.5 + index * 0.75 }}
       className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-        {project.thumbnail && (
-          <img
-            src={project.thumbnail || "/fallback-thumb.jpeg"}
-            onError={(e) => {
-              e.currentTarget.src = "/fallback-thumb.jpeg";
-            }}
-            alt={`Preview do projeto ${project.title}`}
-            loading="lazy"
+        {project.isFeatured && project.videoUrl ? (
+          <video
+            ref={videoRef}
+            src={project.videoUrl}
+            muted
+            loop
+            playsInline
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          ></video>
+        ) : (
+          project.thumbnail && (
+            <img
+              src={project.thumbnail ? project.thumbnail : "/fallback-thumb.jpeg"}
+              onError={(e) => {
+                e.currentTarget.src = "/fallback-thumb.jpeg";
+              }}
+              alt={`Preview do projeto ${project.title}`}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )
         )}
       </div>
 
@@ -86,18 +114,6 @@ export function ProjectCard({
             >
               <FaArrowUpRightFromSquare className="text-xs" />
               Ver projeto
-            </a>
-          )}
-
-          {project.videoUrl && (
-            <a
-              href={project.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Ver demonstração em vídeo"
-              className="flex items-center justify-center rounded-lg border border-neutral-200 p-2 text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-600 dark:hover:bg-white/5"
-            >
-              <FaPlay className="text-xs" />
             </a>
           )}
         </div>

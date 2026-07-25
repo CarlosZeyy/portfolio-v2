@@ -80,6 +80,12 @@ export default async function editProjectPage({
                 className="hidden"
               />
 
+              <input
+                type="hidden"
+                name="existing_thumbnail"
+                value={project.thumbnail_url}
+              />
+
               <label
                 htmlFor="file-upload"
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-teal-800 to-teal-300 px-6 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-teal-500/50 active:translate-y-0 cursor-pointer"

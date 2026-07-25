@@ -21,6 +21,7 @@ export default async function Home() {
       repoUrl: p.repo_url,
       deployUrl: p.deploy_url,
       videoUrl: p.video_url,
+      isFeatured: p.is_featured,
     })) || [];
 
   const hasProjects = projects.length > 0;
