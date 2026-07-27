@@ -6,6 +6,7 @@ import { Hero } from "@/components/Hero";
 import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";
 import { About } from "@/components/About";
+import { ProjectList } from "@/components/ProjectGallery";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -60,15 +61,7 @@ export default async function Home() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project, index) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    index={index}
-                  />
-                ))}
-              </div>
+              <ProjectList projects={projects} />
             )}
           </div>
         </section>
