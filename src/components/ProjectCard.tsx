@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { hover, motion, useInView } from "framer-motion";
 import { FaGithub, FaArrowUpRightFromSquare, FaPlay } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
@@ -9,16 +9,31 @@ import { stackIcons } from "@/lib/stackIcons";
 export function ProjectCard({
   project,
   index,
+  onExpand,
 }: {
   project: Project;
   index: number;
+  onExpand: () => void;
 }) {
   const stacks = project.stacks ?? [];
 
   const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isInView = useInView(cardRef, { amount: 0.5 });
+
+  const handleMouseEnter = () => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+
+    hoverTimerRef.current = setTimeout(() => {
+      onExpand();
+    }, 3000);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+  };
 
   useEffect(() => {
     if (!project.isFeatured || !videoRef.current) return;
@@ -33,6 +48,9 @@ export function ProjectCard({
   return (
     <motion.article
       ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      layoutId={`card-${project.id}`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: 1.5 + index * 0.75 }}
@@ -40,18 +58,22 @@ export function ProjectCard({
     >
       <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {project.isFeatured && project.videoUrl ? (
-          <video
+          <motion.video
+            layoutId={`image-${project.id}`}
             ref={videoRef}
             src={project.videoUrl}
             muted
             loop
             playsInline
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          ></video>
+          ></motion.video>
         ) : (
           project.thumbnail && (
-            <img
-              src={project.thumbnail ? project.thumbnail : "/fallback-thumb.jpeg"}
+            <motion.img
+              layoutId={`image-${project.id}`}
+              src={
+                project.thumbnail ? project.thumbnail : "/fallback-thumb.jpeg"
+              }
               onError={(e) => {
                 e.currentTarget.src = "/fallback-thumb.jpeg";
               }}
@@ -64,12 +86,18 @@ export function ProjectCard({
       </div>
 
       <div className="p-6 flex flex-col grow">
-        <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white">
+        <motion.h3
+          layoutId={`title-${project.id}`}
+          className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white"
+        >
           {project.title}
-        </h3>
-        <p className="mt-1.5 line-clamp-2 text-sm font-light text-neutral-500 dark:text-neutral-400">
+        </motion.h3>
+        <motion.p
+          layoutId={`desc-${project.id}`}
+          className="mt-1.5 line-clamp-2 text-sm font-light text-neutral-500 dark:text-neutral-400"
+        >
           {project.description}
-        </p>
+        </motion.p>
 
         {stacks.length > 0 && (
           <div className="mt-4 mb-4 flex flex-wrap gap-1.5">
