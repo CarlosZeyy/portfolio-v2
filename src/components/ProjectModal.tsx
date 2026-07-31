@@ -3,6 +3,7 @@
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
 import { motion } from "framer-motion";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
 export function ProjectModal({
   project,
@@ -21,7 +22,12 @@ export function ProjectModal({
         className="w-full max-w-4xl bg-neutral-900 rounded-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <motion.h2 layoutId={`title-${project.id}`} className="text-2xl font-semibold flex justify-center mt-5">{project.title}</motion.h2>
+        <motion.h2
+          layoutId={`title-${project.id}`}
+          className="text-2xl font-semibold flex justify-center mt-5"
+        >
+          {project.title}
+        </motion.h2>
         <motion.div className="relative p-10 pb-0 w-full h-100 sm:h-125 overflow-hidden">
           {project.videoUrl ? (
             <motion.video
@@ -78,6 +84,17 @@ export function ProjectModal({
           <motion.p layoutId={`desc-${project.id}`}>
             {project.description}
           </motion.p>
+        </motion.div>
+
+        <motion.p className="mx-10 text-xs font-light">Deseja ver mais detalhes sobre o projeto?</motion.p>
+        <motion.div className="cursor-pointer rounded-lg bg-teal-600 py-3 mx-10 my-3 flex flex-row gap-3 justify-center items-center text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0">
+          <motion.button
+            className="cursor-pointer"
+            layoutId={`proj-${project.id}`}
+          >
+            Ver Projeto
+          </motion.button>
+          <FaArrowUpRightFromSquare />
         </motion.div>
       </motion.div>
     </div>

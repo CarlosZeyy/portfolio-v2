@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { hover, motion, useInView } from "framer-motion";
-import { FaGithub, FaArrowUpRightFromSquare, FaPlay } from "react-icons/fa6";
+import { motion, useInView } from "framer-motion";
+import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
 
