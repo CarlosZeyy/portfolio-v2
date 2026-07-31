@@ -21,8 +21,8 @@ export function ProjectModal({
         className="w-full max-w-4xl bg-neutral-900 rounded-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <motion.h2 layoutId={`title-${project.id}`}>{project.title}</motion.h2>
-        <motion.div className="relative w-full h-100 sm:h-125 overflow-hidden">
+        <motion.h2 layoutId={`title-${project.id}`} className="text-2xl font-semibold flex justify-center mt-5">{project.title}</motion.h2>
+        <motion.div className="relative p-10 pb-0 w-full h-100 sm:h-125 overflow-hidden">
           {project.videoUrl ? (
             <motion.video
               layoutId={`image-${project.id}`}
@@ -31,7 +31,7 @@ export function ProjectModal({
               loop
               playsInline
               autoPlay
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
             ></motion.video>
           ) : (
             project.thumbnail && (
@@ -45,16 +45,16 @@ export function ProjectModal({
                 }}
                 alt={`Preview do projeto ${project.title}`}
                 loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="h-full w-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
               />
             )
           )}
         </motion.div>
 
-        <motion.div className="px-8 py-4">
+        <motion.div className="mx-10 my-5">
           <motion.span layoutId={`stacks-${project.id}`}>
             {project.stacks.length > 0 && (
-              <div className="mt-4 mb-4 flex flex-wrap gap-1.5">
+              <div className="mt-4 mb-4 flex flex-wrap gap-3">
                 {project.stacks.map((stack) => {
                   const stackData = stackIcons[stack];
                   const ComponentIcon = stackData?.icon;
