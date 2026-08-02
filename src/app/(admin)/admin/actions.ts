@@ -67,6 +67,12 @@ export async function addProject(formData: FormData) {
     return;
   }
 
+  if (isFeatured) {
+    await supabase.from("projects").update({
+      is_featured: false,
+    }).eq("is_featured", true);
+  }
+
   await supabase.from("projects").insert({
     title: schema.data?.title,
     description: schema.data?.description,
@@ -147,6 +153,15 @@ export async function updateProject(formData: FormData) {
   if (!schema.success) {
     console.error(schema.error);
     return;
+  }
+
+  if (isFeatured) {
+    await supabase
+      .from("projects")
+      .update({
+        is_featured: false,
+      })
+      .neq("id", id);
   }
 
   await supabase
