@@ -10,6 +10,10 @@ export const projectSchema = z.object({
   deployUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
   isFeatured: z.boolean().default(false).optional(),
+  problemDescription:z.string().optional(),
+  solutionDescription:z.string().optional(),
+  technicalChallenges:z.string().optional(),
+  galleryUrls:z.string().array().optional(),
 });
 
 export type Project = z.infer<typeof projectSchema>;
