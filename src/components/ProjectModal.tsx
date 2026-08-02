@@ -4,6 +4,7 @@ import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
 import { motion } from "framer-motion";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import { FaArrowDown } from "react-icons/fa";
 
 export function ProjectModal({
   project,
@@ -13,9 +14,12 @@ export function ProjectModal({
   onClose: () => void;
 }) {
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-999 bg-black/60 backdrop-blur-sm flex items-center justify-center"
       onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
       <motion.div
         layoutId={`card-${project.id}`}
@@ -86,7 +90,9 @@ export function ProjectModal({
           </motion.p>
         </motion.div>
 
-        <motion.p className="mx-10 text-xs font-light">Deseja ver mais detalhes sobre o projeto?</motion.p>
+        <motion.p className="mx-10 text-xs font-light flex items-center gap-2">
+          Deseja ver mais detalhes sobre o projeto? <FaArrowDown />
+        </motion.p>
         <motion.div className="cursor-pointer rounded-lg bg-teal-600 py-3 mx-10 my-3 flex flex-row gap-3 justify-center items-center text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0">
           <motion.button
             className="cursor-pointer"
@@ -97,6 +103,6 @@ export function ProjectModal({
           <FaArrowUpRightFromSquare />
         </motion.div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

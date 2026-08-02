@@ -52,14 +52,14 @@ export function About() {
       id="about"
       className="py-16 sm:py-24 min-h-screen flex flex-col justify-center"
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.2 }}
       initial={{ opacity: 0, y: 50 }}
     >
       <motion.p
         className="font-mono text-xs uppercase tracking-wide text-neutral-400 dark:text-neutral-500"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.5, delay: 1 }}
       >
         ~/sobre-mim
@@ -70,7 +70,7 @@ export function About() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 1 }}
             className="mb-6 font-mono text-lg text-white"
           >
@@ -80,7 +80,7 @@ export function About() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 1.2 }}
             className="text-neutral-400 font-medium"
           >
@@ -104,7 +104,7 @@ export function About() {
             rel="noopener noreferrer"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 1.4 }}
             className="flex justify-center items-center gap-4 rounded-lg bg-teal-600 px-5 py-3 text-xl font-semibold text-white transition-[colors] duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
           >
@@ -116,7 +116,7 @@ export function About() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 0.8 }}
             className="mb-6 font-mono text-lg text-white"
           >
@@ -129,7 +129,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1 }}
               className="relative pl-8 pb-10 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-700/50 hover:before:bg-teal-500"
             >
@@ -145,7 +145,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.25 }}
               className="relative pl-8 pb-10 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-700/50 hover:before:bg-teal-500"
             >
@@ -161,7 +161,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.5 }}
               className="relative pl-8 pb-10 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-700/50 hover:before:bg-teal-500"
             >
@@ -177,7 +177,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.75 }}
               className="relative pl-8 pb-10 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-700/50 hover:before:bg-teal-500"
             >
@@ -196,7 +196,7 @@ export function About() {
             <motion.h3
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1 }}
               className="mb-6 font-mono text-lg text-white"
             >
@@ -206,7 +206,7 @@ export function About() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.25 }}
               className="text-sm text-neutral-400 mb-3"
             >
@@ -215,7 +215,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.5 }}
               className="flex flex-wrap gap-2 mb-8"
             >
@@ -234,7 +234,7 @@ export function About() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 1.75 }}
               className="text-sm text-neutral-400 mb-3"
             >
@@ -243,7 +243,7 @@ export function About() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, delay: 2 }}
               className="flex flex-wrap gap-2 mb-8"
             >

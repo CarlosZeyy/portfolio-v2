@@ -52,11 +52,15 @@ export function ProjectCard({
       onMouseLeave={handleMouseLeave}
       layoutId={`card-${project.id}`}
       initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 1.5 + index * 0.75 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        opacity: { duration: 0.5, delay: index * 0.5 },
+        y: { duration: 0.5, delay: index * 0.5 },
+      }}
       className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
-      <div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+      <motion.div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {project.isFeatured && project.videoUrl ? (
           <motion.video
             layoutId={`image-${project.id}`}
@@ -83,7 +87,7 @@ export function ProjectCard({
             />
           )
         )}
-      </div>
+      </motion.div>
 
       <div className="p-6 flex flex-col grow">
         <motion.h3
