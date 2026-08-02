@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
@@ -20,11 +20,14 @@ export function ProjectCard({
   const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   const isInView = useInView(cardRef, { amount: 0.5 });
 
   const handleMouseEnter = () => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+
+    setIsHovering(true);
 
     hoverTimerRef.current = setTimeout(() => {
       onExpand();
@@ -33,6 +36,7 @@ export function ProjectCard({
 
   const handleMouseLeave = () => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    setIsHovering(false);
   };
 
   useEffect(() => {
@@ -55,11 +59,27 @@ export function ProjectCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{
-        opacity: { duration: 0.5, delay: index * 0.5 },
-        y: { duration: 0.5, delay: index * 0.5 },
+        opacity: { duration: 0.5, delay: (index % 3) * 0.25 },
+        y: { duration: 0.5, delay: (index % 3) * 0.25 },
+        layout: { duration: 0.4, delay: 0 },
       }}
-      className="group flex flex-col h-full overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-2xl hover:shadow-teal-900/10 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
+      className="group flex flex-col h-full relative overflow-hidden rounded-2xl border border-neutral-200/70 bg-white/80 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-400 hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-900/30 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40"
     >
+      <svg className="absolute inset-0 w-full h-full z-50 pointer-events-none">
+        <motion.rect
+          width={"100%"}
+          height={"100%"}
+          fill={"transparent"}
+          rx={16}
+          stroke={"#14b8a6"}
+          strokeWidth={4}
+          initial={{ pathLength: 0 }}
+          animate={isHovering ? { pathLength: 1 } : { pathLength: 0 }}
+          transition={
+            isHovering ? { duration: 3, ease: "linear" } : { duration: 0.3 }
+          }
+        ></motion.rect>
+      </svg>
       <motion.div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {project.isFeatured && project.videoUrl ? (
           <motion.video
@@ -104,7 +124,10 @@ export function ProjectCard({
         </motion.p>
 
         {stacks.length > 0 && (
-          <div className="mt-4 mb-4 flex flex-wrap gap-1.5">
+          <motion.div
+            layoutId={`stacks-${project.id}`}
+            className="mt-4 mb-4 flex flex-wrap gap-1.5"
+          >
             {stacks.map((stack) => {
               const stackData = stackIcons[stack];
               const ComponentIcon = stackData?.icon;
@@ -121,7 +144,7 @@ export function ProjectCard({
                 </span>
               );
             })}
-          </div>
+          </motion.div>
         )}
 
         <div className="mt-auto flex items-center gap-2 border-t border-neutral-200/70 pt-4 dark:border-neutral-800">
