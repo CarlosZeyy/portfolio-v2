@@ -1,7 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase-server";
-import { ProjectCard } from "@/components/ProjectCard";
 import { Project } from "@/lib/projectSchema";
-import { StarBackground } from "@/components/StarBackground";
 import { Hero } from "@/components/Hero";
 import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";

@@ -5,6 +5,7 @@ import { stackIcons } from "@/lib/stackIcons";
 import { motion } from "framer-motion";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { FaArrowDown } from "react-icons/fa";
+import Link from "next/link";
 
 export function ProjectModal({
   project,
@@ -25,7 +26,7 @@ export function ProjectModal({
         layoutId={`card-${project.id}`}
         className="w-full max-w-4xl bg-neutral-900 rounded-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
-        transition={{layout: {duration: 0.3, ease: 'easeInOut'}}}
+        transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
       >
         <motion.h2
           layoutId={`title-${project.id}`}
@@ -101,12 +102,14 @@ export function ProjectModal({
             Deseja ver mais detalhes sobre o projeto? <FaArrowDown />
           </motion.p>
           <motion.div className="cursor-pointer rounded-lg bg-teal-600 py-3 mx-10 my-3 flex flex-row gap-3 justify-center items-center text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0">
-            <motion.button
-              className="cursor-pointer"
-              layoutId={`proj-${project.id}`}
-            >
-              Ver detalhes do Projeto
-            </motion.button>
+            <Link href={`/project/${project.id}`}>
+              <motion.button
+                className="cursor-pointer"
+                layoutId={`proj-${project.id}`}
+              >
+                Ver detalhes do Projeto
+              </motion.button>
+            </Link>
             <FaArrowUpRightFromSquare />
           </motion.div>
         </motion.div>

@@ -168,7 +168,7 @@ export function ProjectCard({
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-teal-600 px-3 py-2 text-xs font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25"
             >
               <FaArrowUpRightFromSquare className="text-xs" />
-              Ver projeto
+              Deploy
             </a>
           )}
         </div>
