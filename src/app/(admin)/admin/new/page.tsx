@@ -42,6 +42,7 @@ const addProjectPage = () => {
               Titulo do projeto:
             </label>
             <input
+              placeholder="Titulo do projeto"
               type="text"
               name="title"
               className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
@@ -53,8 +54,46 @@ const addProjectPage = () => {
               Descrição do projeto:
             </label>
             <textarea
+              placeholder="Descrição do projeto"
               id=""
               name="description"
+
+              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+            ></textarea>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              Problema do projeto:
+            </label>
+            <textarea
+              id=""
+              name="problem_description"
+              placeholder="Descreva o problema que o projeto está resolvendo"
+              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+            ></textarea>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              Solução do projeto:
+            </label>
+            <textarea
+              id=""
+              name="solution_description"
+              placeholder="Descreva como o projeto resolveu o problema"
+              className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+            ></textarea>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              Desafio Tecnico:
+            </label>
+            <textarea
+              id=""
+              name="technical_challenges"
+              placeholder="Descreva os desafios tecnicos que teve durante o desenvolvimento do projeto"
               className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
             ></textarea>
           </div>
@@ -78,6 +117,37 @@ const addProjectPage = () => {
             >
               <FiUpload className="text-xl transition-transform duration-300 group-hover:scale-110" />
               <span>Escolher Arquivo</span>
+            </label>
+
+            <p
+              className={`text-sm italic transition-colors duration-300 ${
+                fileName !== "Nenhum arquivo selecionado"
+                  ? "text-teal-600 font-medium"
+                  : "text-gray-500"
+              }`}
+            >
+              {fileName}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">
+              Imagens do projeto:
+            </label>
+
+            <input
+              type="file"
+              id="gallery-upload"
+              className="hidden"
+              name="gallery_files"
+            />
+
+            <label
+              htmlFor="gallery-upload"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-teal-800 to-teal-300 px-6 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-teal-500/50 active:translate-y-0 cursor-pointer"
+            >
+              <FiUpload className="text-xl transition-transform duration-300 group-hover:scale-110" />
+              <span>Enviar imagens</span>
             </label>
 
             <p

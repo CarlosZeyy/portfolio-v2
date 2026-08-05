@@ -16,6 +16,10 @@ export async function addProject(formData: FormData) {
   const deployUrl = formData.get("deploy_url") as string;
   const videoUrl = formData.get("video_url") as string;
   const isFeatured = formData.get("is_featured") === "on";
+  const problemDescription = formData.get("problem_description") as string;
+  const solutionDescription = formData.get("solution_description") as string;
+  const technicalChallenges = formData.get("technical_challenges") as string;
+  const galleryUrls = formData.get("gallery_urls") as string;
 
   const stacksList: string[] = stacks
     ? stacks
@@ -60,6 +64,10 @@ export async function addProject(formData: FormData) {
     deployUrl: deployUrl,
     videoUrl: videoUrl,
     isFeatured: isFeatured,
+    problemDescription: problemDescription,
+    solutionDescription: solutionDescription,
+    technicalChallenges: technicalChallenges,
+    galleryUrls: galleryUrls,
   });
 
   if (!schema.success) {
@@ -82,6 +90,10 @@ export async function addProject(formData: FormData) {
     deploy_url: schema.data?.deployUrl,
     video_url: schema.data?.videoUrl,
     is_featured: schema.data?.isFeatured,
+    problem_description: problemDescription,
+    solution_description: solutionDescription,
+    technical_challenges: technicalChallenges,
+    gallery_urls: galleryUrls,
   });
 
   revalidatePath("/admin");
