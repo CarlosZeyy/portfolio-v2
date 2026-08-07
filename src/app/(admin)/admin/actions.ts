@@ -19,7 +19,7 @@ export async function addProject(formData: FormData) {
   const problemDescription = formData.get("problem_description") as string;
   const solutionDescription = formData.get("solution_description") as string;
   const technicalChallenges = formData.get("technical_challenges") as string;
-  const galleryUrls = formData.get("gallery_urls") as string;
+  const galleryFiles = formData.getAll("gallery_files") as File[];
 
   const stacksList: string[] = stacks
     ? stacks
@@ -55,19 +55,44 @@ export async function addProject(formData: FormData) {
 
   const finalImageUrl = publicUrlData.publicUrl;
 
+  const validGalleryFiles = galleryFiles.filter((file) => file.size > 0);
+  let uploadedGalleryFiles: string[] = [];
+
+  for (const file of validGalleryFiles) {
+    const uniqueName = `${Date.now()}-${file.name}`;
+    const fileBuffer = await file.arrayBuffer();
+
+    const { error: loopError } = await supabase.storage
+      .from("portfolio-media")
+      .upload(uniqueName, fileBuffer, {
+        contentType: file.type,
+      });
+
+    if (loopError) {
+      console.error("Erro ao carregar imagens: ", loopError.message);
+      continue;
+    }
+
+    const { data: loopUrlData } = supabase.storage
+      .from("portfolio-media")
+      .getPublicUrl(uniqueName);
+
+    uploadedGalleryFiles.push(loopUrlData.publicUrl);
+  }
+
   const schema = projectSchema.safeParse({
     title: title,
     description: desc,
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
-    deployUrl: deployUrl,
-    videoUrl: videoUrl,
+    deployUrl: deployUrl ? deployUrl : undefined,
+    videoUrl: videoUrl ? videoUrl : undefined,
     isFeatured: isFeatured,
     problemDescription: problemDescription,
     solutionDescription: solutionDescription,
     technicalChallenges: technicalChallenges,
-    galleryUrls: galleryUrls,
+    galleryUrls: uploadedGalleryFiles,
   });
 
   if (!schema.success) {
@@ -76,9 +101,12 @@ export async function addProject(formData: FormData) {
   }
 
   if (isFeatured) {
-    await supabase.from("projects").update({
-      is_featured: false,
-    }).eq("is_featured", true);
+    await supabase
+      .from("projects")
+      .update({
+        is_featured: false,
+      })
+      .eq("is_featured", true);
   }
 
   await supabase.from("projects").insert({
@@ -93,7 +121,7 @@ export async function addProject(formData: FormData) {
     problem_description: problemDescription,
     solution_description: solutionDescription,
     technical_challenges: technicalChallenges,
-    gallery_urls: galleryUrls,
+    gallery_urls: schema.data?.galleryUrls,
   });
 
   revalidatePath("/admin");

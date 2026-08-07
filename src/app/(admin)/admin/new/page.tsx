@@ -7,16 +7,32 @@ import { BiArrowBack } from "react-icons/bi";
 import { FiUpload } from "react-icons/fi";
 
 const addProjectPage = () => {
-  const [fileName, setFileName] = useState<string>(
+  const [thumbName, setThumbName] = useState<string>(
     "Nenhum arquivo selecionado",
   );
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const [galleryName, setGalleryName] = useState<string>(
+    "Nenhum arquivo selecionado",
+  );
+
+  const handleThumbChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      setFileName(files[0].name);
+      setThumbName(files[0].name);
     } else {
-      setFileName("Nenhum arquivo selecionado");
+      setThumbName("Nenhum arquivo selecionado");
+    }
+  };
+
+  const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const names = Array.from(files)
+        .map((file) => file.name)
+        .join(", ");
+      setGalleryName(names);
+    } else {
+      setGalleryName("Nenhum arquivo selecionado");
     }
   };
 
@@ -57,7 +73,6 @@ const addProjectPage = () => {
               placeholder="Descrição do projeto"
               id=""
               name="description"
-
               className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
             ></textarea>
           </div>
@@ -108,7 +123,7 @@ const addProjectPage = () => {
               id="file-upload"
               className="hidden"
               name="thumbnail_url"
-              onChange={handleFileChange}
+              onChange={handleThumbChange}
             />
 
             <label
@@ -121,12 +136,12 @@ const addProjectPage = () => {
 
             <p
               className={`text-sm italic transition-colors duration-300 ${
-                fileName !== "Nenhum arquivo selecionado"
+                thumbName !== "Nenhum arquivo selecionado"
                   ? "text-teal-600 font-medium"
                   : "text-gray-500"
               }`}
             >
-              {fileName}
+              {thumbName}
             </p>
           </div>
 
@@ -140,6 +155,8 @@ const addProjectPage = () => {
               id="gallery-upload"
               className="hidden"
               name="gallery_files"
+              multiple
+              onChange={handleGalleryChange}
             />
 
             <label
@@ -152,12 +169,12 @@ const addProjectPage = () => {
 
             <p
               className={`text-sm italic transition-colors duration-300 ${
-                fileName !== "Nenhum arquivo selecionado"
+                galleryName !== "Nenhum arquivo selecionado"
                   ? "text-teal-600 font-medium"
                   : "text-gray-500"
               }`}
             >
-              {fileName}
+              {galleryName}
             </p>
           </div>
 
