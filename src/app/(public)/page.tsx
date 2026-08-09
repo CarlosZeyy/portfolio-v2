@@ -8,7 +8,10 @@ import { ProjectList } from "@/components/ProjectGallery";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
-  const { data: rawProjects } = await supabase.from("projects").select("*");
+  const { data: rawProjects } = await supabase
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   const projects: Project[] =
     rawProjects?.map((p) => ({

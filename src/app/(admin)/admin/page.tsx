@@ -19,7 +19,10 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
-  const projects = await supabase.from("projects").select("*");
+  const projects = await supabase
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   return (
     <div className="min-h-screen  text-white p-8 flex flex-col items-center justify-center pt-24">
