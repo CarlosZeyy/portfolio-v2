@@ -16,7 +16,21 @@ export default async function ProjectPage({
     .eq("id", id)
     .single();
 
-  const project: Project = projectInfo;
+  const project: Project = {
+    id: projectInfo.id,
+    title: projectInfo.title,
+    description: projectInfo.description,
+    thumbnail: projectInfo.thumbnail_url,
+    stacks: projectInfo.stacks,
+    repoUrl: projectInfo.repo_url,
+    deployUrl: projectInfo.deploy_url,
+    videoUrl: projectInfo.video_url,
+    isFeatured: projectInfo.is_featured,
+    problemDescription: projectInfo.problem_description,
+    solutionDescription: projectInfo.solution_description,
+    technicalChallenges: projectInfo.technical_challenges,
+    galleryUrls: projectInfo.gallery_urls,
+  };
 
   const stacks = project.stacks;
 
@@ -24,10 +38,9 @@ export default async function ProjectPage({
     <>
       <h1>{project.title}</h1>
 
-      <span>{stacks.length > 0 && (
-          <div
-            className="mt-4 mb-4 flex flex-wrap gap-1.5"
-          >
+      <span>
+        {stacks.length > 0 && (
+          <div className="mt-4 mb-4 flex flex-wrap gap-1.5">
             {stacks.map((stack) => {
               const stackData = stackIcons[stack];
               const ComponentIcon = stackData?.icon;
@@ -45,9 +58,22 @@ export default async function ProjectPage({
               );
             })}
           </div>
-        )}</span>
+        )}
+      </span>
 
       <p>{project.description}</p>
+
+      <p>{project.problemDescription}</p>
+
+      <p>{project.solutionDescription}</p>
+
+      <p>{project.technicalChallenges}</p>
+
+      <div className="mt-4 flex flex-row gap-4">
+        {project.galleryUrls?.map((url) => (
+          <img key={url} src={url} alt={project.title} width={200} />
+        ))}
+      </div>
 
       <Link href={`/#projects`}>
         <button>Voltar</button>

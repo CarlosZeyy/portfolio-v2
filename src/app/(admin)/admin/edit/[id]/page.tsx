@@ -1,5 +1,6 @@
 import { createServerSupabase } from "@/lib/supabase-server";
 import { updateProject } from "../../actions";
+import GalleryManager from "@/components/GalleryManager";
 import { FiUpload } from "react-icons/fi";
 import Link from "next/link";
 import { BiArrowBack } from "react-icons/bi";
@@ -104,6 +105,9 @@ export default async function editProjectPage({
                 {project.thumbnail_url}
               </p>
             </div>
+
+            <GalleryManager initialUrls={project.gallery_urls} />
+            <input type="file" name="new_gallery_files" multiple/>
 
             <div className="text-sm font-medium text-neutral-300">
               <label className="text-sm font-medium text-neutral-300">

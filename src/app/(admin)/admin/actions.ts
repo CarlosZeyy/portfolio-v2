@@ -142,6 +142,11 @@ export async function updateProject(formData: FormData) {
   const deployUrl = formData.get("deploy_url") as string;
   const videoUrl = formData.get("video_url") as string;
   const isFeatured = formData.get("is_featured") === "on";
+  const remainingGalleryString = formData.get("remaining_gallery") as string;
+  const remainingGallery = remainingGalleryString
+    ? JSON.parse(remainingGalleryString)
+    : [];
+  const newGalleryFiles = formData.getAll("new_gallery_files") as File[];
 
   const stacksList: string[] = stacks
     ? stacks
@@ -179,15 +184,41 @@ export async function updateProject(formData: FormData) {
     finalImageUrl = publicUrlData.publicUrl;
   }
 
+  const validGalleryFiles = newGalleryFiles.filter((file) => file.size > 0);
+  let uploadedGalleryFiles: string[] = [];
+
+  for (const file of validGalleryFiles) {
+    const uniqueName = `${Date.now()}-${file.name}`;
+    const fileBuffer = await file.arrayBuffer();
+
+    const { error: loopError } = await supabase.storage
+      .from("portfolio-media")
+      .upload(uniqueName, fileBuffer, {
+        contentType: file.type,
+      });
+
+    if (loopError) {
+      console.error("Erro ao carregar imagens: ", loopError.message);
+      continue;
+    }
+
+    const { data: loopUrlData } = supabase.storage
+      .from("portfolio-media")
+      .getPublicUrl(uniqueName);
+
+    uploadedGalleryFiles.push(loopUrlData.publicUrl);
+  }
+
   const schema = projectSchema.safeParse({
     title: title,
     description: desc,
     thumbnail: finalImageUrl,
     stacks: stacksList,
     repoUrl: repoUrl,
-    deployUrl: deployUrl,
-    videoUrl: videoUrl,
+    deployUrl: deployUrl ? deployUrl : undefined,
+    videoUrl: videoUrl ? videoUrl : undefined,
     isFeatured: isFeatured,
+    galleryUrls: [...remainingGallery, ...uploadedGalleryFiles],
   });
 
   if (!schema.success) {
@@ -215,6 +246,7 @@ export async function updateProject(formData: FormData) {
       deploy_url: schema.data?.deployUrl,
       video_url: schema.data?.videoUrl,
       is_featured: schema.data?.isFeatured,
+      gallery_urls: schema.data?.galleryUrls,
     })
     .eq("id", id);
 
