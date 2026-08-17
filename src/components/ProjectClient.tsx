@@ -6,7 +6,8 @@ import { SpaceBackground } from "@/components/SpaceBackground";
 import Link from "next/link";
 import { BiArrowBack } from "react-icons/bi";
 import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 function slugify(text: string) {
   return text
@@ -38,6 +39,8 @@ export default function ProjectClient({ project }: { project: Project }) {
       content: project.technicalChallenges,
     },
   ].filter((section) => section.content);
+
+  const [activeImg, setActiveImg] = useState(gallery[0]);
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
@@ -189,11 +192,26 @@ export default function ProjectClient({ project }: { project: Project }) {
               ~/galeria
             </p>
 
+            <div className="aspect-video w-full mt-5">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  src={activeImg}
+                  key={activeImg}
+                  alt=""
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </AnimatePresence>
+            </div>
+
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {gallery.map((url) => (
                 <div
+                  onClick={() => setActiveImg(url)}
                   key={url}
-                  className="group aspect-square overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900"
+                  className={`group aspect-square overflow-hidden rounded-xl cursor-pointer border border-neutral-800 bg-neutral-900 ${url === activeImg ? "border-teal-500 opacity-100" : "border-neutral-800 opacity-70 hover:opacity-100"}`}
                 >
                   <img
                     src={url}
