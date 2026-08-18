@@ -1,22 +1,7 @@
 import { Project } from "@/lib/projectSchema";
-import { stackIcons } from "@/lib/stackIcons";
 import { createServerSupabase } from "@/lib/supabase-server";
-import { SpaceBackground } from "@/components/SpaceBackground";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BiArrowBack } from "react-icons/bi";
-import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import ProjectClient from "@/components/ProjectClient";
-
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 export default async function ProjectPage({
   params,

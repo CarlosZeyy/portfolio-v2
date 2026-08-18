@@ -3,21 +3,13 @@
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
 import { SpaceBackground } from "@/components/SpaceBackground";
+import { slugify } from "@/lib/formats";
 import Link from "next/link";
 import { BiArrowBack } from "react-icons/bi";
 import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 export default function ProjectClient({ project }: { project: Project }) {
   const stacks = project.stacks ?? [];
