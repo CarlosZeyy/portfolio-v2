@@ -147,6 +147,9 @@ export async function updateProject(formData: FormData) {
     ? JSON.parse(remainingGalleryString)
     : [];
   const newGalleryFiles = formData.getAll("new_gallery_files") as File[];
+  const problemDescription = formData.get("problem_description") as string;
+  const solutionDescription = formData.get("solution_description") as string;
+  const technicalChallenges = formData.get("technical_challenges") as string;
 
   const stacksList: string[] = stacks
     ? stacks
@@ -219,6 +222,9 @@ export async function updateProject(formData: FormData) {
     videoUrl: videoUrl ? videoUrl : undefined,
     isFeatured: isFeatured,
     galleryUrls: [...remainingGallery, ...uploadedGalleryFiles],
+    problemDescription: problemDescription,
+    solutionDescription: solutionDescription,
+    technicalChallenges: technicalChallenges,
   });
 
   if (!schema.success) {
@@ -247,6 +253,9 @@ export async function updateProject(formData: FormData) {
       video_url: schema.data?.videoUrl,
       is_featured: schema.data?.isFeatured,
       gallery_urls: schema.data?.galleryUrls,
+      problem_description:schema.data?.problemDescription,
+      solution_description:schema.data?.solutionDescription,
+      technical_challenges:schema.data?.technicalChallenges,
     })
     .eq("id", id);
 

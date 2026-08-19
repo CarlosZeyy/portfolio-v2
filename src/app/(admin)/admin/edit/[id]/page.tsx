@@ -71,6 +71,42 @@ export default async function editProjectPage({
 
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-neutral-300">
+                Problema do projeto:
+              </label>
+              <textarea
+                name="problem_description"
+                placeholder="Descreva o problema que o projeto está resolvendo"
+                defaultValue={project.problem_description}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+              ></textarea>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-neutral-300">
+                Solução do projeto:
+              </label>
+              <textarea
+                name="solution_description"
+                placeholder="Descreva como o projeto resolveu o problema"
+                defaultValue={project.solution_description}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+              ></textarea>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-neutral-300">
+                Desafio Tecnico:
+              </label>
+              <textarea
+                name="technical_challenges"
+                placeholder="Descreva os desafios tecnicos que teve durante o desenvolvimento do projeto"
+                defaultValue={project.technical_challenges}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-all duration-200 placeholder:text-neutral-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
+              ></textarea>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-neutral-300">
                 Thumbnail do projeto:
               </label>
 
@@ -107,7 +143,7 @@ export default async function editProjectPage({
             </div>
 
             <GalleryManager initialUrls={project.gallery_urls} />
-            <input type="file" name="new_gallery_files" multiple/>
+            <input type="file" name="new_gallery_files" multiple />
 
             <div className="text-sm font-medium text-neutral-300">
               <label className="text-sm font-medium text-neutral-300">

@@ -67,8 +67,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 font-sans transition-colors duration-300">
-      <div className="pointer-events-none absolute -left-24 -top-32 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/10" />
-      <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl dark:bg-indigo-500/10" />
 
       <div className="relative w-full max-w-md rounded-2xl border border-neutral-200/70 bg-white/80 px-8 py-10 shadow-xl shadow-neutral-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-neutral-800 dark:bg-[#131720]/80 dark:shadow-black/40">
         <div className="text-center">
