@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function ShootingStars() {
   const [stars, setStars] = useState<
-    { id: number; top: string; left: string; size: number; delay: number }[]
+    { id: number; top: string; left: string; duration: number; delay: number }[]
   >([]);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function ShootingStars() {
       id: i,
       top: `${Math.random() * 100 - 20}%`,
       left: `${Math.random() * 100 - 20}%`,
-      size: Math.random() * 2 + 1,
+      duration: Math.random() * 2 + 1,
       delay: Math.random() * 3,
     }));
     setStars(starsGenerate);
@@ -32,7 +32,7 @@ export default function ShootingStars() {
           animate={{ x: 1500, y: 1500, rotate: 45, opacity: [0, 1, 0] }}
           transition={{
             repeat: Infinity,
-            duration: 1,
+            duration: star.duration,
             delay: star.delay,
             ease: "linear",
           }}
