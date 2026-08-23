@@ -24,17 +24,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
-        <BlackHoleLight/>
-        <div className="min-h-screen flex flex-col lg:flex-row">
-          <main className="flex-1 z-10 relative">{children}</main>
-        </div>
-      </body>
-    </html>
+    <>
+      <BlackHoleLight />
+      <div className="min-h-screen flex flex-col lg:flex-row">
+        <main className="flex-1 z-10 relative">{children}</main>
+      </div>
+    </>
   );
 }

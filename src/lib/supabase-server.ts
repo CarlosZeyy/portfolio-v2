@@ -21,7 +21,7 @@ export async function createServerSupabase() {
               }
             });
           } catch (error) {
-            console.error(error);
+            // console.error(error);
           }
         },
       },

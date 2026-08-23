@@ -27,23 +27,17 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
-        <div className="min-h-screen flex flex-col lg:flex-row">
-          <aside className="hidden lg:flex lg:flex-col lg:w-20 lg:h-screen sticky z-50 top-0 border-r bg-[#F7F8FA] dark:bg-[#0B0E14] border-neutral-200/50 dark:border-neutral-800/50">
-            <Sidebar />
-          </aside>
-          <MenuOverlay />
-          <MobileHeader />
-          <SocialDock />
+    <>
+      <div className="min-h-screen flex flex-col lg:flex-row">
+        <aside className="hidden lg:flex lg:flex-col lg:w-20 lg:h-screen sticky z-50 top-0 border-r bg-[#F7F8FA] dark:bg-[#0B0E14] border-neutral-200/50 dark:border-neutral-800/50">
+          <Sidebar />
+        </aside>
+        <MenuOverlay />
+        <MobileHeader />
+        <SocialDock />
 
-          <main className="flex-1">{children}</main>
-        </div>
-      </body>
-    </html>
+        <main className="flex-1">{children}</main>
+      </div>
+    </>
   );
 }
