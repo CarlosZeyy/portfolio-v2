@@ -5,6 +5,7 @@ import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";
 import { About } from "@/components/About";
 import { ProjectList } from "@/components/ProjectGallery";
+import Contact from "@/components/Contact";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -66,6 +67,9 @@ export default async function Home() {
             )}
           </div>
         </section>
+
+        {/* Contact */}
+        <Contact />
       </div>
     </div>
   );

@@ -2,14 +2,17 @@
 
 import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 import { motion } from "framer-motion";
+import { useContactStore } from "@/store/useMenuStore";
 
 export function SocialDock() {
+  const isContactVisible = useContactStore((state) => state.isContactVisible);
+
   return (
     <>
       <motion.ul
         initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 2, ease: "easeOut" }}
+        animate={{ y: isContactVisible ? 100 : 0, opacity: isContactVisible ? 0 : 1 }}
+        transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
         className="bg-white/0 px-6 py-3 backdrop-blur-xs rounded-full fixed bottom-6 left-1/2 lg:left-[95%] -translate-x-1/2 z-50 flex gap-5 text-3xl"
       >
         <a
