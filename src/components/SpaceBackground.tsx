@@ -3,11 +3,13 @@
 import { Canvas } from "@react-three/fiber";
 import Galaxy from "./Galaxy";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import CameraRig from "./CameraRig";
 
 export function SpaceBackground() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas>
+        <CameraRig />
         <Galaxy />
         <EffectComposer>
           <Bloom mipmapBlur intensity={1.2} luminanceThreshold={0} />
