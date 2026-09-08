@@ -34,10 +34,6 @@ export default async function Home() {
       {/* <StarBackground /> */}
       <SpaceBackground />
 
-      {/* Blobs ambiente, ecoando a tela de login */}
-      <div className="pointer-events-none absolute -left-24 -top-32 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/10" />
-      <div className="pointer-events-none absolute right-0 top-96 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl dark:bg-indigo-500/10" />
-
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Hero */}
         <Hero />

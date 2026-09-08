@@ -37,8 +37,6 @@ export default function ProjectClient({ project }: { project: Project }) {
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
       <SpaceBackground />
-      <div className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 rounded-full bg-teal-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 top-64 h-80 w-80 rounded-full bg-indigo-500/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-4xl px-6 pb-24">
         <Link

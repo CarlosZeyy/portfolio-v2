@@ -67,11 +67,11 @@ export default function Galaxy() {
     if (pointsRef.current) {
       pointsRef.current.rotation.y += delta * 0.05;
 
-      const targetX = Math.PI * 0.25 + (state.pointer.y * 0.1);
-      const targetZ = state.pointer.x * 0.1;
+      const targetX = Math.PI * 0.25 + (state.pointer.y * 0.15);
+      const targetZ = -(state.pointer.x * 0.15);
 
-      pointsRef.current.rotation.x = THREE.MathUtils.lerp(pointsRef.current.rotation.x, targetX, 0.05);
-      pointsRef.current.rotation.z = THREE.MathUtils.lerp(pointsRef.current.rotation.z, targetZ, 0.05);
+      pointsRef.current.rotation.x = THREE.MathUtils.lerp(pointsRef.current.rotation.x, targetX, delta * 2);
+      pointsRef.current.rotation.z = THREE.MathUtils.lerp(pointsRef.current.rotation.z, targetZ, delta * 2);
     }
   });
 
