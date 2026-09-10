@@ -30,3 +30,15 @@ export const useContactStore = create<ContacteVisible>((set) => ({
     set({ isContactVisible: isVisible });
   },
 }));
+
+interface ModeState {
+  is3DMode: boolean;
+  toggle3DMode: () => void;
+  set3DMode: (value: boolean) => void;
+}
+
+export const useModeStore = create<ModeState>((set) => ({
+  is3DMode: true,
+  toggle3DMode: () => set((state) => ({ is3DMode: !state.is3DMode })),
+  set3DMode: (value) => set({ is3DMode: value }),
+}));

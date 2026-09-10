@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 export default function Galaxy() {
+  const groupRef = useRef<THREE.Group>(null);
   const pointsRef = useRef<THREE.Points>(null);
 
   const count = 30000;
@@ -34,13 +35,10 @@ export default function Galaxy() {
         0.5 *
         radius;
 
-      const x = Math.cos(branchAngle + spinAngle) * radius + randomX;
-      const y = randomY;
-      const z = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = z;
+      positions[i * 3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+      positions[i * 3 + 1] = randomY;
+      positions[i * 3 + 2] =
+        Math.sin(branchAngle + spinAngle) * radius + randomZ;
     }
 
     return positions;
@@ -59,43 +57,54 @@ export default function Galaxy() {
       context.fillStyle = gradient;
       context.fillRect(0, 0, 32, 32);
     }
-
     return new THREE.CanvasTexture(canvas);
   }, []);
 
   useFrame((state, delta) => {
     if (pointsRef.current) {
       pointsRef.current.rotation.y += delta * 0.05;
+    }
 
-      const targetX = Math.PI * 0.25 + (state.pointer.y * 0.15);
+    if (groupRef.current) {
+      const targetX = Math.PI * 0.25 + state.pointer.y * 0.15;
       const targetZ = -(state.pointer.x * 0.15);
 
-      pointsRef.current.rotation.x = THREE.MathUtils.lerp(pointsRef.current.rotation.x, targetX, delta * 2);
-      pointsRef.current.rotation.z = THREE.MathUtils.lerp(pointsRef.current.rotation.z, targetZ, delta * 2);
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
+        targetX,
+        delta * 2,
+      );
+      groupRef.current.rotation.z = THREE.MathUtils.lerp(
+        groupRef.current.rotation.z,
+        targetZ,
+        delta * 2,
+      );
     }
   });
 
   return (
-    <points ref={pointsRef} rotation={[Math.PI * 0.25, 0, 0]}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-          args={[positions, 3]}
-        />
-      </bufferGeometry>
+    <group ref={groupRef} rotation={[Math.PI * 0.25, 0, 0]}>
+      <points ref={pointsRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={count}
+            array={positions}
+            itemSize={3}
+            args={[positions, 3]}
+          />
+        </bufferGeometry>
 
-      <pointsMaterial
-        size={0.025}
-        color={"#14b8a6"}
-        transparent={true}
-        opacity={0.8}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        map={particleTexture}
-      />
-    </points>
+        <pointsMaterial
+          size={0.025}
+          color="#14b8a6"
+          transparent={true}
+          opacity={0.8}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          map={particleTexture}
+        />
+      </points>
+    </group>
   );
 }
