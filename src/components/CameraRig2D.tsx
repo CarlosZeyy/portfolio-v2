@@ -5,7 +5,7 @@ import { useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-export default function CameraRig() {
+export default function CameraRig2D() {
   const { camera } = useThree();
 
   useGSAP(() => {

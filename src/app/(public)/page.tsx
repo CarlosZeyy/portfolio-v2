@@ -6,6 +6,7 @@ import { SpaceBackground } from "@/components/SpaceBackground";
 import { About } from "@/components/About";
 import { ProjectList } from "@/components/ProjectGallery";
 import Contact from "@/components/Contact";
+import { View2D } from "@/components/View2D";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -34,7 +35,7 @@ export default async function Home() {
       {/* <StarBackground /> */}
       <SpaceBackground />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <View2D>
         {/* Hero */}
         <Hero />
 
@@ -66,7 +67,7 @@ export default async function Home() {
 
         {/* Contact */}
         <Contact />
-      </div>
+      </View2D>
     </div>
   );
 }

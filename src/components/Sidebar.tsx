@@ -1,11 +1,12 @@
 "use client";
 
-import { useMenuStore } from "@/store/useMenuStore";
+import { useMenuStore, useModeStore } from "@/store/useMenuStore";
 import { LuAlignJustify } from "react-icons/lu";
 import { GoArrowSwitch } from "react-icons/go";
 
 export function Sidebar() {
   const openMenu = useMenuStore((state) => state.openMenu);
+  const { is3DMode, toggle3DMode } = useModeStore();
 
   return (
     <div className="h-full flex flex-col justify-between items-center py-8">
@@ -18,10 +19,18 @@ export function Sidebar() {
       </div>
 
       <div className="flex flex-col items-center gap-6">
-        <div>
-          <p>PT</p>
-          <GoArrowSwitch />
-        </div>
+        <button
+          onClick={toggle3DMode}
+          className="flex flex-col items-center gap-2 text-neutral-400 hover:text-teal-400 transition-colors group cursor-pointer"
+          title={
+            is3DMode
+              ? "Ir para versão 2D simplificada"
+              : "Ir para versão 3D imersiva"
+          }
+        >
+          <p className="font-mono text-xs">{is3DMode ? "2D" : "3D"}</p>
+          <GoArrowSwitch className="text-xl group-hover:rotate-180 transition-transform duration-500" />
+        </button>
 
         <div
           onClick={openMenu}
