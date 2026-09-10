@@ -25,7 +25,7 @@ export default function Layout({
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
         {children}
