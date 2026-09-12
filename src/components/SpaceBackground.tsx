@@ -6,6 +6,7 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import CameraRig2D from "./CameraRig2D";
 import CameraRig3D from "./CameraRig3D";
 import { useModeStore } from "@/store/useMenuStore";
+import NavStar from "./NavStar";
 
 export function SpaceBackground() {
   const is3DMode = useModeStore((state) => state.is3DMode);
@@ -14,9 +15,10 @@ export function SpaceBackground() {
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas>
         {is3DMode ? <CameraRig3D /> : <CameraRig2D />}
+        {is3DMode && <NavStar position={[2, 0, 4]} />}
 
         <Galaxy />
-        
+
         <EffectComposer>
           <Bloom mipmapBlur intensity={1.2} luminanceThreshold={0} />
         </EffectComposer>
