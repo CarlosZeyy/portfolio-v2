@@ -7,6 +7,7 @@ import { About } from "@/components/About";
 import { ProjectList } from "@/components/ProjectGallery";
 import Contact from "@/components/Contact";
 import { View2D } from "@/components/View2D";
+import SplashScreen from "@/components/SplashScreen";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -34,6 +35,7 @@ export default async function Home() {
     <div className="relative min-h-screen overflow-hidden font-sans transition-colors duration-300">
       {/* <StarBackground /> */}
       <SpaceBackground />
+      <SplashScreen />
 
       <View2D>
         {/* Hero */}

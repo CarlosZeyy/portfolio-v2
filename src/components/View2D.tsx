@@ -8,7 +8,7 @@ export function View2D({ children }: { children: React.ReactNode }) {
 
   return (
     <AnimatePresence>
-      {!is3DMode && (
+      {is3DMode === false && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
