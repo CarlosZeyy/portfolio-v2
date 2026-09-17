@@ -15,9 +15,25 @@ export function SpaceBackground() {
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas>
         {is3DMode ? <CameraRig3D /> : <CameraRig2D />}
-        {is3DMode && <NavStar position={[-2.5, 0, 4]} title="Sobre Mim" />}
-        {is3DMode && <NavStar position={[0, 0, 4.5]} title="Projetos" />}
-        {is3DMode && <NavStar position={[2.5, 0, 4]} title="Contato" />}
+        {is3DMode && (
+          <NavStar radius={3} speed={0.15} angle={0} title="Sobre Mim" />
+        )}
+        {is3DMode && (
+          <NavStar
+            radius={4}
+            speed={0.15}
+            angle={Math.PI * (2 / 3)}
+            title="Projetos"
+          />
+        )}
+        {is3DMode && (
+          <NavStar
+            radius={5}
+            speed={0.15}
+            angle={Math.PI * (4 / 3)}
+            title="Contato"
+          />
+        )}
 
         <Galaxy />
 

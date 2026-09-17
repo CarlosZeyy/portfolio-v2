@@ -1,15 +1,34 @@
 import { Float, Html } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+import * as THREE from 'three'
 
 export default function NavStar({
-  position,
+  radius,
+  speed,
   title,
+  angle
 }: {
-  position: [number, number, number];
+  radius: number;
+  speed: number;
+  angle: number;
   title: string;
 }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      const time = (state.clock.elapsedTime * speed) + angle;
+
+      meshRef.current.position.x = Math.cos(time) * radius;
+
+      meshRef.current.position.z = Math.sin(time) * radius;
+    }
+  })
+
   return (
     <Float speed={2} rotationIntensity={2} floatIntensity={2}>
-      <mesh position={position}>
+      <mesh ref={meshRef}>
         <sphereGeometry args={[0.1, 32, 32]} />
         <meshBasicMaterial color={"#fff"} />
         <Html center position={[0, -0.3, 0]}>
