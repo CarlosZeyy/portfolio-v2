@@ -50,7 +50,7 @@ export function Sidebar() {
         </div>
 
         <div className="flex flex-col items-center gap-6">
-          <LanguageToggle className="flex-col gap-1 [&_[aria-hidden]]:hidden" />
+          <LanguageToggle className="flex-col gap-1 **:aria-[hidden]:hidden" />
 
           <button
             onClick={toggle3DMode}

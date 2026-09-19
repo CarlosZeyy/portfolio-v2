@@ -30,4 +30,4 @@ drop policy if exists "admin le mensagens" on public.messages;
 create policy "admin le mensagens"
   on public.messages for select
   to authenticated
-  using ((auth.jwt() ->> 'email') = 'SEU_EMAIL_DE_LOGIN@exemplo.com');
+  using ((auth.jwt() ->> 'email') = 'carlosmoisesdev@gmail.com');

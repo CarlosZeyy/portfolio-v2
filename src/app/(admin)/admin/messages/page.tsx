@@ -125,7 +125,7 @@ export default async function MessagesPage() {
                 {/* whitespace-pre-wrap: respeita as quebras de linha que o
                     visitante digitou. O React escapa o conteúdo — a mensagem é
                     texto de terceiros e nunca é interpretada como HTML. */}
-                <p className="mt-5 leading-relaxed break-words whitespace-pre-wrap text-neutral-200">
+                <p className="mt-5 leading-relaxed wrap-break-word whitespace-pre-wrap text-neutral-200">
                   {message.message}
                 </p>
 
