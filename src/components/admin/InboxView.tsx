@@ -56,7 +56,7 @@ export function InboxView({ messages, filter, loadError }: InboxViewProps) {
           <LuTriangleAlert className="mt-0.5 shrink-0" />
           <span>
             A coluna <code className="font-mono">is_read</code> ainda não existe. Rode{" "}
-            <code className="font-mono">supabase/lote5.sql</code> para liberar o lida/não lida e a exclusão.
+            <code className="font-mono">supabase/migration_and_security_patch.sql</code> para liberar o lida/não lida e a exclusão.
           </span>
         </p>
       )}

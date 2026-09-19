@@ -13,7 +13,7 @@ const adminEmails = (env.ADMIN_EMAILS ?? "")
  * qualquer conta Google ou GitHub, então qualquer pessoa consegue uma sessão
  * válida. Quem pode entrar é quem está em ADMIN_EMAILS.
  *
- * Isto é a 2ª camada. A 1ª é o RLS do Supabase (supabase/messages.sql): um
+ * Isto é a 2ª camada. A 1ª é o RLS do Supabase (supabase/migration_and_security_patch.sql): um
  * usuário logado pode chamar a API REST direto com o próprio token, sem passar
  * por nenhuma página do Next — só a policy do banco segura esse caminho.
  */

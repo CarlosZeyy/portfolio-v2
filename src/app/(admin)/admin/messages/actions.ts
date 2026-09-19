@@ -14,7 +14,7 @@ export interface MessageActionResult {
 // (.select("id")) e tratam "nenhuma linha" como falha — é a diferença entre
 // "marcado como lido" e um botão que mente.
 const NOT_AFFECTED =
-  "Nenhuma linha foi alterada. Confira as policies de UPDATE/DELETE da tabela messages (supabase/lote5.sql).";
+  "Nenhuma linha foi alterada. Confira as policies de UPDATE/DELETE da tabela messages (supabase/migration_and_security_patch.sql).";
 
 export async function setMessageRead(
   id: string,

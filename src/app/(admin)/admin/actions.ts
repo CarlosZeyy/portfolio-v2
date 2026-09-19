@@ -140,7 +140,7 @@ async function saveProject(
       // PGRST204 = coluna inexistente: a migração do Lote 5 ainda não rodou.
       const hint =
         error.code === "PGRST204"
-          ? " Rode supabase/lote5.sql para criar as colunas em inglês."
+          ? " Rode supabase/migration_and_security_patch.sql para criar as colunas em inglês."
           : "";
       return { error: `O banco recusou a gravação: ${error.message}.${hint}` };
     }

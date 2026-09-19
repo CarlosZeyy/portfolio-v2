@@ -47,7 +47,7 @@ export async function sendEmail(
   }
 
   const supabase = await createServerSupabase();
-  // Sem .select(): a policy do anon é só de INSERT (ver supabase/messages.sql),
+  // Sem .select(): a policy do anon é só de INSERT (ver supabase/migration_and_security_patch.sql),
   // e pedir a linha de volta exigiria liberar leitura da tabela.
   const { error } = await supabase.from("messages").insert(parsed.data);
 
@@ -65,7 +65,7 @@ export async function sendEmail(
   // real achar que falou com você.
   if (MISSING_TABLE_CODES.has(error.code) && process.env.NODE_ENV !== "production") {
     console.warn(
-      '[contato] tabela "messages" não encontrada — modo mock. Rode supabase/messages.sql para persistir.',
+      '[contato] tabela "messages" não encontrada — modo mock. Rode supabase/migration_and_security_patch.sql para persistir.',
       parsed.data,
     );
     return {
