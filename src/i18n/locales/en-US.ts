@@ -48,19 +48,43 @@ const enUS: Dictionary = {
   hero: {
     greeting: "Hi, I'm",
     description:
-      "Full stack developer — from the database to the interface. I work with React, Next.js and Node.js day to day, plus Java with Spring Boot and a bit of infrastructure when the project calls for it.",
+      "Full stack developer and Systems Analyst at Systelos — from the database to the interface. I work with React, Next.js and Node.js day to day, plus Java with Spring Boot and Docker when the project calls for it.",
     viewProjects: "View projects",
     viewGithub: "View code on GitHub",
   },
 
   about: {
-    bio: "I started working early in my family's traditional glass installation trade. It was there, in manual work, that I learned the non-negotiable value of precision, of care for the details and of commitment to the client's deadlines. Today I bring that same mindset to Software Engineering. My focus is on architecting solutions that solve real problems, such as the automated quote delivery system I built to modernize customer service. I strongly believe in code as a tool for collaboration, which motivated me to act as a Volunteer Mentor at Estácio college, guiding students and people from outside the institution with no prior experience through their first steps in web development.",
+    headline: "From glass to code.",
+    bio: {
+      origin:
+        "Before I wrote my first line of code, I cut and installed glass. I spent my youth in my father's glass shop doing honest manual work: measuring, cutting, hauling sheets and fitting them on job sites. Glass has no Ctrl+Z — a wrong measurement is money lost on the spot. That's where I learned to measure twice, to keep my word on a deadline and to look the customer in the eye.",
+      turn: "In March 2025 I started a degree in Systems Analysis and Development at Estácio, in Santo André, and I went all in: active in class, showing up at events and, soon enough, volunteering as a mentor for people taking their first steps. Theory alone wasn't going to cut it, so I built real software: Enfermex, a complete patient management system, and a tool that automates quote delivery for my father's glass shop. That attitude led my program coordinator to recommend me to a professor who was building a startup.",
+      now: "Today I'm a Systems Analyst at Systelos, where I build the product and support the people who use it. Working support reminds me daily that behind every bug there's someone just trying to get their job done. I write JavaScript, TypeScript, React, Node, Java and Spring Boot, ship with Docker — and bring to every release the same care as someone who used to install glass in other people's homes.",
+    },
+    orbit: {
+      origin: {
+        label: "origin",
+        text: "I started where there's no undo: cutting and installing glass at my father's shop.",
+      },
+      turn: {
+        label: "ignition",
+        text: "In 2025 I went back to school and refused to stay in theory: classes, events, mentoring and two real systems — one of them for my father's glass shop.",
+      },
+      now: {
+        label: "current orbit",
+        text: "A recommendation from my program coordinator led me to Systelos, where I now build software and stay close to the people who use it.",
+      },
+      closing: "The tools changed. The craft didn't.",
+    },
     downloadCv: "Download Résumé",
     softSkills: {
       problemSolving: "Problem Solving",
       communication: "Communication",
-      results: "Results Oriented",
-      leadership: "Leadership",
+      resilience: "Resilience",
+      customerEmpathy: "Customer Empathy",
+      attentionToDetail: "Attention to Detail",
+      continuousLearning: "Continuous Learning",
+      mentoring: "Mentoring",
       teamwork: "Teamwork",
       proactivity: "Proactivity",
     },
@@ -68,27 +92,73 @@ const enUS: Dictionary = {
 
   experience: {
     ongoing: "in progress",
+    planned: "planned",
+    blocks: {
+      professional: "professional experience",
+      academic: "education",
+    },
     kinds: {
+      work: "Work",
+      project: "Own project",
+      trade: "Trade",
       education: "Education",
       volunteer: "Volunteering",
-      freelance: "Freelance",
     },
     items: {
-      degree: {
-        title: "Systems Analysis and Development",
-        organization: "Estácio",
-      },
-      mentor: {
-        title: "Volunteer Mentor (Front-end)",
-        organization: "Estácio",
-      },
-      enfermex: {
-        title: "Enfermex (Patient management system)",
-        organization: "Freelancer",
+      systelos: {
+        period: "2026 — present",
+        title: "Systems Analyst",
+        organization: "Systelos",
+        description:
+          "Software development and hands-on customer support. I hear the problem from the person using the system, track down the cause and take the fix all the way to production.",
       },
       quotes: {
+        period: "Jun 2026 — Jul 2026",
         title: "Automated Quote Delivery System",
-        organization: "Freelancer",
+        organization: "My father's glass shop",
+        description:
+          "Automates quote delivery and modernizes customer service at the glass shop where I first started working.",
+      },
+      enfermex: {
+        period: "May 2026 — Jun 2026",
+        title: "Enfermex",
+        organization: "Patient management system",
+        description:
+          "End-to-end patient management in a single system, designed and built by me.",
+      },
+      glazier: {
+        period: "Before code",
+        title: "Glazier",
+        organization: "My father's glass shop",
+        description:
+          "Manual labor: cutting, hauling and installing glass, dealing with customers face to face on job sites. No tech involved — just the right measurement, the deadline met and a clean finish.",
+      },
+      postgrad: {
+        period: "After graduation",
+        title: "Postgraduate degree in Software Engineering",
+        organization: "Estácio",
+        description: "The next step I plan to take as soon as I finish my degree.",
+      },
+      degree: {
+        period: "Mar 2025 — Jun 2027",
+        title: "Systems Analysis and Development",
+        organization: "Estácio · Santo André",
+        description:
+          "Active in class and at program events, putting theory to work on real projects.",
+      },
+      mentor: {
+        period: "2025",
+        title: "Volunteer Mentor (Front-end)",
+        organization: "Estácio",
+        description:
+          "First steps in web development with students and beginners from outside the college.",
+      },
+      production: {
+        period: "Feb 2018 — Jul 2020 · withdrew",
+        title: "Production Engineering",
+        organization: "Anhanguera",
+        description:
+          "I studied for two and a half years before withdrawing. Years later, software development turned out to be the path that made sense.",
       },
     },
   },

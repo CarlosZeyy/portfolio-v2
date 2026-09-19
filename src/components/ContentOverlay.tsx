@@ -111,7 +111,10 @@ function SectionPanel({ id, onClose, children }: SectionPanelProps) {
       // background-color; o gradiente escuro entra como background-IMAGE por
       // cima dele. Sem esse tint o texto perde contraste toda vez que o núcleo
       // incandescente da nébula passa atrás do painel.
-      className="pointer-events-auto flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-neutral-800 bg-white/5 bg-linear-to-b from-neutral-950/55 to-neutral-950/35 shadow-2xl shadow-black/50 outline-none backdrop-blur-xl"
+      // force-dark: o painel é vidro escuro em QUALQUER tema do sistema, então o
+      // conteúdo (About, Experience, Contact...) tem que usar as variantes dark:
+      // — senão, no tema claro, sai texto escuro sobre vidro escuro.
+      className="force-dark pointer-events-auto flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-neutral-800 bg-white/5 bg-linear-to-b from-neutral-950/55 to-neutral-950/35 shadow-2xl shadow-black/50 outline-none backdrop-blur-xl"
     >
       <header className="flex items-start justify-between gap-6 border-b border-neutral-800/80 px-8 py-6">
         <div>

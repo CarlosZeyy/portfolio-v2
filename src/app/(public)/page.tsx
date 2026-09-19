@@ -54,6 +54,7 @@ export default async function Home() {
           título; a seção completa ali seria vidro dentro de vidro. */}
       <ContentOverlay
         sections={{
+          about: <About embedded />,
           experience: <Experience embedded />,
           contact: <Contact embedded />,
           projects: projectsContent,

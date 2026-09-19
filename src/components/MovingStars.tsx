@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { useRef, useEffect } from "react";
 
 export function MovingStars() {
-  const starsRef = useRef<any>(null);
+  const starsRef = useRef<THREE.Group>(null);
   
   const mouse = useRef({ x: 0, y: 0 });
 

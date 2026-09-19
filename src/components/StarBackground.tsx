@@ -1,27 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { round2, seededRandom } from "@/lib/seededRandom";
+
+// Constante de módulo com semente fixa (ver seededRandom): sem useEffect, sem
+// estado e sem diferença entre o HTML do servidor e o do cliente.
+const random = seededRandom(42);
+const STARS = Array.from({ length: 70 }, (_, id) => ({
+  id,
+  top: `${round2(random() * 100)}%`,
+  left: `${round2(random() * 100)}%`,
+  size: round2(random() * 2 + 1),
+  delay: round2(random() * 3),
+}));
 
 export function StarBackground() {
-  const [stars, setStars] = useState<
-    { id: number; top: string; left: string; size: number; delay: number }[]
-  >([]);
-
-  useEffect(() => {
-    const starsGenerate = Array.from({ length: 70 }).map((_, i) => ({
-      id: i,
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      size: Math.random() * 2 + 1,
-      delay: Math.random() * 3,
-    }));
-    setStars(starsGenerate);
-  }, []);
-
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-      {stars.map((star) => (
+      {STARS.map((star) => (
         <motion.div
           key={star.id}
           className="absolute bg-white rounded-full blur-[1px] shadow shadow-white"
