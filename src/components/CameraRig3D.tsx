@@ -10,7 +10,12 @@ import { planetRegistry, useOrbitStore } from "@/store/useOrbitStore";
 // Posição de repouso do hub (destino da intro) = ponto t=0 do zoom.
 const HOME_POSITION = new THREE.Vector3(0, 4, 8);
 // Distância final entre a câmera e o planeta com zoom = 1.
-const CLOSE_DISTANCE = 1.4;
+const CLOSE_DISTANCE = 1.35;
+// Enquadramento final: o planeta termina deslocado para a esquerda por esta
+// fração da meia-largura da tela, abrindo o lado direito para o painel 2D.
+const FRAME_SHIFT = 0.48;
+// Em telas estreitas/retrato o painel ocupa a largura toda: planeta centrado.
+const FRAME_SHIFT_MIN_ASPECT = 1.2;
 
 const ZOOM_DAMPING = 5;
 const FOCUS_DAMPING = 4;
@@ -28,6 +33,7 @@ const LINE_HEIGHT_PIXELS = 16;
 const planetPosition = new THREE.Vector3();
 const closePosition = new THREE.Vector3();
 const lookTarget = new THREE.Vector3();
+const viewRight = new THREE.Vector3();
 
 /**
  * Wheel -> zoomProgress. O listener só ACUMULA o valor bruto no store;
@@ -178,6 +184,31 @@ export default function CameraRig3D() {
       THREE.MathUtils.lerp(0, focus.y, t),
       THREE.MathUtils.lerp(0, focus.z, t),
     );
+
+    // 7) Composição: mirar num ponto à DIREITA do planeta empurra o planeta
+    //    para a esquerda do quadro. A meia-largura visível na distância d é
+    //    d * tan(fov/2) * aspect; o desvio é uma fração dela. O t³ guarda o
+    //    movimento para o fim do zoom, quando o painel está prestes a entrar.
+    const aspect = state.size.width / state.size.height;
+    if (
+      aspect > FRAME_SHIFT_MIN_ASPECT &&
+      state.camera instanceof THREE.PerspectiveCamera
+    ) {
+      const distance = state.camera.position.distanceTo(focus);
+      const halfWidth =
+        distance *
+        Math.tan(THREE.MathUtils.degToRad(state.camera.fov) / 2) *
+        aspect;
+
+      // right = direção do olhar x up do mundo
+      viewRight
+        .copy(focus)
+        .sub(state.camera.position)
+        .cross(state.camera.up)
+        .normalize();
+      lookTarget.addScaledVector(viewRight, halfWidth * FRAME_SHIFT * t ** 3);
+    }
+
     state.camera.lookAt(lookTarget);
   });
 

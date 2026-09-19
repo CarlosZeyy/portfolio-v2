@@ -2,7 +2,12 @@ import { Float, Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { planetRegistry, useOrbitStore } from "@/store/useOrbitStore";
+import {
+  planetRegistry,
+  useOrbitStore,
+  type PlanetId,
+} from "@/store/useOrbitStore";
+import Planet, { type PlanetVariant } from "./Planet";
 
 // Rigidez (lambda) dos amortecimentos. Quanto maior, mais rápido converge:
 // em ~3/lambda segundos o valor já percorreu 95% do caminho até o alvo.
@@ -17,7 +22,8 @@ const MAX_DELTA = 0.1;
 const LABEL_WRAPPER_STYLE = { pointerEvents: "none" } as const;
 
 interface NavStarProps {
-  id: string;
+  id: PlanetId;
+  variant: PlanetVariant;
   radius: number;
   speed: number;
   angle: number;
@@ -26,13 +32,14 @@ interface NavStarProps {
 
 export default function NavStar({
   id,
+  variant,
   radius,
   speed,
   angle,
   title,
 }: NavStarProps) {
   const orbitRef = useRef<THREE.Group>(null);
-  const planetRef = useRef<THREE.Mesh>(null);
+  const planetRef = useRef<THREE.Group>(null);
 
   // TEMPO ACUMULADO: substitui o clock.elapsedTime. O relógio global nunca
   // para, então ao retomar de uma pausa o ângulo (elapsedTime * speed) estaria
@@ -50,10 +57,13 @@ export default function NavStar({
   const clearHoveredPlanet = useOrbitStore((state) => state.clearHoveredPlanet);
 
   useEffect(() => {
-    const orbit = orbitRef.current;
-    if (!orbit) return;
+    // Registra o grupo que FLUTUA (dentro do Float), não o da órbita: é nele
+    // que a câmera mira, então o planeta fica centrado no quadro do zoom
+    // mesmo subindo e descendo.
+    const planet = planetRef.current;
+    if (!planet) return;
 
-    planetRegistry.set(id, orbit);
+    planetRegistry.set(id, planet);
     return () => {
       planetRegistry.delete(id);
       clearHoveredPlanet(id);
@@ -133,15 +143,15 @@ export default function NavStar({
       </mesh>
 
       <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-        <mesh ref={planetRef}>
-          <sphereGeometry args={[0.1, 32, 32]} />
-          <meshBasicMaterial color={"#fff"} />
+        {/* Este grupo recebe a escala do hover; o visual mora no <Planet>. */}
+        <group ref={planetRef}>
+          <Planet variant={variant} hovered={isHovered} />
           {/* O label é DOM por cima do canvas. Se ele capturar o mouse, o R3F
               recebe o pointermove com offsetX/Y relativos ao LABEL (não ao
               canvas), o raio sai torto e o hover se perde bem em cima do
               texto. Tem que ser via `style`: a prop `pointerEvents` do Html
               só é aplicada no modo `transform`. */}
-          <Html center position={[0, -0.3, 0]} style={LABEL_WRAPPER_STYLE}>
+          <Html center position={[0, -0.4, 0]} style={LABEL_WRAPPER_STYLE}>
             <div
               className={`pointer-events-none select-none whitespace-nowrap font-mono text-xl transition-colors duration-300 ${
                 isHovered ? "text-teal-400" : "text-white"
@@ -150,7 +160,7 @@ export default function NavStar({
               {title}
             </div>
           </Html>
-        </mesh>
+        </group>
       </Float>
     </group>
   );

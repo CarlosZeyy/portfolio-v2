@@ -8,6 +8,7 @@ import { ProjectList } from "@/components/ProjectGallery";
 import Contact from "@/components/Contact";
 import { View2D } from "@/components/View2D";
 import SplashScreen from "@/components/SplashScreen";
+import { ContentOverlay } from "@/components/ContentOverlay";
 
 export default async function Home() {
   const supabase = await createServerSupabase();
@@ -36,6 +37,7 @@ export default async function Home() {
       {/* <StarBackground /> */}
       <SpaceBackground />
       <SplashScreen />
+      <ContentOverlay />
 
       <View2D>
         {/* Hero */}
