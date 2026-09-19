@@ -1,0 +1,56 @@
+# Uso (os scripts do package.json já embutem o --env-file):
+#   npm run docker:up      # builda e sobe em http://localhost:3000
+#   npm run docker:logs
+#   npm run docker:down
+#
+# Equivalente na mão:
+#   docker compose --env-file .env.local up -d --build
+#
+# Por que o --env-file: o Compose só interpola ${VARIAVEL} a partir do shell ou
+# de um arquivo chamado exatamente `.env`. Na VPS você pode simplesmente nomear
+# o arquivo como `.env` e rodar `docker compose up -d --build`, sem flag.
+#
+# As variáveis são usadas em DOIS momentos, e os dois são necessários:
+#   - build   (args)     -> NEXT_PUBLIC_*: embutidas no bundle pelo `next build`.
+#                           Mudou o valor? O cache do build é invalidado sozinho.
+#   - runtime (env_file) -> variáveis só de servidor, como ADMIN_EMAILS.
+#                           Mudou? Basta `up -d` de novo, sem rebuild.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # `:?` faz o Compose parar com esta mensagem se a variável não chegou,
+        # em vez de buildar com valor vazio.
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?use --env-file .env.local (ou crie um .env)}
+        NEXT_PUBLIC_SUPABASE_PUBLIC_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLIC_ANON_KEY:?use --env-file .env.local (ou crie um .env)}
+    image: portfolio-via-lactea:latest
+    container_name: portfolio-via-lactea
+    restart: unless-stopped
+
+    ports:
+      # HOST:CONTAINER. Atrás de um proxy reverso (Nginx, Caddy, Traefik) na
+      # mesma VPS, troque por "127.0.0.1:3000:3000" para o app não ficar
+      # exposto direto na internet, só pelo proxy.
+      - "3000:3000"
+
+    # Aceita os dois nomes; o que existir é carregado (.env.local tem prioridade).
+    env_file:
+      - path: .env
+        required: false
+      - path: .env.local
+        required: false
+
+    # --- endurecimento: o app não precisa de nada disto para funcionar ---------
+    init: true                       # tini como PID 1: repassa sinais, colhe zumbis
+    read_only: true                  # sistema de arquivos do container imutável
+    tmpfs:
+      - /tmp
+      # Único lugar em que o Next escreve em runtime (cache de fetch/imagens).
+      - /app/.next/cache:uid=1001,gid=1001
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

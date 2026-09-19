@@ -1,0 +1,49 @@
+# O contexto de build é enviado inteiro ao daemon antes do primeiro passo.
+# Tudo aqui é o que NÃO deve ir: deixa o build mais rápido e — principalmente —
+# impede que segredos e lixo local entrem na imagem pelo `COPY . .`.
+
+# --- dependências e artefatos: a imagem gera os próprios, para linux/musl ------
+node_modules
+.next
+out
+build
+coverage
+*.tsbuildinfo
+next-env.d.ts
+
+# --- SEGREDOS: nunca no contexto. O build recebe SÓ as duas variáveis públicas -
+# --- (como build args); o arquivo .env em si jamais entra na imagem. -----------
+.env
+.env.*
+*.pem
+*.key
+
+# --- git e CI ------------------------------------------------------------------
+.git
+.gitignore
+.gitattributes
+.github
+
+# --- o próprio Docker (mudar o compose não deve invalidar o cache do build) ---
+Dockerfile
+.dockerignore
+docker-compose*.yml
+compose*.yaml
+
+# --- editor, SO e logs ---------------------------------------------------------
+.vscode
+.idea
+.claude
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- não faz parte do app em execução ------------------------------------------
+supabase
+README.md
+*.md
+.vercel
