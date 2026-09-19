@@ -157,6 +157,13 @@ export default function NavStar({
           setHoveredPlanet(id);
         }}
         onPointerOut={() => clearHoveredPlanet(id)}
+        // Clique (ou toque) voa direto para a seção. No desktop é um atalho
+        // para o hover + scroll; em tela de toque é o ÚNICO jeito, já que lá
+        // não existe hover nem roda de mouse.
+        onClick={(event) => {
+          event.stopPropagation();
+          useOrbitStore.getState().enterSection(id);
+        }}
       >
         <sphereGeometry args={[HIT_RADIUS, 12, 12]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />

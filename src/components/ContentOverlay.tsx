@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, type ReactNode } from "react";
 import { IoClose } from "react-icons/io5";
+import { useMenuStore } from "@/store/useMenuStore";
 import {
   selectActiveSection,
   useOrbitStore,
@@ -39,7 +40,11 @@ export function ContentOverlay({ sections }: ContentOverlayProps) {
     if (!activeSection) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") exitSection();
+      // Com o menu aberto por cima, o Esc é dele: sem este guard o mesmo
+      // keydown fecharia o menu E arrancaria o usuário da seção.
+      if (event.key === "Escape" && !useMenuStore.getState().isOpen) {
+        exitSection();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);

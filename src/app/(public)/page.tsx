@@ -4,6 +4,7 @@ import { Hero } from "@/components/Hero";
 import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";
 import { About } from "@/components/About";
+import { Experience } from "@/components/Experience";
 import { ProjectList } from "@/components/ProjectGallery";
 import Contact from "@/components/Contact";
 import { View2D } from "@/components/View2D";
@@ -57,7 +58,14 @@ export default async function Home() {
       {/* <StarBackground /> */}
       <SpaceBackground />
       <SplashScreen />
-      <ContentOverlay sections={{ projects: projectsContent }} />
+      {/* `embedded`: só a timeline. O painel do hub já é o vidro e já tem o
+          título; a seção completa ali seria vidro dentro de vidro. */}
+      <ContentOverlay
+        sections={{
+          experience: <Experience embedded />,
+          projects: projectsContent,
+        }}
+      />
 
       <View2D>
         {/* Hero */}
@@ -65,6 +73,9 @@ export default async function Home() {
 
         {/* About */}
         <About />
+
+        {/* Experiência */}
+        <Experience />
 
         {/* Projetos */}
         <section id="projects" className="scroll-mt-8 pb-24">

@@ -25,3 +25,28 @@
     animation: none;
   }
 }
+
+/*
+ * Borda em degradê (teal -> quase nada -> violeta) para os painéis de vidro.
+ * border-color não aceita gradiente respeitando border-radius, então a borda é
+ * um elemento próprio: fundo em degradê com 1px de padding, e uma máscara que
+ * EXCLUI a content-box — sobra só o anel de 1px, já com os cantos arredondados.
+ */
+@utility glass-ring {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgb(45 212 191 / 0.5),
+    rgb(255 255 255 / 0.07) 32%,
+    rgb(255 255 255 / 0.04) 68%,
+    rgb(139 92 246 / 0.5)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}

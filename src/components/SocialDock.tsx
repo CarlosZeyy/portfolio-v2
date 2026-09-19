@@ -13,7 +13,7 @@ export function SocialDock() {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: isContactVisible ? 100 : 0, opacity: isContactVisible ? 0 : 1 }}
         transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
-        className="bg-white/0 px-6 py-3 backdrop-blur-xs rounded-full fixed bottom-6 left-1/2 lg:left-[95%] -translate-x-1/2 z-50 flex gap-5 text-3xl"
+        className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 gap-5 rounded-full border border-neutral-200/60 bg-white/70 px-6 py-3 text-2xl shadow-lg shadow-black/20 backdrop-blur-md lg:left-[95%] lg:border-transparent lg:bg-transparent lg:text-3xl lg:shadow-none lg:backdrop-blur-none dark:border-white/10 dark:bg-[#0B0E14]/70 dark:lg:border-transparent dark:lg:bg-transparent"
       >
         <a
           href="https://github.com/CarlosZeyy"

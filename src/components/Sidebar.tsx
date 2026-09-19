@@ -10,17 +10,26 @@ export function Sidebar() {
 
   if (is3DMode) {
     return (
-      <div className="fixed top-8 left-8 z-50">
+      // No celular o MobileHeader já traz o menu; aqui é o par dele no desktop.
+      <div className="fixed top-8 left-8 z-50 hidden items-center gap-3 lg:flex">
         <button
-        onClick={toggle3DMode}
-        className="group flex items-center gap-3 rounded-full bg-white/5 border border-neutral-800 px-5 py-2.5 text-sm text-neutral-400 hover:text-teal-400 hover:border-teal-500/50 backdrop-blur-md transition-all shadow-lg"
-        title="Mudar para versão 2D"
+          onClick={toggle3DMode}
+          className="group flex cursor-pointer items-center gap-3 rounded-full border border-neutral-800 bg-white/5 px-5 py-2.5 text-sm text-neutral-400 shadow-lg backdrop-blur-md transition-all hover:border-teal-500/50 hover:text-teal-400"
+          title="Mudar para versão 2D"
         >
-          <GoArrowSwitch className="text-lg group-hover:rotate-180 transition-transform duration-500"/>
+          <GoArrowSwitch className="text-lg transition-transform duration-500 group-hover:rotate-180" />
           <span className="font-mono tracking-wider">MODO 2D</span>
         </button>
+
+        <button
+          onClick={openMenu}
+          aria-label="Abrir menu"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-neutral-800 bg-white/5 text-neutral-400 shadow-lg backdrop-blur-md transition-all hover:border-teal-500/50 hover:text-teal-400"
+        >
+          <LuAlignJustify className="text-lg" />
+        </button>
       </div>
-    )
+    );
   }
 
   return (
