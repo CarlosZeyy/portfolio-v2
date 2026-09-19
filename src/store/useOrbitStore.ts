@@ -1,8 +1,16 @@
 import { create } from "zustand";
 import type * as THREE from "three";
 
-/** Cada planeta do hub é a porta de uma seção de conteúdo: o id é o mesmo. */
-export type PlanetId = "about" | "projects" | "contact";
+/**
+ * Cada planeta do hub é a porta de uma seção de conteúdo: o id é o mesmo (e é
+ * também a âncora #id da seção no modo 2D). A lista existe em runtime para
+ * validar deep links; o tipo é derivado dela, então nunca saem de sincronia.
+ */
+export const PLANET_IDS = ["about", "experience", "projects", "contact"] as const;
+export type PlanetId = (typeof PLANET_IDS)[number];
+
+export const isPlanetId = (value: string): value is PlanetId =>
+  (PLANET_IDS as readonly string[]).includes(value);
 
 // Histerese da entrada na seção: entra acima de ENTER e só sai abaixo de EXIT.
 // Com um limiar único, o trackpad (que manda deltas minúsculos) faria o painel
@@ -31,6 +39,12 @@ interface OrbitState {
   setHoveredPlanet: (id: PlanetId) => void;
   clearHoveredPlanet: (id: PlanetId) => void;
   addZoom: (amount: number) => void;
+  /**
+   * Abre uma seção direto, sem hover nem scroll (deep link, ex.: voltar de
+   * /project/[id] para /#projects). Deixa o store no mesmo estado de quem
+   * chegou lá rolando: foco no planeta, zoom 1, dentro da seção.
+   */
+  enterSection: (id: PlanetId) => void;
   /** Volta ao hub (botão fechar / Esc). A câmera recua sozinha, amortecida. */
   exitSection: () => void;
   reset: () => void;
@@ -67,6 +81,14 @@ export const useOrbitStore = create<OrbitState>((set) => ({
         : zoomProgress > SECTION_ENTER_ZOOM;
 
       return { zoomProgress, isInsideSection };
+    }),
+
+  enterSection: (id) =>
+    set({
+      hoveredPlanetId: null,
+      focusedPlanetId: id,
+      zoomProgress: 1,
+      isInsideSection: true,
     }),
 
   exitSection: () => set({ zoomProgress: 0, isInsideSection: false }),

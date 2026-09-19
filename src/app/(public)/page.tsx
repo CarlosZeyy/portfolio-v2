@@ -32,12 +32,32 @@ export default async function Home() {
 
   const hasProjects = projects.length > 0;
 
+  // Um único elemento para os dois mundos: a seção #projects do modo 2D e o
+  // painel de vidro do hub 3D. Como page.tsx é Server Component, o fetch do
+  // Supabase acontece aqui e os Client Components recebem tudo pronto, como
+  // ReactNode. Só um dos dois está montado por vez (View2D x ContentOverlay).
+  const projectsContent = hasProjects ? (
+    <ProjectList projects={projects} />
+  ) : (
+    <div className="rounded-2xl border border-dashed border-neutral-300 px-6 py-16 text-center dark:border-neutral-700">
+      <p className="font-mono text-xs text-neutral-400 dark:text-neutral-600">
+        git log --oneline
+      </p>
+      <p className="mt-3 text-base font-medium text-neutral-700 dark:text-neutral-300">
+        Nenhum projeto publicado ainda.
+      </p>
+      <p className="mt-1 text-sm font-light text-neutral-500 dark:text-neutral-400">
+        Os primeiros commits estão a caminho! volte em breve.
+      </p>
+    </div>
+  );
+
   return (
     <div className="relative min-h-screen overflow-hidden font-sans transition-colors duration-300">
       {/* <StarBackground /> */}
       <SpaceBackground />
       <SplashScreen />
-      <ContentOverlay />
+      <ContentOverlay sections={{ projects: projectsContent }} />
 
       <View2D>
         {/* Hero */}
@@ -50,23 +70,7 @@ export default async function Home() {
         <section id="projects" className="scroll-mt-8 pb-24">
           <ProjectText />
 
-          <div className="mt-8">
-            {!hasProjects ? (
-              <div className="rounded-2xl border border-dashed border-neutral-300 px-6 py-16 text-center dark:border-neutral-700">
-                <p className="font-mono text-xs text-neutral-400 dark:text-neutral-600">
-                  git log --oneline
-                </p>
-                <p className="mt-3 text-base font-medium text-neutral-700 dark:text-neutral-300">
-                  Nenhum projeto publicado ainda.
-                </p>
-                <p className="mt-1 text-sm font-light text-neutral-500 dark:text-neutral-400">
-                  Os primeiros commits estão a caminho! volte em breve.
-                </p>
-              </div>
-            ) : (
-              <ProjectList projects={projects} />
-            )}
-          </div>
+          <div className="mt-8">{projectsContent}</div>
         </section>
 
         {/* Contact */}

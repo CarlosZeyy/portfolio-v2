@@ -11,6 +11,7 @@ import {
 
 const SECTION_META: Record<PlanetId, { path: string; title: string }> = {
   about: { path: "~/sobre-mim", title: "Sobre Mim" },
+  experience: { path: "~/experiencia", title: "Experiência" },
   projects: { path: "~/projetos", title: "Projetos" },
   contact: { path: "~/contato", title: "Contato" },
 };
@@ -132,15 +133,45 @@ function SectionPanel({ id, onClose, children }: SectionPanelProps) {
       {/* overscroll-contain: ao bater no fim do texto, a rolagem não "vaza"
           para a página (scroll chaining). min-h-0 deixa o flex item encolher
           para que o overflow role aqui, e não estoure o max-h do painel. */}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 py-6 text-neutral-300 [scrollbar-color:var(--color-neutral-700)_transparent] [scrollbar-width:thin]">
+      {/* layoutScroll: os cards de projeto usam layoutId para "crescer" até o
+          modal. Dentro de um container rolável o framer precisa saber do
+          scroll, senão mede a origem da animação como se o scrollTop fosse 0
+          e o card sai voando do lugar errado. */}
+      <motion.div
+        layoutScroll
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 py-6 text-neutral-300 [scrollbar-color:var(--color-neutral-700)_transparent] scrollbar-thin"
+      >
         {children}
-      </div>
+      </motion.div>
     </motion.section>
   );
 }
 
 /** Conteúdo provisório, só para demonstrar a ponte 3D -> 2D e a rolagem. */
 function MockSection({ id }: { id: PlanetId }) {
+  if (id === "experience") {
+    return (
+      <ol className="ml-1">
+        {["2025 — 2027", "2025", "2025", "2024"].map((period, index) => (
+          <li
+            key={index}
+            className="relative pb-8 pl-8 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-700/60 last:pb-0"
+          >
+            <span className="absolute -left-1 top-1 h-2.5 w-2.5 rounded-full bg-pink-400" />
+            <p className="font-mono text-sm text-pink-400">{period}</p>
+            <h3 className="mt-1 font-medium text-white">
+              Marco de carreira {index + 1}
+            </h3>
+            <p className="text-sm text-neutral-400">
+              Placeholder — mova a timeline do About.tsx para cá via prop
+              sections.
+            </p>
+          </li>
+        ))}
+      </ol>
+    );
+  }
+
   if (id === "projects") {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

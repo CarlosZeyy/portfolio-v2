@@ -20,20 +20,40 @@ const ORBIT_SPEED = 0.15;
 const MAX_DPR = 1.5;
 const MIN_DPR = 0.75;
 
-const NAV_STARS: {
+// Órbitas entre 2.8 e 5.2: abaixo disso o planeta entra no bulbo incandescente
+// do núcleo; acima, ao passar na frente da câmera (que fica em z = 8) ele sai
+// pela borda de baixo da tela junto com o label.
+const PLANETS: {
   id: PlanetId;
   variant: PlanetVariant;
   title: string;
   radius: number;
-  angle: number;
 }[] = [
-  { id: "about", variant: "moon", title: "Sobre Mim", radius: 3, angle: 0 },
-  { id: "projects", variant: "rings", title: "Projetos", radius: 4, angle: Math.PI * (2 / 3) },
-  { id: "contact", variant: "lattice", title: "Contato", radius: 5, angle: Math.PI * (4 / 3) },
+  { id: "about", variant: "moon", title: "Sobre Mim", radius: 2.8 },
+  { id: "experience", variant: "gyro", title: "Experiência", radius: 3.6 },
+  { id: "projects", variant: "rings", title: "Projetos", radius: 4.4 },
+  { id: "contact", variant: "lattice", title: "Contato", radius: 5.2 },
 ];
 
-export function SpaceBackground() {
-  const is3DMode = useModeStore((state) => state.is3DMode);
+// Fase inicial: o ciclo de 2π dividido igualmente entre os planetas (π/2 com
+// quatro). Sai do índice, então acrescentar um 5º planeta redistribui sozinho.
+// Como todos têm a mesma velocidade angular, o espaçamento nunca se desfaz.
+const NAV_STARS = PLANETS.map((planet, index) => ({
+  ...planet,
+  angle: (index / PLANETS.length) * Math.PI * 2,
+}));
+
+interface SpaceBackgroundProps {
+  /**
+   * false = só pano de fundo, mesmo no modo 3D: sem planetas, sem zoom e sem
+   * capturar o mouse. É o caso de /project/[id]: o modo 3D persiste no store
+   * durante a navegação, e o hub interativo atrás do texto roubaria o scroll.
+   */
+  hub?: boolean;
+}
+
+export function SpaceBackground({ hub = true }: SpaceBackgroundProps) {
+  const is3DMode = useModeStore((state) => state.is3DMode) === true && hub;
   const [dprCap, setDprCap] = useState(MAX_DPR);
 
   return (

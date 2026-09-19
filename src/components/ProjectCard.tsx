@@ -1,10 +1,22 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
+import {
+  FaGithub,
+  FaArrowUpRightFromSquare,
+  FaArrowRight,
+} from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { stackIcons } from "@/lib/stackIcons";
+
+const EXPAND_DELAY_MS = 3000;
+
+// Os botões do rodapé ficam ACIMA do link esticado do título (ver abaixo).
+const ACTION_BASE =
+  "relative z-10 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5";
+const ACTION_OUTLINE = `${ACTION_BASE} border border-neutral-200 text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-600 dark:hover:bg-white/5`;
 
 export function ProjectCard({
   project,
@@ -16,38 +28,58 @@ export function ProjectCard({
   onExpand: () => void;
 }) {
   const stacks = project.stacks ?? [];
+  const detailsHref = project.id ? `/project/${project.id}` : null;
+  const hasVideo = Boolean(project.isFeatured && project.videoUrl);
 
   const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isHovering, setIsHovering] = useState(false);
 
+  // Sem `root`: o IntersectionObserver usa o viewport, mas leva em conta o
+  // recorte de qualquer ancestral com overflow. Por isso o mesmo card pausa
+  // ao sair da tela no modo 2D E ao ser rolado para fora do painel de vidro
+  // no hub 3D, sem precisar saber onde está montado.
   const isInView = useInView(cardRef, { amount: 0.5 });
 
-  const handleMouseEnter = () => {
+  const clearHoverTimer = () => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = null;
+  };
 
+  const handleMouseEnter = () => {
+    clearHoverTimer();
     setIsHovering(true);
-
-    hoverTimerRef.current = setTimeout(() => {
-      onExpand();
-    }, 3000);
+    hoverTimerRef.current = setTimeout(onExpand, EXPAND_DELAY_MS);
   };
 
   const handleMouseLeave = () => {
-    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    clearHoverTimer();
     setIsHovering(false);
   };
 
+  // Clicar no card navega e desmonta tudo: sem isto o timer do hover
+  // dispararia o modal 3s depois, já em outra página.
+  useEffect(
+    () => () => {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    },
+    [],
+  );
+
   useEffect(() => {
-    if (!project.isFeatured || !videoRef.current) return;
+    const video = videoRef.current;
+    if (!hasVideo || !video) return;
 
     if (isInView) {
-      videoRef.current.play();
+      // play() devolve uma Promise que rejeita (AbortError) se um pause()
+      // chegar antes de o vídeo começar — rolagem rápida faz isso o tempo
+      // todo. É esperado, então não pode virar erro não tratado no console.
+      video.play().catch(() => {});
     } else {
-      videoRef.current.pause();
+      video.pause();
     }
-  }, [isInView, project.isFeatured]);
+  }, [isInView, hasVideo]);
 
   return (
     <motion.article
@@ -76,16 +108,24 @@ export function ProjectCard({
           initial={{ pathLength: 0 }}
           animate={isHovering ? { pathLength: 1 } : { pathLength: 0 }}
           transition={
-            isHovering ? { duration: 3, ease: "linear" } : { duration: 0.3 }
+            isHovering
+              ? { duration: EXPAND_DELAY_MS / 1000, ease: "linear" }
+              : { duration: 0.3 }
           }
         ></motion.rect>
       </svg>
       <motion.div className="relative aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-        {project.isFeatured && project.videoUrl ? (
+        {hasVideo ? (
           <motion.video
             layoutId={`image-${project.id}`}
             ref={videoRef}
+            // WebM ou MP4: o navegador decide pelo Content-Type da URL.
             src={project.videoUrl}
+            // Sem poster o card fica um retângulo vazio até o 1º frame chegar.
+            poster={project.thumbnail || "/fallback-thumb.jpeg"}
+            // Só os metadados no load; o vídeo em si baixa quando o card
+            // entra em cena e o play() é chamado.
+            preload="metadata"
             muted
             loop
             playsInline
@@ -114,7 +154,20 @@ export function ProjectCard({
           layoutId={`title-${project.id}`}
           className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white"
         >
-          {project.title}
+          {/* "Link esticado": o ::after deste link cobre o card inteiro, então
+              clicar em qualquer ponto navega. É o jeito de ter um card
+              clicável SEM aninhar <a> dentro de <a> (HTML inválido — os botões
+              Código/Deploy são links também): eles só ficam por cima, em z-10. */}
+          {detailsHref ? (
+            <Link
+              href={detailsHref}
+              className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-teal-500"
+            >
+              {project.title}
+            </Link>
+          ) : (
+            project.title
+          )}
         </motion.h3>
         <motion.p
           layoutId={`desc-${project.id}`}
@@ -147,29 +200,42 @@ export function ProjectCard({
           </motion.div>
         )}
 
-        <div className="mt-auto flex items-center gap-2 border-t border-neutral-200/70 pt-4 dark:border-neutral-800">
-          {project.repoUrl && (
-            <a
-              href={project.repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-neutral-200 px-3 py-2 text-xs font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-600 dark:hover:bg-white/5"
-            >
-              <FaGithub className="text-sm" />
-              Código
-            </a>
+        {/* Duas linhas: três botões lado a lado não cabem com texto legível
+            num card de ~290px (a largura dele dentro do painel do hub). */}
+        <div className="mt-auto flex flex-col gap-2 border-t border-neutral-200/70 pt-4 dark:border-neutral-800">
+          {(project.repoUrl || project.deployUrl) && (
+            <div className="flex items-center gap-2">
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${ACTION_OUTLINE} flex-1`}
+                >
+                  <FaGithub className="text-sm" />
+                  Código
+                </a>
+              )}
+
+              {project.deployUrl && (
+                <a
+                  href={project.deployUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${ACTION_BASE} flex-1 bg-teal-600 text-white hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25`}
+                >
+                  <FaArrowUpRightFromSquare className="text-xs" />
+                  Deploy
+                </a>
+              )}
+            </div>
           )}
 
-          {project.deployUrl && (
-            <a
-              href={project.deployUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-teal-600 px-3 py-2 text-xs font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25"
-            >
-              <FaArrowUpRightFromSquare className="text-xs" />
-              Deploy
-            </a>
+          {detailsHref && (
+            <Link href={detailsHref} className={`${ACTION_OUTLINE} group/details`}>
+              Detalhes
+              <FaArrowRight className="text-xs transition-transform duration-200 group-hover/details:translate-x-0.5" />
+            </Link>
           )}
         </div>
       </div>

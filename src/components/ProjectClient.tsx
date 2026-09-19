@@ -36,7 +36,7 @@ export default function ProjectClient({ project }: { project: Project }) {
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
-      <SpaceBackground />
+      <SpaceBackground hub={false} />
 
       <div className="relative mx-auto max-w-4xl px-6 pb-24">
         <Link

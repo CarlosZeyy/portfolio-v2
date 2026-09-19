@@ -5,12 +5,19 @@ import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { planetRegistry, useOrbitStore } from "@/store/useOrbitStore";
+import {
+  isPlanetId,
+  planetRegistry,
+  useOrbitStore,
+  type PlanetId,
+} from "@/store/useOrbitStore";
+import { PLANET_CLOSE_DISTANCE } from "./Planet";
 
 // Posição de repouso do hub (destino da intro) = ponto t=0 do zoom.
 const HOME_POSITION = new THREE.Vector3(0, 4, 8);
-// Distância final entre a câmera e o planeta com zoom = 1.
-const CLOSE_DISTANCE = 1.35;
+// Distância final entre a câmera e o planeta com zoom = 1. Vem do Planet.tsx
+// (em raios do planeta) para o enquadramento não mudar quando a escala muda.
+const CLOSE_DISTANCE = PLANET_CLOSE_DISTANCE;
 // Enquadramento final: o planeta termina deslocado para a esquerda por esta
 // fração da meia-largura da tela, abrindo o lado direito para o painel 2D.
 const FRAME_SHIFT = 0.48;
@@ -79,6 +86,23 @@ function useWheelZoom() {
   }, [domElement]);
 }
 
+/**
+ * Deep link: /#projects (o "Voltar aos projetos" da página de detalhes) deve
+ * reabrir a seção, não largar o usuário num hub resetado. O hash é consumido
+ * UMA vez: limpo da URL para que alternar 2D <-> 3D depois não reabra a seção.
+ */
+function consumeSectionHash(): PlanetId | null {
+  const hash = window.location.hash.slice(1);
+  if (!isPlanetId(hash)) return null;
+
+  window.history.replaceState(
+    null,
+    "",
+    window.location.pathname + window.location.search,
+  );
+  return hash;
+}
+
 export default function CameraRig3D() {
   const { camera } = useThree();
 
@@ -88,10 +112,26 @@ export default function CameraRig3D() {
   const smoothZoom = useRef(0);
   // Ponto de foco suavizado, para trocar de planeta em pleno zoom sem corte.
   const focusPoint = useRef<THREE.Vector3 | null>(null);
+  // undefined = hash ainda não lido. Fica num ref (e não numa variável do
+  // efeito) porque o StrictMode monta -> desmonta -> monta: a 2ª passada já
+  // encontra a URL limpa e precisa lembrar o que a 1ª leu.
+  const deepLink = useRef<PlanetId | null | undefined>(undefined);
 
   useWheelZoom();
 
   useGSAP(() => {
+    if (deepLink.current === undefined) deepLink.current = consumeSectionHash();
+
+    if (deepLink.current) {
+      // Chegou por deep link: sem intro. A câmera já nasce pousada no planeta
+      // (smoothZoom = 1), senão o painel abriria com a câmera ainda voando.
+      useOrbitStore.getState().enterSection(deepLink.current);
+      smoothZoom.current = 1;
+      introDone.current = true;
+      camera.position.copy(HOME_POSITION);
+      return;
+    }
+
     introDone.current = false;
     camera.position.set(0, 0, 2);
     camera.lookAt(0, 0, 0);
