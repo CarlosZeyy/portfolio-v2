@@ -145,7 +145,7 @@ function SectionPanel({ id, onClose, children }: SectionPanelProps) {
           e o card sai voando do lugar errado. */}
       <motion.div
         layoutScroll
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 py-6 text-neutral-300 [scrollbar-color:var(--color-neutral-700)_transparent] scrollbar-thin"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 py-6 text-neutral-300"
       >
         {children}
       </motion.div>

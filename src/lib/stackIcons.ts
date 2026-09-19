@@ -34,6 +34,34 @@ import {
   SiClaude,
   SiGithubcopilot,
   SiGooglegemini,
+  SiThreedotjs,
+  SiGsap,
+  SiWebgl,
+  SiFramer,
+  SiRedux,
+  SiReactquery,
+  SiShadcnui,
+  SiStorybook,
+  SiFigma,
+  SiGraphql,
+  SiPrisma,
+  SiDrizzle,
+  SiTrpc,
+  SiSocketdotio,
+  SiStripe,
+  SiFirebase,
+  SiKubernetes,
+  SiTerraform,
+  SiCloudflare,
+  SiNetlify,
+  SiVitest,
+  SiCypress,
+  SiTestinglibrary,
+  SiEslint,
+  SiPrettier,
+  SiTurborepo,
+  SiBun,
+  SiI18Next,
 } from "react-icons/si";
 import {
   FaJava,
@@ -64,6 +92,21 @@ export const stackIcons: Record<string, Icon> = {
   "Angular": { icon: SiAngular, bg: `#DD003166` },
   "Sass": { icon: FaSass, bg: `#CC669966` },
   "Bootstrap": { icon: SiBootstrap, bg: `#7952B366` },
+  "Redux": { icon: SiRedux, bg: `#764ABC66` },
+  "React Query": { icon: SiReactquery, bg: `#FF415466` },
+  "shadcn/ui": { icon: SiShadcnui, bg: `#ffffff66` },
+  "Storybook": { icon: SiStorybook, bg: `#FF478566` },
+  "Figma": { icon: SiFigma, bg: `#F24E1E66` },
+  "i18next": { icon: SiI18Next, bg: `#26A69A66` },
+
+  // 3D / Motion (o que move este portfólio):
+  "Three.js": { icon: SiThreedotjs, bg: `#ffffff66` },
+  // Não existe marca do R3F no Simple Icons; ele é Three.js em React.
+  "React Three Fiber": { icon: SiThreedotjs, bg: `#ffffff66` },
+  "WebGL": { icon: SiWebgl, bg: `#99000066` },
+  "GLSL": { icon: SiWebgl, bg: `#5586A466` },
+  "GSAP": { icon: SiGsap, bg: `#0AE44866` },
+  "Framer Motion": { icon: SiFramer, bg: `#0055FF66` },
 
   // Back:
   Java: { icon: FaJava, bg: `#ED8B0066` },
@@ -77,11 +120,21 @@ export const stackIcons: Record<string, Icon> = {
   "Python": { icon: SiPython, bg: `#3776AB66` },
   "Redis": { icon: DiRedis, bg: `#DC382D66` },
   "Zustand": { icon: Zustand, bg: `#7952B366` },
+  "GraphQL": { icon: SiGraphql, bg: `#E1009866` },
+  "Prisma": { icon: SiPrisma, bg: `#2D374866` },
+  "Drizzle": { icon: SiDrizzle, bg: `#C5F74F66` },
+  "tRPC": { icon: SiTrpc, bg: `#2596BE66` },
+  "Socket.io": { icon: SiSocketdotio, bg: `#ffffff66` },
+  "Stripe": { icon: SiStripe, bg: `#635BFF66` },
+  "Bun": { icon: SiBun, bg: `#FBF0DF66` },
 
   // DevOps:
   "Docker": { icon: SiDocker, bg: `#2496ED66` },
   "Docker Compose": { icon: GrDocker, bg: `#2496ED66` },
   "GitHub Actions": { icon: SiGithubactions, bg: `#2088FF66` },
+  "Kubernetes": { icon: SiKubernetes, bg: `#326CE566` },
+  "Terraform": { icon: SiTerraform, bg: `#844FBA66` },
+  "Turborepo": { icon: SiTurborepo, bg: `#EF444466` },
 
   // Cloud:
   "Azure": { icon: VscAzure, bg: `#0089D666` },
@@ -91,10 +144,16 @@ export const stackIcons: Record<string, Icon> = {
   "AWS": { icon: FaAws, bg: `#FF990066` },
   "GCP": { icon: SiGooglecloud, bg: `#4285F466` },
   "Nginx": { icon: DiNginx, bg: `#00963966` },
+  "Cloudflare": { icon: SiCloudflare, bg: `#F3802066` },
+  "Netlify": { icon: SiNetlify, bg: `#00C7B766` },
+  "Firebase": { icon: SiFirebase, bg: `#DD2C0066` },
 
   // Tests:
   "Jest": { icon: SiJest, bg: `#C2132566` },
   "Jenkins": { icon: DiJenkins, bg: `#D2493966` },
+  "Vitest": { icon: SiVitest, bg: `#6E9F1866` },
+  "Cypress": { icon: SiCypress, bg: `#69D3A766` },
+  "Testing Library": { icon: SiTestinglibrary, bg: `#E3333266` },
 
   // DB:
   "PostgreSQL": { icon: SiPostgresql, bg: `#4169E166` },
@@ -113,6 +172,8 @@ export const stackIcons: Record<string, Icon> = {
   "VS Code": { icon: VscVscode, bg: `#2F80ED66` },
   "IntelliJ IDEA": { icon: SiIntellijidea, bg: `#00000066` },
   "Cursor": { icon: SiCursor, bg: `#00000066` },
+  "ESLint": { icon: SiEslint, bg: `#4B32C366` },
+  "Prettier": { icon: SiPrettier, bg: `#F7B93E66` },
 
   // AI
   "Claude": { icon: SiClaude, bg: `#D9775766` },

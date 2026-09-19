@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { getRequestLocale } from "@/i18n/server";
+import { CustomCursor } from "@/components/CustomCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,9 @@ export default async function Layout({
     >
       <body className="min-h-full bg-[#F7F8FA] text-neutral-900 dark:bg-[#0B0E14] dark:text-white">
         <I18nProvider locale={locale}>{children}</I18nProvider>
+        {/* Fora da árvore das páginas: o cursor não re-renderiza com elas e
+            sobrevive à navegação entre rotas (público, /project, /admin). */}
+        <CustomCursor />
       </body>
     </html>
   );

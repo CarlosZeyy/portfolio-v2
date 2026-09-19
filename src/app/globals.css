@@ -66,3 +66,240 @@
     linear-gradient(#000 0 0);
   mask-composite: exclude;
 }
+
+/* =============================================================================
+ * SCROLLBAR
+ * Fina, com trilho quase invisível e um "thumb" de vidro que acende no degradê
+ * da nébula (teal -> violeta) ao passar o mouse. Vale para a página E para
+ * qualquer painel rolável (modal, painel do hub, inbox).
+ * ========================================================================== */
+:root {
+  --scrollbar-size: 10px;
+  --scrollbar-track: rgb(0 0 0 / 0.04);
+  --scrollbar-thumb: linear-gradient(180deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0.18));
+  --scrollbar-thumb-solid: rgb(0 0 0 / 0.25); /* Firefox não aceita gradiente */
+  --scrollbar-thumb-hover: linear-gradient(180deg, #14b8a6, #8b5cf6);
+  --scrollbar-thumb-active: linear-gradient(180deg, #2dd4bf, #a78bfa);
+}
+
+/* Mesma regra dupla do `dark:` — tema do sistema OU escopo .force-dark (admin). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --scrollbar-track: rgb(255 255 255 / 0.03);
+    --scrollbar-thumb: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.09));
+    --scrollbar-thumb-solid: rgb(255 255 255 / 0.18);
+  }
+}
+.force-dark {
+  --scrollbar-track: rgb(255 255 255 / 0.03);
+  --scrollbar-thumb: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.09));
+  --scrollbar-thumb-solid: rgb(255 255 255 / 0.18);
+}
+
+/* Chromium / Safari */
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  /* Borda transparente + background-clip: o degradê só pinta o miolo, então o
+     thumb vira uma pílula de 4px flutuando no meio de um trilho de 10px — com
+     área de clique de 10px, que é o que importa para quem arrasta. */
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border-width: 2px; /* engrossa 2px ao acender */
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+  border-width: 2px;
+  background-clip: padding-box;
+}
+
+/*
+ * Firefox. TEM que ficar dentro do @supports: a partir do Chromium 121, definir
+ * scrollbar-width/scrollbar-color faz o navegador IGNORAR os ::-webkit-scrollbar
+ * acima — o degradê e o hover sumiriam justo onde eles funcionam.
+ */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-solid) transparent;
+  }
+}
+
+/* =============================================================================
+ * CURSOR CUSTOMIZADO (src/components/CustomCursor.tsx)
+ * O componente só escreve `transform` (posição) e troca data-atributos; toda a
+ * aparência e as transições moram aqui. Só transform e opacity são animados:
+ * as duas propriedades que o compositor resolve sem layout nem repaint.
+ * ========================================================================== */
+
+/* O cursor nativo só some DEPOIS que o componente confirma mouse de verdade e
+   está ativo — sem JS, ou em tela de toque, nada muda. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+/* Onde o cursor nativo é insubstituível: o I-beam de quem está digitando. */
+html.has-custom-cursor :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="submit"], [type="button"]), textarea, [contenteditable="true"]) {
+  cursor: text !important;
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  --cursor-ring: rgb(45 212 191 / 0.75);
+  --cursor-dot: #ffffff;
+}
+.cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+/* Camada de POSIÇÃO: recebe o translate3d do JS. will-change a promove a uma
+   camada própria do compositor — mover não repinta nada por baixo. */
+.cursor__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/* Camada de FORMA: escala/cor/rotação por CSS. Separada da de posição para as
+   duas transforms não brigarem no mesmo elemento. */
+.cursor__ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cursor__ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cursor__ring circle,
+.cursor__ring path {
+  fill: none;
+  stroke: var(--cursor-ring);
+  stroke-width: 1.25;
+  /* O anel escala por transform; sem isto o traço engrossaria junto. */
+  vector-effect: non-scaling-stroke;
+  transition: stroke 0.3s ease, opacity 0.3s ease, fill 0.3s ease;
+}
+.cursor__ticks {
+  opacity: 0;
+  transform-origin: 18px 18px;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cursor__dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--cursor-dot);
+  /* Contorno escuro: o ponto branco continua legível sobre fundo claro, sem
+     mix-blend-mode (que obrigaria o navegador a recompor o canvas WebGL). */
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35), 0 0 8px rgb(45 212 191 / 0.6);
+  transition: transform 0.25s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ---- link / botão / card: o anel abre e preenche de leve; o ponto some ------ */
+.cursor[data-state="link"] .cursor__ring {
+  transform: scale(1.6);
+}
+.cursor[data-state="link"] .cursor__ring circle {
+  fill: rgb(45 212 191 / 0.12);
+  stroke: rgb(94 234 212 / 0.95);
+}
+.cursor[data-state="link"] .cursor__dot {
+  transform: scale(0);
+}
+
+/* ---- campo de texto: some e devolve o I-beam nativo ------------------------- */
+.cursor[data-state="native"] {
+  opacity: 0;
+}
+
+/* ---- hub 3D: retículo violeta, com marcas girando devagar ------------------- */
+.cursor[data-state="space"],
+.cursor[data-state="target"] {
+  --cursor-ring: rgb(167 139 250 / 0.9);
+  --cursor-dot: #ddd6fe;
+}
+.cursor[data-state="space"] .cursor__ring {
+  transform: scale(1.3);
+}
+.cursor[data-state="space"] .cursor__ticks,
+.cursor[data-state="target"] .cursor__ticks {
+  opacity: 1;
+}
+.cursor[data-state="space"] .cursor__spin {
+  animation: cursor-spin 9s linear infinite;
+}
+.cursor[data-state="space"] .cursor__dot,
+.cursor[data-state="target"] .cursor__dot {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35), 0 0 10px rgb(167 139 250 / 0.9);
+}
+
+/* ---- planeta sob a mira: o retículo "trava" — fecha, vira teal e para ------- */
+.cursor[data-state="target"] {
+  --cursor-ring: rgb(45 212 191 / 1);
+  --cursor-dot: #5eead4;
+}
+.cursor[data-state="target"] .cursor__ring {
+  transform: scale(0.95) rotate(45deg);
+}
+.cursor[data-state="target"] .cursor__ticks {
+  transform: scale(0.78);
+}
+.cursor[data-state="target"] .cursor__dot {
+  animation: cursor-pulse 1.1s ease-in-out infinite;
+}
+
+/* ---- clique: encolhe um instante, em qualquer estado ------------------------ */
+.cursor[data-pressed="true"] .cursor__ring {
+  transform: scale(0.8);
+}
+.cursor[data-state="link"][data-pressed="true"] .cursor__ring {
+  transform: scale(1.3);
+}
+
+.cursor__spin {
+  transform-origin: 18px 18px;
+}
+@keyframes cursor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cursor-pulse {
+  50% {
+    transform: scale(1.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor__spin,
+  .cursor[data-state="target"] .cursor__dot {
+    animation: none;
+  }
+}
