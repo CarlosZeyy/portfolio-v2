@@ -1,15 +1,161 @@
 "use client";
 
 import { Project } from "@/lib/projectSchema";
-import { stackIcons } from "@/lib/stackIcons";
 import { SpaceBackground } from "@/components/SpaceBackground";
 import { slugify } from "@/lib/formats";
+import { EASE_OUT_EXPO, fadeUp, revealOnce, staggerContainer } from "@/lib/motion";
 import Link from "next/link";
 import { BiArrowBack } from "react-icons/bi";
 import { FaGithub, FaArrowUpRightFromSquare } from "react-icons/fa6";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type Variants,
+} from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { GlassPanel } from "./GlassPanel";
+import { StackChip } from "./StackChip";
 
+// Título: cada palavra sobe de trás de uma máscara (overflow-hidden), em
+// cascata. É a mesma revelação do menu — a assinatura de entrada do site.
+const wordVariants: Variants = {
+  hidden: { y: "110%", rotate: 3 },
+  visible: {
+    y: "0%",
+    rotate: 0,
+    transition: { duration: 1, ease: EASE_OUT_EXPO },
+  },
+};
+
+const pad = (value: number) => String(value).padStart(2, "0");
+
+function Gallery({ images, title }: { images: string[]; title: string }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const step = useCallback(
+    (direction: 1 | -1) =>
+      setActiveIndex(
+        (current) => (current + direction + images.length) % images.length,
+      ),
+    [images.length],
+  );
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") step(1);
+      if (event.key === "ArrowLeft") step(-1);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [step]);
+
+  return (
+    <motion.section className="mt-24" variants={staggerContainer()} {...revealOnce}>
+      <motion.div variants={fadeUp} className="flex items-end justify-between gap-6">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wide text-teal-400">
+            ~/galeria
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            Por dentro do projeto
+          </h2>
+        </div>
+        <p className="font-mono text-sm text-neutral-400">
+          <span className="text-white">{pad(activeIndex + 1)}</span> /{" "}
+          {pad(images.length)}
+        </p>
+      </motion.div>
+
+      <motion.div
+        variants={fadeUp}
+        className="group/stage relative mt-8 aspect-video w-full overflow-hidden rounded-3xl bg-neutral-950 shadow-2xl shadow-black/50"
+      >
+        {/* Sem mode="wait": a imagem que sai e a que entra ficam empilhadas
+            (absolute) e animam AO MESMO TEMPO. É um crossfade de verdade — com
+            "wait" a tela ficava vazia entre uma foto e outra. */}
+        <AnimatePresence initial={false}>
+          <motion.img
+            key={images[activeIndex]}
+            src={images[activeIndex]}
+            alt={`${title} — imagem ${activeIndex + 1} de ${images.length}`}
+            initial={{ opacity: 0, scale: 1.06, filter: "blur(12px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </AnimatePresence>
+        <div
+          aria-hidden
+          className="glass-ring pointer-events-none absolute inset-0 rounded-[inherit]"
+        />
+
+        {images.length > 1 &&
+          ([-1, 1] as const).map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              onClick={() => step(direction)}
+              aria-label={direction === 1 ? "Próxima imagem" : "Imagem anterior"}
+              className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:border-teal-400/60 hover:text-teal-300 focus-visible:opacity-100 sm:opacity-0 sm:group-hover/stage:opacity-100 ${
+                direction === 1 ? "right-4" : "left-4"
+              }`}
+            >
+              {direction === 1 ? <LuChevronRight /> : <LuChevronLeft />}
+            </button>
+          ))}
+      </motion.div>
+
+      {images.length > 1 && (
+        <motion.div
+          variants={fadeUp}
+          className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-5 md:grid-cols-6"
+        >
+          {images.map((url, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <button
+                key={url}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                aria-label={`Ver imagem ${index + 1}`}
+                aria-current={isActive}
+                className="group/thumb relative aspect-4/3 cursor-pointer overflow-hidden rounded-xl bg-neutral-900 outline-none"
+              >
+                <img
+                  src={url}
+                  alt=""
+                  loading="lazy"
+                  className={`h-full w-full object-cover transition-all duration-500 group-hover/thumb:scale-110 group-hover/thumb:opacity-100 group-hover/thumb:saturate-100 group-focus-visible/thumb:opacity-100 ${
+                    isActive ? "opacity-100" : "opacity-45 saturate-50"
+                  }`}
+                />
+                {/* O anel da miniatura ativa é UM elemento com layoutId: ao
+                    trocar de foto ele desliza de uma miniatura para a outra,
+                    em vez de apagar aqui e acender ali. */}
+                {isActive ? (
+                  <motion.span
+                    layoutId="gallery-active-ring"
+                    transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
+                    className="absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_2px_#2dd4bf,0_0_20px_rgb(45_212_191/0.35)]"
+                  />
+                ) : (
+                  <span className="absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)] transition-shadow duration-300 group-hover/thumb:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.35)]" />
+                )}
+              </button>
+            );
+          })}
+        </motion.div>
+      )}
+    </motion.section>
+  );
+}
 
 export default function ProjectClient({ project }: { project: Project }) {
   const stacks = project.stacks ?? [];
@@ -32,13 +178,30 @@ export default function ProjectClient({ project }: { project: Project }) {
     },
   ].filter((section) => section.content);
 
-  const [activeImg, setActiveImg] = useState(gallery[0]);
+  // Barra de progresso de leitura no topo (a mola tira o tremor do scroll).
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+
+  // Parallax da mídia principal: enquanto ela atravessa a tela, a imagem
+  // desliza dentro da moldura — dá profundidade sem mexer no layout.
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: mediaProgress } = useScroll({
+    target: mediaRef,
+    offset: ["start end", "end start"],
+  });
+  const mediaY = useTransform(mediaProgress, [0, 1], ["-6%", "6%"]);
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
       <SpaceBackground hub={false} />
 
-      <div className="relative mx-auto max-w-4xl px-6 pb-24">
+      <motion.div
+        aria-hidden
+        style={{ scaleX: progress }}
+        className="fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-linear-to-r from-teal-400 to-violet-500"
+      />
+
+      <div className="relative mx-auto max-w-5xl px-6 pb-32">
         <Link
           href="/#projects"
           className="group inline-flex w-fit items-center gap-2 py-10 text-sm font-medium text-neutral-400 transition-colors hover:text-teal-400"
@@ -48,172 +211,199 @@ export default function ProjectClient({ project }: { project: Project }) {
         </Link>
 
         <motion.header
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col gap-6"
+          variants={staggerContainer(0.09, 0.1)}
+          initial="hidden"
+          animate="visible"
+          className="relative flex flex-col pt-6 sm:pt-14"
         >
-          <p className="font-mono text-xs uppercase tracking-wide text-teal-500">
+          {/* Véu: um degradê radial escuro e desfocado atrás do cabeçalho. O
+              hero fica solto sobre a nébula (sem caixa), mas o texto ganha um
+              fundo que não depende de onde a faixa clara da galáxia está. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-x-16 -inset-y-10 -z-10 bg-[radial-gradient(ellipse_70%_60%_at_30%_55%,rgb(11_14_20/0.9),transparent_75%)] blur-2xl"
+          />
+          <motion.p
+            variants={fadeUp}
+            className="font-mono text-xs uppercase tracking-wide text-teal-400"
+          >
             ~/projetos/{slugify(project.title)}
-          </p>
+          </motion.p>
 
-          <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {project.title}
+          {/* aria-label: leitores de tela leem o título inteiro, não palavra
+              por palavra (cada uma vive num span próprio por causa da máscara). */}
+          <h1
+            aria-label={project.title}
+            className="mt-5 text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.95] font-semibold tracking-tighter text-balance text-white"
+          >
+            {project.title.split(" ").map((word, index) => (
+              <span
+                key={index}
+                aria-hidden
+                className="mr-[0.22em] inline-block overflow-hidden pb-[0.12em] align-bottom"
+              >
+                <motion.span variants={wordVariants} className="inline-block origin-left">
+                  {word}
+                </motion.span>
+              </span>
+            ))}
           </h1>
 
           {project.description && (
-            <p className="max-w-2xl text-lg font-light leading-relaxed text-neutral-400 md:text-xl">
+            <motion.p
+              variants={fadeUp}
+              className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-300 md:text-xl"
+            >
               {project.description}
-            </p>
+            </motion.p>
           )}
 
           {stacks.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 text-xl">
-              {stacks.map((stack) => {
-                const stackData = stackIcons[stack];
-                const ComponentIcon = stackData?.icon;
-                const ComponentBg = stackData.bg;
-
-                return (
-                  <span
-                    key={stack}
-                    style={{ backgroundColor: ComponentBg }}
-                    className="flex shrink-0 items-center gap-1.5  whitespace-nowrap rounded-full border border-neutral-800 bg-white/5 px-2.5 py-1 font-mono font-medium text-neutral-300 backdrop-blur-xl transition-colors hover:bg-white/10"
-                  >
-                    {ComponentIcon && (
-                      <ComponentIcon className="text-xl opacity-70" />
-                    )}
-                    {stack}
-                  </span>
-                );
-              })}
-            </div>
+            <motion.div
+              variants={staggerContainer(0.04)}
+              className="mt-8 flex flex-wrap gap-2"
+            >
+              {stacks.map((stack) => (
+                <motion.div key={stack} variants={fadeUp}>
+                  <StackChip stack={stack} size="md" />
+                </motion.div>
+              ))}
+            </motion.div>
           )}
 
           {(project.repoUrl || project.deployUrl) && (
-            <div className="flex flex-wrap gap-3 pt-2">
-              {project.repoUrl && (
-                <a
-                  href={project.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-white/5 px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-700 hover:bg-white/10"
-                >
-                  <FaGithub /> Código-fonte
-                </a>
-              )}
-
+            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
               {project.deployUrl && (
                 <a
                   href={project.deployUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
+                  className="flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
                 >
                   <FaArrowUpRightFromSquare className="text-xs" /> Ver deploy
                 </a>
               )}
-            </div>
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#0B0E14]/60 px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400/40 hover:bg-white/10"
+                >
+                  <FaGithub /> Código-fonte
+                </a>
+              )}
+            </motion.div>
           )}
         </motion.header>
 
         {(project.videoUrl || project.thumbnail) && (
-          <div
-            className="animate-fade-in-up mt-12 aspect-video w-full overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-2xl shadow-black/40"
-            style={{ animationDelay: "0.1s" }}
+          <motion.div
+            ref={mediaRef}
+            initial={{ opacity: 0, y: 60, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1.1, delay: 0.5, ease: EASE_OUT_EXPO }}
+            className="relative mt-16"
           >
-            {project.videoUrl ? (
-              <video
-                src={project.videoUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster={project.thumbnail || undefined}
-                className="h-full w-full object-cover"
+            <div
+              aria-hidden
+              className="absolute -inset-8 rounded-[3rem] bg-linear-to-br from-teal-500/20 via-transparent to-violet-500/25 blur-3xl"
+            />
+            <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-neutral-950 shadow-2xl shadow-black/50">
+              {/* scale-112: folga para o parallax de ±6% nunca mostrar a borda. */}
+              <motion.div style={{ y: mediaY }} className="h-full w-full scale-112">
+                {project.videoUrl ? (
+                  <video
+                    src={project.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster={project.thumbnail || undefined}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={project.thumbnail || "/fallback-thumb.jpeg"}
+                    alt={`Preview do projeto ${project.title}`}
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </motion.div>
+              <div
+                aria-hidden
+                className="glass-ring pointer-events-none absolute inset-0 rounded-[inherit]"
               />
-            ) : (
-              <img
-                src={project.thumbnail || "/fallback-thumb.jpeg"}
-                alt={`Preview do projeto ${project.title}`}
-                className="h-full w-full object-cover"
-              />
-            )}
-          </div>
+            </div>
+          </motion.div>
         )}
 
         {caseStudy.length > 0 && (
-          <div className="mt-16 flex flex-col">
+          // Uma única "folha" de vidro para a narrativa inteira: texto corrido
+          // solto sobre a nébula não tem contraste, e um card por capítulo
+          // viraria uma pilha de caixas. Dentro dela o layout é de revista:
+          // numeral e título fixos (sticky) à esquerda, texto à direita.
+          <GlassPanel className="mt-24" contentClassName="px-6 sm:px-12" spotlight={false}>
             {caseStudy.map((section, index) => (
-              <div
+              <motion.article
                 key={section.key}
-                className="relative pb-10 pl-8 last:pb-0 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-neutral-800 last:before:hidden hover:before:bg-teal-500/60"
+                variants={staggerContainer(0.1)}
+                {...revealOnce}
+                className="grid grid-cols-1 gap-6 border-b border-white/10 py-12 last:border-b-0 sm:py-16 lg:grid-cols-12 lg:gap-12"
               >
-                <span className="absolute left-[-4.5px] top-2 h-2.5 w-2.5 rounded-full bg-teal-500 shadow-[0_0_0_4px_rgba(20,184,166,0.15)]" />
-
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="rounded-2xl border border-neutral-800 bg-white/5 p-8 shadow-xl backdrop-blur-md"
-                >
-                  <p className="font-mono text-xs text-teal-500">
-                    {section.key}:
-                  </p>
-                  <h2 className="mt-1 text-2xl font-semibold text-white">
-                    {section.title}
-                  </h2>
-                  <p className="mt-4 text-lg font-light leading-relaxed text-neutral-400">
-                    {section.content}
-                  </p>
+                <motion.div variants={fadeUp} className="lg:col-span-4">
+                  <div className="lg:sticky lg:top-24">
+                    <span className="block bg-linear-to-b from-teal-300 to-violet-500/40 bg-clip-text font-mono text-6xl leading-none font-light text-transparent sm:text-7xl">
+                      {pad(index + 1)}
+                    </span>
+                    <p className="mt-5 font-mono text-xs text-teal-400">
+                      {section.key}:
+                    </p>
+                    <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                      {section.title}
+                    </h2>
+                  </div>
                 </motion.div>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {gallery.length > 0 && (
-          <div
-            className="animate-fade-in-up mt-16"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <p className="font-mono text-xs uppercase tracking-wide text-neutral-500">
-              ~/galeria
-            </p>
-
-            <div className="aspect-video w-full mt-5">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  src={activeImg}
-                  key={activeImg}
-                  alt=""
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              </AnimatePresence>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {gallery.map((url) => (
-                <div
-                  onClick={() => setActiveImg(url)}
-                  key={url}
-                  className={`group aspect-square overflow-hidden rounded-xl cursor-pointer border border-neutral-800 bg-neutral-900 ${url === activeImg ? "border-teal-500 opacity-100" : "border-neutral-800 opacity-70 hover:opacity-100"}`}
+                {/* whitespace-pre-line respeita as quebras de parágrafo que
+                    você digita no textarea do admin. A primeira linha em
+                    destaque é o "lead" de artigo. */}
+                <motion.p
+                  variants={fadeUp}
+                  className="text-lg leading-[1.8] whitespace-pre-line text-neutral-300 first-line:text-xl first-line:font-medium first-line:text-white lg:col-span-8"
                 >
-                  <img
-                    src={url}
-                    alt={`Imagem da galeria de ${project.title}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+                  {section.content}
+                </motion.p>
+              </motion.article>
+            ))}
+          </GlassPanel>
         )}
+
+        {gallery.length > 0 && <Gallery images={gallery} title={project.title} />}
+
+        <motion.footer
+          variants={fadeUp}
+          {...revealOnce}
+          className="mt-24 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-10 sm:flex-row sm:items-center"
+        >
+          <p className="text-2xl font-semibold tracking-tight text-white">
+            Gostou deste projeto?
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/#contact"
+              className="rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25"
+            >
+              Vamos conversar
+            </Link>
+            <Link
+              href="/#projects"
+              className="rounded-xl border border-white/10 bg-[#0B0E14]/60 px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400/40"
+            >
+              Ver outros projetos
+            </Link>
+          </div>
+        </motion.footer>
       </div>
     </div>
   );

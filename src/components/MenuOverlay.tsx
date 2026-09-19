@@ -27,7 +27,7 @@ const LINKS: MenuLink[] = [
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/CarlosZeyy", icon: FaGithub },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/carlosmoisesdev/", icon: FaLinkedin },
-  { label: "WhatsApp", href: "http://wa.me/11991054718", icon: FaWhatsapp },
+  { label: "WhatsApp", href: "http://wa.me/5511991054718", icon: FaWhatsapp },
 ];
 
 // Uma órbita por seção de conteúdo, nas cores dos planetas do hub.
@@ -119,7 +119,7 @@ export function MenuOverlay() {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-60 flex flex-col overflow-y-auto bg-[#0B0E14]/70 backdrop-blur-3xl"
+          className="fixed inset-0 z-60 flex flex-col overflow-y-clip bg-[#0B0E14]/70 backdrop-blur-3xl"
         >
           {/* Auroras: o desfoque forte sozinho vira um cinza chapado; estas
               duas manchas devolvem a paleta da nébula ao fundo do menu. */}

@@ -63,6 +63,7 @@ export default async function Home() {
       <ContentOverlay
         sections={{
           experience: <Experience embedded />,
+          contact: <Contact embedded />,
           projects: projectsContent,
         }}
       />

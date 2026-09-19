@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from "framer-motion";
 import { Project } from "@/lib/projectSchema";
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectModal } from "./ProjectModal";
@@ -24,6 +24,9 @@ export function ProjectList({ projects }: ProjectGalleryProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedProject = projects.find((project) => project.id === selectedId);
   const isClient = useIsClient();
+  // Referência estável: o modal registra Esc/trava de scroll num efeito que
+  // depende do onClose, e uma arrow nova a cada render o refaria à toa.
+  const closeModal = useCallback(() => setSelectedId(null), []);
 
   return (
     // @container: as colunas respondem à largura de ONDE a lista está, não à
@@ -52,7 +55,7 @@ export function ProjectList({ projects }: ProjectGalleryProps) {
             {selectedProject && (
               <ProjectModal
                 project={selectedProject}
-                onClose={() => setSelectedId(null)}
+                onClose={closeModal}
               />
             )}
           </AnimatePresence>,

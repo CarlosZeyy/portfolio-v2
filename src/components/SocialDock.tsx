@@ -34,7 +34,7 @@ export function SocialDock() {
         </a>
 
         <a
-          href="http://wa.me/11991054718"
+          href="http://wa.me/5511991054718"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:scale-110 hover:text-teal-400 transition-all"
