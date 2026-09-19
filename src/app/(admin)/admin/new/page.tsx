@@ -37,7 +37,7 @@ const addProjectPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white p-8 flex flex-col items-center justify-center pt-24">
+    <div className="min-h-screen text-white p-8 flex flex-col items-center justify-center pt-24">
       <h1 className="text-xl font-semibold mb-2">Adicionar Novo Projeto</h1>
 
       <Link

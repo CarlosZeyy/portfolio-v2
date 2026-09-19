@@ -7,21 +7,22 @@ import { LuArrowUpRight, LuX } from "react-icons/lu";
 import { useMenuStore, useModeStore } from "@/store/useMenuStore";
 import { useOrbitStore, type PlanetId } from "@/store/useOrbitStore";
 import { EASE_OUT_EXPO } from "@/lib/motion";
+import { useTranslation } from "react-i18next";
+import { LanguageToggle } from "./LanguageToggle";
 
 interface MenuLink {
-  label: string;
-  /** Âncora da seção no modo 2D. */
-  anchor: string;
+  /** Âncora da seção no modo 2D — e a chave do rótulo em sections.*. */
+  anchor: "top" | PlanetId;
   /** Planeta equivalente no hub 3D; null = o próprio hub. */
   planet: PlanetId | null;
 }
 
 const LINKS: MenuLink[] = [
-  { label: "Início", anchor: "top", planet: null },
-  { label: "Sobre Mim", anchor: "about", planet: "about" },
-  { label: "Experiência", anchor: "experience", planet: "experience" },
-  { label: "Projetos", anchor: "projects", planet: "projects" },
-  { label: "Contato", anchor: "contact", planet: "contact" },
+  { anchor: "top", planet: null },
+  { anchor: "about", planet: "about" },
+  { anchor: "experience", planet: "experience" },
+  { anchor: "projects", planet: "projects" },
+  { anchor: "contact", planet: "contact" },
 ];
 
 const SOCIALS = [
@@ -74,6 +75,7 @@ export function MenuOverlay() {
   const closeMenu = useMenuStore((state) => state.closeMenu);
   const is3DMode = useModeStore((state) => state.is3DMode);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -114,7 +116,7 @@ export function MenuOverlay() {
           key="menu-overlay"
           role="dialog"
           aria-modal="true"
-          aria-label="Menu de navegação"
+          aria-label={t("nav.menu")}
           variants={overlayVariants}
           initial="hidden"
           animate="visible"
@@ -168,9 +170,12 @@ export function MenuOverlay() {
             variants={fadeVariants}
             className="relative flex items-center justify-between px-6 py-5 sm:px-12 sm:py-8"
           >
-            <span className="font-mono text-xs uppercase tracking-[0.3em] text-neutral-400">
-              Menu
-            </span>
+            <div className="flex items-center gap-6">
+              <span className="font-mono text-xs uppercase tracking-[0.3em] text-neutral-400">
+                {t("nav.menu")}
+              </span>
+              <LanguageToggle />
+            </div>
 
             <button
               ref={closeButtonRef}
@@ -178,7 +183,7 @@ export function MenuOverlay() {
               onClick={closeMenu}
               className="group flex cursor-pointer items-center gap-3 rounded-full border border-white/10 bg-white/5 py-2 pr-2 pl-5 font-mono text-xs tracking-widest text-neutral-300 outline-none transition-colors hover:border-teal-400/50 hover:text-teal-300 focus-visible:border-teal-400/50"
             >
-              FECHAR
+              {t("nav.close")}
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition-transform duration-500 group-hover:rotate-90">
                 <LuX className="text-base" />
               </span>
@@ -204,7 +209,7 @@ export function MenuOverlay() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="bg-linear-to-r from-white to-white bg-clip-text text-[clamp(2.5rem,9vw,6.5rem)] leading-none font-semibold tracking-tighter text-transparent transition-[translate,--tw-gradient-from,--tw-gradient-to] duration-500 group-hover/link:translate-x-3 group-hover/link:from-teal-300 group-hover/link:to-violet-400 group-focus-visible/link:translate-x-3 group-focus-visible/link:from-teal-300 group-focus-visible/link:to-violet-400">
-                    {link.label}
+                    {t(`sections.${link.anchor}`)}
                   </span>
                   <LuArrowUpRight className="hidden -translate-x-4 self-center text-4xl text-teal-300 opacity-0 transition-all duration-500 group-hover/link:translate-x-0 group-hover/link:opacity-100 sm:block" />
                 </motion.a>

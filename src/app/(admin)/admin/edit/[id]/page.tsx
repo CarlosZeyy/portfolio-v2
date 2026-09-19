@@ -26,7 +26,7 @@ export default async function editProjectPage({
 
   return (
     <>
-      <div className="min-h-screen bg-neutral-950 text-white text p-8 flex flex-col items-center pt-24">
+      <div className="min-h-screen text-white text p-8 flex flex-col items-center pt-24">
         <h1 className="text-xl font-semibold mb-2">
           Editando projeto de ID: {id}{" "}
         </h1>

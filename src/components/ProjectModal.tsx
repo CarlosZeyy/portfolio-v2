@@ -9,6 +9,7 @@ import { FaArrowRight, FaArrowUpRightFromSquare, FaGithub } from "react-icons/fa
 import { LuX } from "react-icons/lu";
 import Link from "next/link";
 import { StackChip } from "./StackChip";
+import { useTranslation } from "react-i18next";
 
 // Só o que NÃO é elemento compartilhado entra com fade: o que tem layoutId
 // (card, mídia, título, descrição, stacks) já chega "voando" do card.
@@ -33,6 +34,7 @@ export function ProjectModal({
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const stacks = project.stacks ?? [];
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -83,7 +85,7 @@ export function ProjectModal({
           ref={closeButtonRef}
           type="button"
           onClick={onClose}
-          aria-label="Fechar"
+          aria-label={t("projects.close")}
           variants={extrasVariants}
           custom={0}
           initial="hidden"
@@ -122,7 +124,7 @@ export function ProjectModal({
                     onError={(e) => {
                       e.currentTarget.src = "/fallback-thumb.jpeg";
                     }}
-                    alt={`Preview do projeto ${project.title}`}
+                    alt={t("projects.previewAlt", { title: project.title })}
                     loading="lazy"
                     className="h-full w-full object-cover"
                   />
@@ -143,7 +145,7 @@ export function ProjectModal({
               animate="visible"
               className="font-mono text-xs tracking-wide text-teal-400"
             >
-              ~/projetos/{slugify(project.title)}
+              {t("paths.projects")}/{slugify(project.title)}
             </motion.p>
 
             <motion.h2
@@ -172,7 +174,7 @@ export function ProjectModal({
                   animate="visible"
                   className="mt-7 font-mono text-[11px] tracking-widest text-neutral-500 uppercase"
                 >
-                  Stack
+                  {t("projects.stack")}
                 </motion.p>
                 <motion.div
                   layoutId={`stacks-${project.id}`}
@@ -197,7 +199,7 @@ export function ProjectModal({
                 className="group/cta flex items-center justify-between gap-3 rounded-xl bg-teal-600 px-5 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/30 active:translate-y-0"
               >
                 <motion.span layoutId={`proj-${project.id}`}>
-                  Ver case study completo
+                  {t("projects.caseStudy")}
                 </motion.span>
                 <FaArrowRight className="transition-transform duration-300 group-hover/cta:translate-x-1" />
               </Link>
@@ -211,7 +213,7 @@ export function ProjectModal({
                       rel="noopener noreferrer"
                       className={`${SECONDARY_ACTION} flex-1`}
                     >
-                      <FaGithub /> Código
+                      <FaGithub /> {t("projects.code")}
                     </a>
                   )}
                   {project.deployUrl && (
@@ -221,7 +223,7 @@ export function ProjectModal({
                       rel="noopener noreferrer"
                       className={`${SECONDARY_ACTION} flex-1`}
                     >
-                      <FaArrowUpRightFromSquare className="text-xs" /> Deploy
+                      <FaArrowUpRightFromSquare className="text-xs" /> {t("projects.deploy")}
                     </a>
                   )}
                 </div>

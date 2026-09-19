@@ -3,10 +3,13 @@
 import { useMenuStore, useModeStore } from "@/store/useMenuStore";
 import { LuAlignJustify } from "react-icons/lu";
 import { GoArrowSwitch } from "react-icons/go";
+import { useTranslation } from "react-i18next";
+import { LanguageToggle } from "./LanguageToggle";
 
 export function Sidebar() {
   const openMenu = useMenuStore((state) => state.openMenu);
   const { is3DMode, toggle3DMode } = useModeStore();
+  const { t } = useTranslation();
 
   if (is3DMode) {
     return (
@@ -15,19 +18,21 @@ export function Sidebar() {
         <button
           onClick={toggle3DMode}
           className="group flex cursor-pointer items-center gap-3 rounded-full border border-neutral-800 bg-white/5 px-5 py-2.5 text-sm text-neutral-400 shadow-lg backdrop-blur-md transition-all hover:border-teal-500/50 hover:text-teal-400"
-          title="Mudar para versão 2D"
+          title={t("nav.switchTo2D")}
         >
           <GoArrowSwitch className="text-lg transition-transform duration-500 group-hover:rotate-180" />
-          <span className="font-mono tracking-wider">MODO 2D</span>
+          <span className="font-mono tracking-wider">{t("nav.mode2D")}</span>
         </button>
 
         <button
           onClick={openMenu}
-          aria-label="Abrir menu"
+          aria-label={t("nav.openMenu")}
           className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-neutral-800 bg-white/5 text-neutral-400 shadow-lg backdrop-blur-md transition-all hover:border-teal-500/50 hover:text-teal-400"
         >
           <LuAlignJustify className="text-lg" />
         </button>
+
+        <LanguageToggle className="rounded-full border border-neutral-800 bg-white/5 px-4 py-3 shadow-lg backdrop-blur-md" />
       </div>
     );
   }
@@ -40,19 +45,17 @@ export function Sidebar() {
 
         <div className="-rotate-90 whitespace-nowrap tracking-widest">
           <div className="flex-1 flex items-center justify-center">
-            CARLOS MOISES - DESENVOLVEDOR FULL STACK
+            {t("nav.tagline")}
           </div>
         </div>
 
         <div className="flex flex-col items-center gap-6">
+          <LanguageToggle className="flex-col gap-1 [&_[aria-hidden]]:hidden" />
+
           <button
             onClick={toggle3DMode}
             className="flex flex-col items-center gap-2 text-neutral-400 hover:text-teal-400 transition-colors group cursor-pointer"
-            title={
-              is3DMode
-                ? "Ir para versão 2D simplificada"
-                : "Ir para versão 3D imersiva"
-            }
+            title={t(is3DMode ? "nav.switchTo2D" : "nav.switchTo3D")}
           >
             <p className="font-mono text-xs">{is3DMode ? "2D" : "3D"}</p>
             <GoArrowSwitch className="text-xl group-hover:rotate-180 transition-transform duration-500" />

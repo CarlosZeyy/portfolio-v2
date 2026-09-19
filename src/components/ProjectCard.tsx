@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { StackChip } from "./StackChip";
+import { useTranslation } from "react-i18next";
 
 const EXPAND_DELAY_MS = 3000;
 const EXPAND_DELAY_S = EXPAND_DELAY_MS / 1000;
@@ -122,6 +123,7 @@ export function ProjectCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const { t } = useTranslation();
 
   // Sem `root`: o IntersectionObserver usa o viewport, mas leva em conta o
   // recorte de qualquer ancestral com overflow. Por isso o mesmo card pausa
@@ -231,7 +233,7 @@ export function ProjectCard({
                   onError={(e) => {
                     e.currentTarget.src = "/fallback-thumb.jpeg";
                   }}
-                  alt={`Preview do projeto ${project.title}`}
+                  alt={t("projects.previewAlt", { title: project.title })}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
@@ -255,7 +257,7 @@ export function ProjectCard({
                   <span className="absolute h-full w-full animate-ping rounded-full bg-teal-400/80" />
                   <span className="relative h-full w-full rounded-full bg-teal-400" />
                 </span>
-                Destaque
+                {t("projects.featured")}
               </span>
             )}
           </motion.div>
@@ -325,7 +327,7 @@ export function ProjectCard({
                     className={`${ACTION_OUTLINE} flex-1`}
                   >
                     <FaGithub className="text-sm" />
-                    Código
+                    {t("projects.code")}
                   </a>
                 )}
 
@@ -337,7 +339,7 @@ export function ProjectCard({
                     className={`${ACTION_BASE} flex-1 bg-teal-600 text-white hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25`}
                   >
                     <FaArrowUpRightFromSquare className="text-xs" />
-                    Deploy
+                    {t("projects.deploy")}
                   </a>
                 )}
               </div>
@@ -348,7 +350,7 @@ export function ProjectCard({
                 href={detailsHref}
                 className={`${ACTION_OUTLINE} group/details`}
               >
-                Detalhes
+                {t("projects.details")}
                 <FaArrowRight className="text-xs transition-transform duration-200 group-hover/details:translate-x-0.5" />
               </Link>
             )}

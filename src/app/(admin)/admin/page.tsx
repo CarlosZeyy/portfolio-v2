@@ -1,23 +1,21 @@
 import { formatDate } from "@/lib/formats";
 import { createServerSupabase } from "@/lib/supabase-server";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth";
 import Link from "next/link";
 import { deleteProject } from "./actions";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { TbArrowBack } from "react-icons/tb";
+import { LuInbox } from "react-icons/lu";
 
 export default async function AdminPage() {
+  const user = await requireAdmin();
   const supabase = await createServerSupabase();
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (!user || error) {
-    redirect("/login");
-  }
+  // head: true -> só a contagem, sem trafegar as mensagens para montar o botão.
+  const { count: messageCount } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true });
 
   const projects = await supabase
     .from("projects")
@@ -113,12 +111,24 @@ export default async function AdminPage() {
         )}
       </div>
 
-      <div className="flex gap-10">
+      <div className="flex flex-wrap justify-center gap-x-10">
         <Link
           href={"/"}
           className={`mt-10 flex gap-3 justify-center items-center w-max py-4 px-4 cursor-pointer rounded-lg bg-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"`}
         >
           Retornar ao Portfolio <TbArrowBack className="text-xl" />
+        </Link>
+
+        <Link
+          href={"/admin/messages"}
+          className={`mt-10 flex gap-3 justify-center items-center w-max py-4 px-4 cursor-pointer rounded-lg border border-neutral-800 bg-white/5 backdrop-blur-md text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-500/50 hover:bg-white/10 active:translate-y-0`}
+        >
+          <LuInbox className="text-xl" /> Inbox
+          {messageCount ? (
+            <span className="rounded-full bg-teal-600 px-2 py-0.5 font-mono text-xs">
+              {messageCount}
+            </span>
+          ) : null}
         </Link>
 
         <Link

@@ -3,6 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Galaxy from "./Galaxy";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import CameraRig2D from "./CameraRig2D";
@@ -26,18 +27,20 @@ const MIN_DPR = 0.75;
 const PLANETS: {
   id: PlanetId;
   variant: PlanetVariant;
-  title: string;
   radius: number;
 }[] = [
-  { id: "about", variant: "moon", title: "Sobre Mim", radius: 2.8 },
-  { id: "experience", variant: "gyro", title: "Experiência", radius: 3.6 },
-  { id: "projects", variant: "rings", title: "Projetos", radius: 4.4 },
-  { id: "contact", variant: "lattice", title: "Contato", radius: 5.2 },
+  { id: "about", variant: "moon", radius: 2.8 },
+  { id: "experience", variant: "gyro", radius: 3.6 },
+  { id: "projects", variant: "rings", radius: 4.4 },
+  { id: "contact", variant: "lattice", radius: 5.2 },
 ];
 
 // Fase inicial: o ciclo de 2π dividido igualmente entre os planetas (π/2 com
 // quatro). Sai do índice, então acrescentar um 5º planeta redistribui sozinho.
 // Como todos têm a mesma velocidade angular, o espaçamento nunca se desfaz.
+// O que a câmera precisa enquadrar na largura: a maior órbita.
+const MAX_ORBIT_RADIUS = Math.max(...PLANETS.map((planet) => planet.radius));
+
 const NAV_STARS = PLANETS.map((planet, index) => ({
   ...planet,
   angle: (index / PLANETS.length) * Math.PI * 2,
@@ -55,6 +58,9 @@ interface SpaceBackgroundProps {
 export function SpaceBackground({ hub = true }: SpaceBackgroundProps) {
   const is3DMode = useModeStore((state) => state.is3DMode) === true && hub;
   const [dprCap, setDprCap] = useState(MAX_DPR);
+  // O t() é chamado AQUI, do lado DOM: o <Canvas> é outra árvore React, e o
+  // <Html> do drei monta uma terceira — o rótulo desce já traduzido, como prop.
+  const { t } = useTranslation();
 
   return (
     // No modo 3D o canvas precisa receber o mouse (raycaster do hover + wheel);
@@ -76,10 +82,15 @@ export function SpaceBackground({ hub = true }: SpaceBackgroundProps) {
           }
           onFallback={() => setDprCap(1)}
         />
-        {is3DMode ? <CameraRig3D /> : <CameraRig2D />}
+        {is3DMode ? <CameraRig3D orbitRadius={MAX_ORBIT_RADIUS} /> : <CameraRig2D />}
         {is3DMode &&
           NAV_STARS.map((star) => (
-            <NavStar key={star.id} speed={ORBIT_SPEED} {...star} />
+            <NavStar
+              key={star.id}
+              speed={ORBIT_SPEED}
+              title={t(`sections.${star.id}`)}
+              {...star}
+            />
           ))}
 
         <Galaxy intensity={is3DMode ? 1 : 0.3} />

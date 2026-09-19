@@ -184,7 +184,7 @@ export default function NavStar({
             style={LABEL_WRAPPER_STYLE}
           >
             <div
-              className={`pointer-events-none select-none whitespace-nowrap font-mono text-xl drop-shadow-[0_1px_6px_rgb(0_0_0/0.9)] transition-colors duration-300 ${
+              className={`pointer-events-none select-none whitespace-nowrap font-mono text-base sm:text-xl drop-shadow-[0_1px_6px_rgb(0_0_0/0.9)] transition-colors duration-300 ${
                 isHovered ? "text-teal-400" : "text-white"
               }`}
             >

@@ -5,50 +5,30 @@ import type { IconType } from "react-icons";
 import { LuBriefcase, LuGraduationCap, LuHeartHandshake } from "react-icons/lu";
 import { EASE_OUT_EXPO, revealOnce, staggerContainer } from "@/lib/motion";
 import { GlassPanel } from "./GlassPanel";
+import { useTranslation } from "react-i18next";
 
 type ExperienceKind = "education" | "volunteer" | "freelance";
 
 interface ExperienceItem {
+  /** Ramo do dicionário: experience.items.<id>.title / .organization */
+  id: "degree" | "mentor" | "enfermex" | "quotes";
   period: string;
-  title: string;
-  organization: string;
   kind: ExperienceKind;
   /** Item ainda em andamento: o nó da timeline fica pulsando. */
   ongoing?: boolean;
 }
 
-const KINDS: Record<ExperienceKind, { label: string; icon: IconType }> = {
-  education: { label: "Formação", icon: LuGraduationCap },
-  volunteer: { label: "Voluntariado", icon: LuHeartHandshake },
-  freelance: { label: "Freelance", icon: LuBriefcase },
+const KIND_ICONS: Record<ExperienceKind, IconType> = {
+  education: LuGraduationCap,
+  volunteer: LuHeartHandshake,
+  freelance: LuBriefcase,
 };
 
 const EXPERIENCE: ExperienceItem[] = [
-  {
-    period: "2025 — 2027",
-    title: "Análise e Desenvolvimento de Sistemas",
-    organization: "Estácio",
-    kind: "education",
-    ongoing: true,
-  },
-  {
-    period: "2025",
-    title: "Mentor Voluntário (Front-end)",
-    organization: "Estácio",
-    kind: "volunteer",
-  },
-  {
-    period: "2025",
-    title: "Enfermex (Sistema de gestão de pacientes)",
-    organization: "Freelancer",
-    kind: "freelance",
-  },
-  {
-    period: "2025",
-    title: "Sistema de Envio de Orçamentos Automatizado",
-    organization: "Freelancer",
-    kind: "freelance",
-  },
+  { id: "degree", period: "2025 — 2027", kind: "education", ongoing: true },
+  { id: "mentor", period: "2025", kind: "volunteer" },
+  { id: "enfermex", period: "2025", kind: "freelance" },
+  { id: "quotes", period: "2025", kind: "freelance" },
 ];
 
 const itemVariants: Variants = {
@@ -67,6 +47,8 @@ const railVariants: Variants = {
 };
 
 function Timeline() {
+  const { t } = useTranslation();
+
   return (
     <motion.div variants={staggerContainer(0.14, 0.1)} {...revealOnce}>
       <h3 className="mb-8 font-mono text-lg text-neutral-900 dark:text-white">
@@ -81,11 +63,11 @@ function Timeline() {
         />
 
         {EXPERIENCE.map((item) => {
-          const kind = KINDS[item.kind];
+          const KindIcon = KIND_ICONS[item.kind];
 
           return (
             <motion.li
-              key={item.title}
+              key={item.id}
               variants={itemVariants}
               className="group/item relative pb-6 pl-8 last:pb-0"
             >
@@ -103,21 +85,21 @@ function Timeline() {
                     {item.period}
                     {item.ongoing && (
                       <span className="ml-2 text-xs text-neutral-500 dark:text-neutral-300">
-                        em andamento
+                        {t("experience.ongoing")}
                       </span>
                     )}
                   </p>
                   <span className="flex items-center gap-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 px-2.5 py-0.5 font-mono text-[11px] text-violet-600 dark:text-violet-300">
-                    <kind.icon className="text-sm" />
-                    {kind.label}
+                    <KindIcon className="text-sm" />
+                    {t(`experience.kinds.${item.kind}`)}
                   </span>
                 </div>
 
                 <h4 className="mt-2 font-medium text-neutral-900 dark:text-white">
-                  {item.title}
+                  {t(`experience.items.${item.id}.title`)}
                 </h4>
                 <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
-                  {item.organization}
+                  {t(`experience.items.${item.id}.organization`)}
                 </p>
               </div>
             </motion.li>
@@ -143,6 +125,8 @@ interface ExperienceProps {
 }
 
 export function Experience({ embedded = false }: ExperienceProps) {
+  const { t } = useTranslation();
+
   if (embedded) return <Timeline />;
 
   return (
@@ -152,7 +136,7 @@ export function Experience({ embedded = false }: ExperienceProps) {
       className="flex min-h-screen scroll-mt-8 flex-col justify-center py-16 sm:py-24"
     >
       <p className="font-mono text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-        ~/experiencia
+        {t("paths.experience")}
       </p>
 
       <GlassPanel className="mt-8 max-w-3xl" contentClassName="p-6 sm:p-10">

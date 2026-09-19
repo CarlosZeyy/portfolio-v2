@@ -6,6 +6,7 @@ import { stackIcons } from "@/lib/stackIcons";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import { FaGithub } from "react-icons/fa6";
 import { GlassPanel } from "./GlassPanel";
+import { useTranslation } from "react-i18next";
 
 const GITHUB_URL = "https://github.com/CarlosZeyy";
 const TERMINAL_TEXT = "carlosmoises@dev ~ % whoami";
@@ -41,6 +42,7 @@ const STACKS = HIGHLIGHTS.map((name) => ({
 
 export function Hero() {
   const [text, setText] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     let i = 0;
@@ -89,7 +91,7 @@ export function Hero() {
             variants={fadeUp}
             className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl dark:text-white"
           >
-            Olá, sou o{" "}
+            {t("hero.greeting")}{" "}
             <motion.span
               className="bg-linear-to-r from-neutral-900 via-neutral-900 to-teal-500 bg-clip-text text-nowrap text-transparent dark:from-white dark:via-white dark:to-teal-400"
               style={{ backgroundSize: "200% 100%" }}
@@ -104,9 +106,7 @@ export function Hero() {
             variants={fadeUp}
             className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 dark:text-neutral-300"
           >
-            Desenvolvedor full stack — do banco de dados à interface. Trabalho
-            com React, Next.js e Node.js no dia a dia, além de Java com Spring
-            Boot e um pouco de infraestrutura quando o projeto pede.
+            {t("hero.description")}
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
@@ -114,7 +114,7 @@ export function Hero() {
               href="#projects"
               className="rounded-lg bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
             >
-              Ver projetos
+              {t("hero.viewProjects")}
             </a>
 
             <a
@@ -123,7 +123,7 @@ export function Hero() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-neutral-200 dark:hover:border-teal-400/40 dark:hover:bg-white/10"
             >
-              <FaGithub /> Ver código no GitHub
+              <FaGithub /> {t("hero.viewGithub")}
             </a>
           </motion.div>
         </GlassPanel>

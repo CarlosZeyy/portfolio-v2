@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import { BlackHoleLight } from "@/components/BlackHoleLight";
+import { AdminBackground } from "@/components/admin-scenes/AdminBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +25,10 @@ export default function AdminLayout({
 }>) {
   return (
     <>
-      <BlackHoleLight />
+      {/* Este layout exporta `metadata`, então tem que continuar Server
+          Component — e usePathname só existe no cliente. A escolha da cena
+          (buraco negro em /login, supernova no resto) mora no AdminBackground. */}
+      <AdminBackground />
       <div className="min-h-screen flex flex-col lg:flex-row">
         <main className="flex-1 z-10 relative">{children}</main>
       </div>

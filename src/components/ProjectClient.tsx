@@ -19,6 +19,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GlassPanel } from "./GlassPanel";
 import { StackChip } from "./StackChip";
+import { useTranslation } from "react-i18next";
 
 // Título: cada palavra sobe de trás de uma máscara (overflow-hidden), em
 // cascata. É a mesma revelação do menu — a assinatura de entrada do site.
@@ -35,6 +36,7 @@ const pad = (value: number) => String(value).padStart(2, "0");
 
 function Gallery({ images, title }: { images: string[]; title: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { t } = useTranslation();
 
   const step = useCallback(
     (direction: 1 | -1) =>
@@ -59,10 +61,10 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
       <motion.div variants={fadeUp} className="flex items-end justify-between gap-6">
         <div>
           <p className="font-mono text-xs uppercase tracking-wide text-teal-400">
-            ~/galeria
+            {t("paths.gallery")}
           </p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Por dentro do projeto
+            {t("projects.gallery.title")}
           </h2>
         </div>
         <p className="font-mono text-sm text-neutral-400">
@@ -82,7 +84,11 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
           <motion.img
             key={images[activeIndex]}
             src={images[activeIndex]}
-            alt={`${title} — imagem ${activeIndex + 1} de ${images.length}`}
+            alt={t("projects.gallery.alt", {
+              title,
+              index: activeIndex + 1,
+              total: images.length,
+            })}
             initial={{ opacity: 0, scale: 1.06, filter: "blur(12px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, scale: 0.98 }}
@@ -101,7 +107,11 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
               key={direction}
               type="button"
               onClick={() => step(direction)}
-              aria-label={direction === 1 ? "Próxima imagem" : "Imagem anterior"}
+              aria-label={t(
+                direction === 1
+                  ? "projects.gallery.next"
+                  : "projects.gallery.previous",
+              )}
               className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:border-teal-400/60 hover:text-teal-300 focus-visible:opacity-100 sm:opacity-0 sm:group-hover/stage:opacity-100 ${
                 direction === 1 ? "right-4" : "left-4"
               }`}
@@ -124,7 +134,7 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
                 key={url}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                aria-label={`Ver imagem ${index + 1}`}
+                aria-label={t("projects.gallery.view", { index: index + 1 })}
                 aria-current={isActive}
                 className="group/thumb relative aspect-4/3 cursor-pointer overflow-hidden rounded-xl bg-neutral-900 outline-none"
               >
@@ -160,23 +170,17 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
 export default function ProjectClient({ project }: { project: Project }) {
   const stacks = project.stacks ?? [];
   const gallery = project.galleryUrls ?? [];
-  const caseStudy = [
-    {
-      key: "problema",
-      title: "O Problema",
-      content: project.problemDescription,
-    },
-    {
-      key: "solução",
-      title: "A Solução",
-      content: project.solutionDescription,
-    },
-    {
-      key: "desafios",
-      title: "Desafios Técnicos",
-      content: project.technicalChallenges,
-    },
-  ].filter((section) => section.content);
+  const { t } = useTranslation();
+  // `id` é a chave estável (React key + ramo do dicionário); o rótulo exibido
+  // vem de projects.narrative.<id>. O TEXTO de cada capítulo vem do banco e
+  // fica no idioma em que foi cadastrado.
+  const caseStudy = (
+    [
+      { id: "problem", content: project.problemDescription },
+      { id: "solution", content: project.solutionDescription },
+      { id: "challenges", content: project.technicalChallenges },
+    ] as const
+  ).filter((section) => section.content);
 
   // Barra de progresso de leitura no topo (a mola tira o tremor do scroll).
   const { scrollYProgress } = useScroll();
@@ -207,7 +211,7 @@ export default function ProjectClient({ project }: { project: Project }) {
           className="group inline-flex w-fit items-center gap-2 py-10 text-sm font-medium text-neutral-400 transition-colors hover:text-teal-400"
         >
           <BiArrowBack className="transition-transform duration-200 group-hover:-translate-x-1" />
-          Voltar aos projetos
+          {t("projects.back")}
         </Link>
 
         <motion.header
@@ -227,7 +231,7 @@ export default function ProjectClient({ project }: { project: Project }) {
             variants={fadeUp}
             className="font-mono text-xs uppercase tracking-wide text-teal-400"
           >
-            ~/projetos/{slugify(project.title)}
+            {t("paths.projects")}/{slugify(project.title)}
           </motion.p>
 
           {/* aria-label: leitores de tela leem o título inteiro, não palavra
@@ -280,7 +284,8 @@ export default function ProjectClient({ project }: { project: Project }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 active:translate-y-0"
                 >
-                  <FaArrowUpRightFromSquare className="text-xs" /> Ver deploy
+                  <FaArrowUpRightFromSquare className="text-xs" />{" "}
+                  {t("projects.viewDeploy")}
                 </a>
               )}
               {project.repoUrl && (
@@ -290,7 +295,7 @@ export default function ProjectClient({ project }: { project: Project }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#0B0E14]/60 px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400/40 hover:bg-white/10"
                 >
-                  <FaGithub /> Código-fonte
+                  <FaGithub /> {t("projects.sourceCode")}
                 </a>
               )}
             </motion.div>
@@ -325,7 +330,7 @@ export default function ProjectClient({ project }: { project: Project }) {
                 ) : (
                   <img
                     src={project.thumbnail || "/fallback-thumb.jpeg"}
-                    alt={`Preview do projeto ${project.title}`}
+                    alt={t("projects.previewAlt", { title: project.title })}
                     className="h-full w-full object-cover"
                   />
                 )}
@@ -346,7 +351,7 @@ export default function ProjectClient({ project }: { project: Project }) {
           <GlassPanel className="mt-24" contentClassName="px-6 sm:px-12" spotlight={false}>
             {caseStudy.map((section, index) => (
               <motion.article
-                key={section.key}
+                key={section.id}
                 variants={staggerContainer(0.1)}
                 {...revealOnce}
                 className="grid grid-cols-1 gap-6 border-b border-white/10 py-12 last:border-b-0 sm:py-16 lg:grid-cols-12 lg:gap-12"
@@ -357,10 +362,10 @@ export default function ProjectClient({ project }: { project: Project }) {
                       {pad(index + 1)}
                     </span>
                     <p className="mt-5 font-mono text-xs text-teal-400">
-                      {section.key}:
+                      {t(`projects.narrative.${section.id}.key`)}:
                     </p>
                     <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                      {section.title}
+                      {t(`projects.narrative.${section.id}.title`)}
                     </h2>
                   </div>
                 </motion.div>
@@ -387,20 +392,20 @@ export default function ProjectClient({ project }: { project: Project }) {
           className="mt-24 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-10 sm:flex-row sm:items-center"
         >
           <p className="text-2xl font-semibold tracking-tight text-white">
-            Gostou deste projeto?
+            {t("projects.liked")}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
               href="/#contact"
               className="rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25"
             >
-              Vamos conversar
+              {t("projects.letsTalk")}
             </Link>
             <Link
               href="/#projects"
               className="rounded-xl border border-white/10 bg-[#0B0E14]/60 px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400/40"
             >
-              Ver outros projetos
+              {t("projects.otherProjects")}
             </Link>
           </div>
         </motion.footer>

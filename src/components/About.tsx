@@ -5,6 +5,7 @@ import { fadeUp, revealOnce, staggerContainer } from "@/lib/motion";
 import { motion } from "framer-motion";
 import { FaFileDownload } from "react-icons/fa";
 import { GlassPanel } from "./GlassPanel";
+import { useTranslation } from "react-i18next";
 
 const HARD_SKILLS = [
   "HTML",
@@ -30,27 +31,30 @@ const HARD_SKILLS = [
   "Jira",
 ].map((name) => ({ name, icon: stackIcons[name].icon }));
 
+// Chaves do dicionário (about.softSkills.*): o texto vem do idioma ativo.
 const SOFT_SKILLS = [
-  "Resolução de Problemas",
-  "Comunicação",
-  "Orientação a Resultados",
-  "Liderança",
-  "Trabalho em Equipe",
-  "Proatividade",
-];
+  "problemSolving",
+  "communication",
+  "results",
+  "leadership",
+  "teamwork",
+  "proactivity",
+] as const;
 
 const PILL =
   "flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white/60 px-3 py-1 text-sm text-neutral-700 transition-colors hover:border-teal-500/40 hover:text-teal-600 dark:border-white/10 dark:bg-white/5 dark:text-neutral-300 dark:hover:text-teal-300";
 const HEADING = "mb-6 font-mono text-lg text-neutral-900 dark:text-white";
 
 export function About() {
+  const { t } = useTranslation();
+
   return (
     <section
       id="about"
       className="flex min-h-screen scroll-mt-8 flex-col justify-center py-16 sm:py-24"
     >
       <p className="font-mono text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-        ~/sobre-mim
+        {t("paths.about")}
       </p>
 
       {/* A timeline saiu daqui para o Experience.tsx: sobram bio e skills, em
@@ -70,17 +74,7 @@ export function About() {
             variants={fadeUp}
             className="leading-relaxed text-neutral-600 dark:text-neutral-300"
           >
-            Comecei a trabalhar cedo no ofício tradicional de instalação de
-            vidros com a minha família. Foi ali, no trabalho manual, que aprendi
-            o valor inegociável da precisão, do capricho com os detalhes e do
-            compromisso com os prazos do cliente. Hoje, aplico essa mesma
-            mentalidade na Engenharia de Software. O meu foco é arquitetar
-            soluções que resolvam problemas reais, como o sistema automatizado
-            de envio de orçamentos que desenvolvi para modernizar o atendimento.
-            Acredito fortemente no código como ferramenta de colaboração, o que
-            me motivou a atuar como Mentor Voluntário na faculdade Estácio,
-            guiando alunos e pessoas de fora da instituição iniciantes sem
-            experiência nos seus primeiros passos no desenvolvimento web.
+            {t("about.bio")}
           </motion.p>
 
           <motion.p variants={fadeUp} className={`${HEADING} mb-0`}>
@@ -95,7 +89,7 @@ export function About() {
             rel="noopener noreferrer"
             className="mt-auto flex w-full items-center justify-center gap-3 rounded-lg bg-teal-600 px-5 py-3 text-base font-semibold text-white transition-[background-color,box-shadow] duration-200 hover:bg-teal-500 hover:shadow-lg hover:shadow-teal-600/25 sm:w-fit"
           >
-            Baixar Currículo <FaFileDownload />
+            {t("about.downloadCv")} <FaFileDownload />
           </motion.a>
         </GlassPanel>
 
@@ -132,7 +126,7 @@ export function About() {
           <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
             {SOFT_SKILLS.map((skill) => (
               <span key={skill} className={PILL}>
-                {skill}
+                {t(`about.softSkills.${skill}`)}
               </span>
             ))}
           </motion.div>

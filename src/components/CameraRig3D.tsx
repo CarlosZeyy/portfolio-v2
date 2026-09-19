@@ -13,8 +13,24 @@ import {
 } from "@/store/useOrbitStore";
 import { PLANET_CLOSE_DISTANCE } from "./Planet";
 
-// Posição de repouso do hub (destino da intro) = ponto t=0 do zoom.
-const HOME_POSITION = new THREE.Vector3(0, 4, 8);
+// Posição de repouso do hub em tela larga. Em tela estreita só a DISTÂNCIA
+// muda (ver updateHome): a direção — o ângulo de onde se olha a galáxia — é
+// sempre esta, então a composição é a mesma no desktop e no celular.
+const BASE_HOME = new THREE.Vector3(0, 4, 8);
+const HOME_DIRECTION = BASE_HOME.clone().normalize();
+const BASE_HOME_DISTANCE = BASE_HOME.length();
+// Folga de perspectiva: o pior caso não é o planeta exatamente de lado, e sim
+// um pouco à frente (mais perto da câmera, logo maior na tela).
+const FRAMING_MARGIN = 1.1;
+// Faixa reservada em cada lateral, em PIXELS: metade do label mais largo da
+// órbita externa + um respiro. Tem que ser em pixels porque o label é DOM de
+// largura fixa — no retrato, com a câmera longe, esses ~50px equivalem a quase
+// 2 unidades de mundo, mais que qualquer folga percentual razoável.
+const LABEL_MARGIN_PX = 52;
+// Ao girar o celular, o reenquadramento desliza em vez de pular.
+const HOME_DAMPING = 3;
+// De onde a intro parte: dentro do núcleo, olhando para fora.
+const INTRO_START = new THREE.Vector3(0, 0, 2);
 // Distância final entre a câmera e o planeta com zoom = 1. Vem do Planet.tsx
 // (em raios do planeta) para o enquadramento não mudar quando a escala muda.
 const CLOSE_DISTANCE = PLANET_CLOSE_DISTANCE;
@@ -41,6 +57,7 @@ const planetPosition = new THREE.Vector3();
 const closePosition = new THREE.Vector3();
 const lookTarget = new THREE.Vector3();
 const viewRight = new THREE.Vector3();
+const zoomedPosition = new THREE.Vector3();
 
 /**
  * Wheel -> zoomProgress. O listener só ACUMULA o valor bruto no store;
@@ -103,11 +120,21 @@ function consumeSectionHash(): PlanetId | null {
   return hash;
 }
 
-export default function CameraRig3D() {
-  const { camera } = useThree();
+interface CameraRig3DProps {
+  /** Raio da maior órbita: é o que precisa caber na largura da tela. */
+  orbitRadius: number;
+}
 
-  // Enquanto a intro do GSAP roda ela é a dona da câmera; depois, o useFrame.
-  const introDone = useRef(false);
+export default function CameraRig3D({ orbitRadius }: CameraRig3DProps) {
+  // Progresso da intro, 0 -> 1. O GSAP anima SÓ este número; quem posiciona a
+  // câmera é o useFrame, interpolando até o home ATUAL. Se a intro animasse
+  // camera.position direto até um destino fixo (como antes), o destino ficaria
+  // errado assim que o aspect mudasse — girar o celular no meio da intro, ou o
+  // canvas ainda sem tamanho final no primeiro frame.
+  const intro = useRef({ progress: 0 });
+  // Distância de repouso atual (amortecida) e o ponto derivado dela.
+  const homeDistance = useRef<number | null>(null);
+  const home = useRef(new THREE.Vector3().copy(BASE_HOME));
   // zoomProgress suavizado: o valor bruto anda em degraus (um por tick da roda).
   const smoothZoom = useRef(0);
   // Ponto de foco suavizado, para trocar de planeta em pleno zoom sem corte.
@@ -127,36 +154,54 @@ export default function CameraRig3D() {
       // (smoothZoom = 1), senão o painel abriria com a câmera ainda voando.
       useOrbitStore.getState().enterSection(deepLink.current);
       smoothZoom.current = 1;
-      introDone.current = true;
-      camera.position.copy(HOME_POSITION);
+      intro.current.progress = 1;
       return;
     }
 
-    introDone.current = false;
-    camera.position.set(0, 0, 2);
-    camera.lookAt(0, 0, 0);
-
-    gsap.to(camera.position, {
-      x: HOME_POSITION.x,
-      y: HOME_POSITION.y,
-      z: HOME_POSITION.z,
-      duration: 2.5,
-      ease: "power2.out",
-      onUpdate: () => camera.lookAt(0, 0, 0),
-      onComplete: () => {
-        introDone.current = true;
-      },
-    });
+    gsap.fromTo(
+      intro.current,
+      { progress: 0 },
+      { progress: 1, duration: 2.5, ease: "power2.out" },
+    );
   }, []);
 
   // Ao sair do modo 3D, zera hover/zoom para o próximo mount começar limpo.
   useEffect(() => () => useOrbitStore.getState().reset(), []);
 
   useFrame((state, rawDelta) => {
-    if (!introDone.current) return;
-
     const delta = Math.min(rawDelta, MAX_DELTA);
     const { zoomProgress, focusedPlanetId } = useOrbitStore.getState();
+    const aspect = state.size.width / state.size.height;
+    const halfFovTan =
+      state.camera instanceof THREE.PerspectiveCamera
+        ? Math.tan(THREE.MathUtils.degToRad(state.camera.fov) / 2)
+        : 1;
+
+    // 0) HOME responsivo. O fov da câmera é VERTICAL; a meia-largura visível a
+    //    uma distância d é d * tan(fov/2) * aspect. Descontada a faixa dos
+    //    labels, sobra a fração `usable` da tela para a órbita (raio R):
+    //      d >= R / (tan(fov/2) * aspect * usable)
+    //    Em paisagem isso dá menos que a distância base e o max() mantém o
+    //    enquadramento de sempre; em retrato (aspect < 1) a câmera recua o
+    //    quanto for preciso — num celular 9:19 são ~22 unidades em vez de ~9.
+    //    É contínuo no aspect: não existe "pulo" ao cruzar aspect = 1.
+    const usable = Math.max(0.4, 1 - LABEL_MARGIN_PX / (state.size.width / 2));
+    const targetDistance = Math.max(
+      BASE_HOME_DISTANCE,
+      (orbitRadius * FRAMING_MARGIN) / (halfFovTan * aspect * usable),
+    );
+    homeDistance.current =
+      homeDistance.current === null
+        ? targetDistance // 1º frame: nasce no lugar certo, sem deslizar
+        : THREE.MathUtils.damp(
+            homeDistance.current,
+            targetDistance,
+            HOME_DAMPING,
+            delta,
+          );
+    const homePosition = home.current
+      .copy(HOME_DIRECTION)
+      .multiplyScalar(homeDistance.current);
 
     // 1) Suaviza o zoom. damp(a, b, lambda, dt) = lerp(a, b, 1 - e^(-lambda*dt)):
     //    a cada frame anda uma fração do que falta até o alvo, e a fração é
@@ -197,58 +242,63 @@ export default function CameraRig3D() {
     }
 
     const focus = focusPoint.current;
-    if (!focus) return; // nenhum planeta recebeu hover ainda: câmera no HOME
+    // Sem foco (nenhum planeta recebeu hover ainda) a câmera fica no HOME
+    // olhando o centro — mas AINDA é posicionada todo frame, senão um resize
+    // não a reenquadraria.
+    zoomedPosition.copy(homePosition);
+    lookTarget.set(0, 0, 0);
 
-    // 4) Posição "colada": sai do planeta em direção ao HOME e para a
-    //    CLOSE_DISTANCE dele -> close = focus + normalize(HOME - focus) * d.
-    //    A câmera só avança pela própria linha de visão: é zoom, não travelling.
-    closePosition
-      .copy(HOME_POSITION)
-      .sub(focus)
-      .normalize()
-      .multiplyScalar(CLOSE_DISTANCE)
-      .add(focus);
+    if (focus) {
+      // 4) Posição "colada": sai do planeta em direção ao HOME e para a
+      //    CLOSE_DISTANCE dele -> close = focus + normalize(HOME - focus) * d.
+      //    A câmera só avança pela própria linha de visão: é zoom, não
+      //    travelling.
+      closePosition
+        .copy(homePosition)
+        .sub(focus)
+        .normalize()
+        .multiplyScalar(CLOSE_DISTANCE)
+        .add(focus);
 
-    // 5) lerp(a, b, t) = a + (b - a) * t  ->  t=0 devolve HOME, t=1 devolve
-    //    close. Como a posição é função pura de t (não do frame anterior), o
-    //    scroll para baixo refaz exatamente o mesmo caminho de volta.
-    state.camera.position.set(
-      THREE.MathUtils.lerp(HOME_POSITION.x, closePosition.x, t),
-      THREE.MathUtils.lerp(HOME_POSITION.y, closePosition.y, t),
-      THREE.MathUtils.lerp(HOME_POSITION.z, closePosition.z, t),
-    );
+      // 5) lerp(a, b, t) = a + (b - a) * t  ->  t=0 devolve HOME, t=1 devolve
+      //    close. Como a posição é função pura de t (não do frame anterior),
+      //    o scroll para baixo refaz exatamente o mesmo caminho de volta.
+      zoomedPosition.set(
+        THREE.MathUtils.lerp(homePosition.x, closePosition.x, t),
+        THREE.MathUtils.lerp(homePosition.y, closePosition.y, t),
+        THREE.MathUtils.lerp(homePosition.z, closePosition.z, t),
+      );
 
-    // 6) O alvo do olhar faz o mesmo lerp: do centro da galáxia até o planeta.
-    lookTarget.set(
-      THREE.MathUtils.lerp(0, focus.x, t),
-      THREE.MathUtils.lerp(0, focus.y, t),
-      THREE.MathUtils.lerp(0, focus.z, t),
-    );
+      // 6) O alvo do olhar faz o mesmo lerp: do centro da galáxia ao planeta.
+      lookTarget.set(
+        THREE.MathUtils.lerp(0, focus.x, t),
+        THREE.MathUtils.lerp(0, focus.y, t),
+        THREE.MathUtils.lerp(0, focus.z, t),
+      );
 
-    // 7) Composição: mirar num ponto à DIREITA do planeta empurra o planeta
-    //    para a esquerda do quadro. A meia-largura visível na distância d é
-    //    d * tan(fov/2) * aspect; o desvio é uma fração dela. O t³ guarda o
-    //    movimento para o fim do zoom, quando o painel está prestes a entrar.
-    const aspect = state.size.width / state.size.height;
-    if (
-      aspect > FRAME_SHIFT_MIN_ASPECT &&
-      state.camera instanceof THREE.PerspectiveCamera
-    ) {
-      const distance = state.camera.position.distanceTo(focus);
-      const halfWidth =
-        distance *
-        Math.tan(THREE.MathUtils.degToRad(state.camera.fov) / 2) *
-        aspect;
+      // 7) Composição: mirar num ponto à DIREITA do planeta empurra o planeta
+      //    para a esquerda do quadro. A meia-largura visível na distância d é
+      //    d * tan(fov/2) * aspect; o desvio é uma fração dela. O t³ guarda o
+      //    movimento para o fim do zoom, quando o painel está prestes a entrar.
+      if (aspect > FRAME_SHIFT_MIN_ASPECT) {
+        const halfWidth = zoomedPosition.distanceTo(focus) * halfFovTan * aspect;
 
-      // right = direção do olhar x up do mundo
-      viewRight
-        .copy(focus)
-        .sub(state.camera.position)
-        .cross(state.camera.up)
-        .normalize();
-      lookTarget.addScaledVector(viewRight, halfWidth * FRAME_SHIFT * t ** 3);
+        // right = direção do olhar x up do mundo
+        viewRight
+          .copy(focus)
+          .sub(zoomedPosition)
+          .cross(state.camera.up)
+          .normalize();
+        lookTarget.addScaledVector(viewRight, halfWidth * FRAME_SHIFT * t ** 3);
+      }
     }
 
+    // 8) Intro: do núcleo até onde a câmera deveria estar AGORA.
+    state.camera.position.lerpVectors(
+      INTRO_START,
+      zoomedPosition,
+      intro.current.progress,
+    );
     state.camera.lookAt(lookTarget);
   });
 

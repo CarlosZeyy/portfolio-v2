@@ -14,13 +14,20 @@ alter table public.messages enable row level security;
 -- O site grava com a anon key, então QUALQUER visitante pode inserir — e só
 -- isso. Não existe policy de select/update/delete para anon: ninguém de fora
 -- consegue ler as mensagens dos outros. Você lê pelo dashboard (service role)
--- ou logado no /admin (policy abaixo).
+-- ou logado no /admin/messages (policy de SELECT abaixo).
 create policy "anon pode enviar mensagem"
   on public.messages for insert
   to anon, authenticated
   with check (true);
 
+-- ATENÇÃO: "to authenticated using (true)" NÃO é "só o admin". O /login aceita
+-- qualquer conta Google/GitHub, então "authenticated" é qualquer pessoa da
+-- internet que fizer login — e ela leria nome, e-mail e mensagem de todos os
+-- visitantes direto pela API REST, sem nem abrir o /admin. A leitura é presa
+-- ao SEU e-mail (troque abaixo pelo e-mail da conta com que você loga):
+drop policy if exists "admin le mensagens" on public.messages;
+
 create policy "admin le mensagens"
   on public.messages for select
   to authenticated
-  using (true);
+  using ((auth.jwt() ->> 'email') = 'SEU_EMAIL_DE_LOGIN@exemplo.com');

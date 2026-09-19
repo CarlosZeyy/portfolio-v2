@@ -3,6 +3,7 @@
 import { z } from "zod";
 import {
   contactSchema,
+  type ContactErrorKey,
   type ContactField,
   type ContactFormState,
 } from "@/lib/contactSchema";
@@ -11,8 +12,6 @@ import { createServerSupabase } from "@/lib/supabase-server";
 // PostgREST (PGRST205) / Postgres (42P01): a tabela ainda não foi criada.
 const MISSING_TABLE_CODES = new Set(["PGRST205", "42P01"]);
 
-const GENERIC_ERROR =
-  "Não foi possível enviar agora. Tente de novo em instantes ou use um dos canais ao lado.";
 
 export async function sendEmail(
   _previousState: ContactFormState,
@@ -21,7 +20,7 @@ export async function sendEmail(
   // Honeypot: campo invisível para humanos. Bot que preenche tudo cai aqui e
   // recebe um "sucesso" falso — sem validar, sem gravar, sem dar pista.
   if (formData.get("website")) {
-    return { status: "success", message: "Mensagem enviada!" };
+    return { status: "success", message: "contact.status.success" };
   }
 
   const values: Record<ContactField, string> = {
@@ -35,11 +34,13 @@ export async function sendEmail(
     const { fieldErrors } = z.flattenError(parsed.error);
     return {
       status: "error",
-      message: "Revise os campos destacados.",
+      message: "contact.status.invalid",
+      // O zod tipa mensagens como string; as nossas são sempre ContactErrorKey
+      // (ver contactSchema.ts), então o cast só devolve o tipo que já é.
       fieldErrors: {
-        name: fieldErrors.name?.[0],
-        email: fieldErrors.email?.[0],
-        message: fieldErrors.message?.[0],
+        name: fieldErrors.name?.[0] as ContactErrorKey | undefined,
+        email: fieldErrors.email?.[0] as ContactErrorKey | undefined,
+        message: fieldErrors.message?.[0] as ContactErrorKey | undefined,
       },
       values,
     };
@@ -53,7 +54,7 @@ export async function sendEmail(
   if (!error) {
     return {
       status: "success",
-      message: "Mensagem enviada! Respondo em breve.",
+      message: "contact.status.success",
       delivery: "database",
     };
   }
@@ -69,11 +70,11 @@ export async function sendEmail(
     );
     return {
       status: "success",
-      message: "Mensagem enviada! (modo mock: tabela messages ainda não existe)",
+      message: "contact.status.successMock",
       delivery: "mock",
     };
   }
 
   console.error("[contato] erro ao salvar mensagem:", error.code, error.message);
-  return { status: "error", message: GENERIC_ERROR, values };
+  return { status: "error", message: "contact.status.generic", values };
 }

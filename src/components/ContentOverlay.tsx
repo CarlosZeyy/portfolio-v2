@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, type ReactNode } from "react";
 import { IoClose } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 import {
   selectActiveSection,
   useOrbitStore,
@@ -80,7 +81,7 @@ interface SectionPanelProps {
 function SectionPanel({ id, onClose, children }: SectionPanelProps) {
   const panelRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-  const meta = SECTION_META[id];
+  const { t } = useTranslation();
   const titleId = `section-title-${id}`;
 
   // Leva o foco do teclado para o painel: setas/PageDown rolam o texto e o
@@ -115,10 +116,10 @@ function SectionPanel({ id, onClose, children }: SectionPanelProps) {
       <header className="flex items-start justify-between gap-6 border-b border-neutral-800/80 px-8 py-6">
         <div>
           <p className="font-mono text-xs uppercase tracking-wide text-teal-400">
-            {meta.path}
+            {t(`paths.${id}`)}
           </p>
           <h2 id={titleId} className="mt-2 text-3xl font-semibold text-white">
-            {meta.title}
+            {t(`sections.${id}`)}
           </h2>
         </div>
 
@@ -127,11 +128,11 @@ function SectionPanel({ id, onClose, children }: SectionPanelProps) {
           onClick={onClose}
           className="group flex shrink-0 cursor-pointer items-center gap-2 rounded-full border border-neutral-800 bg-white/5 px-4 py-2 font-mono text-xs tracking-wider text-neutral-300 transition-colors hover:border-teal-500/50 hover:text-teal-400"
         >
-          <span className="hidden sm:inline">VOLTAR À ÓRBITA</span>
+          <span className="hidden sm:inline">{t("nav.backToOrbit")}</span>
           <kbd className="hidden rounded border border-neutral-700 px-1.5 text-[10px] sm:inline">
             ESC
           </kbd>
-          <IoClose className="text-base sm:hidden" aria-label="Fechar" />
+          <IoClose className="text-base sm:hidden" aria-label={t("projects.close")} />
         </button>
       </header>
 

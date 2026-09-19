@@ -6,27 +6,19 @@ import { motion, type Variants } from "framer-motion";
 import type { IconType } from "react-icons";
 import { LuLayers, LuOrbit } from "react-icons/lu";
 import { EASE_OUT_EXPO, fadeUp, staggerContainer } from "@/lib/motion";
+import { useTranslation } from "react-i18next";
+import { LanguageToggle } from "./LanguageToggle";
 
 interface ModeOption {
   is3D: boolean;
-  title: string;
-  description: string;
+  /** Ramo do dicionário: splash.<key>.title / .description */
+  key: "immersive" | "single";
   icon: IconType;
 }
 
 const OPTIONS: ModeOption[] = [
-  {
-    is3D: true,
-    title: "Modo Imersivo",
-    description: "Portfólio interativo com elementos 3D",
-    icon: LuOrbit,
-  },
-  {
-    is3D: false,
-    title: "Modo Página Única",
-    description: "Portfólio simples, direto ao ponto",
-    icon: LuLayers,
-  },
+  { is3D: true, key: "immersive", icon: LuOrbit },
+  { is3D: false, key: "single", icon: LuLayers },
 ];
 
 // A descrição é controlada pelo estado do PAI: "rest" -> "hover". O botão só
@@ -39,6 +31,7 @@ const descriptionVariants: Variants = {
 export default function SplashScreen() {
   const is3DMode = useModeStore((state) => state.is3DMode);
   const setIs3DMode = useModeStore((state) => state.set3DMode);
+  const { t } = useTranslation();
 
   if (is3DMode !== null) return null;
 
@@ -47,6 +40,9 @@ export default function SplashScreen() {
     // o conteúdo rola em vez de ser cortado pelo inset-0.
     <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-950">
       <StarBackground />
+
+      {/* A splash é a primeira tela: o idioma tem que poder ser trocado aqui. */}
+      <LanguageToggle className="absolute top-6 right-6 z-10 text-sm" />
 
       <motion.div
         variants={staggerContainer(0.12, 0.2)}
@@ -67,11 +63,11 @@ export default function SplashScreen() {
           variants={fadeUp}
           className="text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl"
         >
-          Olá, seja bem-vindo
+          {t("splash.title")}
         </motion.h1>
 
         <motion.p variants={fadeUp} className="text-neutral-400">
-          Escolha como quer explorar:
+          {t("splash.subtitle")}
         </motion.p>
 
         {/* Empilhado no celular, lado a lado a partir de sm. */}
@@ -81,7 +77,7 @@ export default function SplashScreen() {
         >
           {OPTIONS.map((option) => (
             <motion.button
-              key={option.title}
+              key={option.key}
               type="button"
               onClick={() => setIs3DMode(option.is3D)}
               initial="rest"
@@ -97,7 +93,7 @@ export default function SplashScreen() {
               />
               <option.icon className="text-3xl text-teal-400 transition-transform duration-500 group-hover:scale-110" />
               <span className="text-xl font-medium text-white sm:text-2xl">
-                {option.title}
+                {t(`splash.${option.key}.title`)}
               </span>
 
               {/* A descrição fica NO FLUXO do card (não mais absolute/top-full):
@@ -108,7 +104,7 @@ export default function SplashScreen() {
                 variants={descriptionVariants}
                 className="text-sm text-neutral-400 [@media(hover:none)]:transform-none! [@media(hover:none)]:opacity-100!"
               >
-                {option.description}
+                {t(`splash.${option.key}.description`)}
               </motion.span>
             </motion.button>
           ))}

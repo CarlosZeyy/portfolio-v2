@@ -15,8 +15,15 @@ import {
 } from "@/lib/contactSchema";
 import { fadeUp, revealOnce, staggerContainer } from "@/lib/motion";
 import { GlassPanel } from "./GlassPanel";
+import { useTranslation } from "react-i18next";
 
-const CHANNELS: { label: string; handle: string; href: string; icon: IconType }[] = [
+// `handle` fixo (endereço) ou, no WhatsApp, a chave de um texto traduzível.
+const CHANNELS: {
+  label: string;
+  handle: string | { key: "contact.whatsapp" };
+  href: string;
+  icon: IconType;
+}[] = [
   {
     label: "E-mail",
     handle: "carlosmoisesdev@gmail.com",
@@ -25,7 +32,7 @@ const CHANNELS: { label: string; handle: string; href: string; icon: IconType }[
   },
   {
     label: "WhatsApp",
-    handle: "Chamar no WhatsApp",
+    handle: { key: "contact.whatsapp" },
     href: "http://wa.me/5511991054718",
     icon: FaWhatsapp,
   },
@@ -56,6 +63,7 @@ interface FieldProps {
 
 function Field({ name, label, state, multiline, ...input }: FieldProps) {
   const id = useId();
+  const { t } = useTranslation();
   const error = state.fieldErrors?.[name];
   const shared = {
     id,
@@ -92,7 +100,7 @@ function Field({ name, label, state, multiline, ...input }: FieldProps) {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden pt-1.5 text-xs text-rose-400"
           >
-            {error}
+            {t(error)}
           </motion.p>
         )}
       </AnimatePresence>
@@ -107,14 +115,15 @@ function ContactForm() {
     sendEmail,
     initialContactState,
   );
+  const { t } = useTranslation();
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
       <div className="grid grid-cols-1 gap-5 @lg:grid-cols-2">
-        <Field name="name" label="Nome" state={state} placeholder="Como posso te chamar?" autoComplete="name" />
-        <Field name="email" label="E-mail" state={state} type="email" placeholder="voce@email.com" autoComplete="email" />
+        <Field name="name" label={t("contact.name")} state={state} placeholder={t("contact.namePlaceholder")} autoComplete="name" />
+        <Field name="email" label={t("contact.email")} state={state} type="email" placeholder={t("contact.emailPlaceholder")} autoComplete="email" />
       </div>
-      <Field name="message" label="Mensagem" state={state} placeholder="Conte sobre o projeto, a vaga ou a ideia..." multiline />
+      <Field name="message" label={t("contact.message")} state={state} placeholder={t("contact.messagePlaceholder")} multiline />
 
       {/* Honeypot anti-spam: fora da tela e do tab order. Humano não vê; bot
           que preenche todos os campos se entrega (a action descarta). */}
@@ -136,11 +145,11 @@ function ContactForm() {
           {isPending ? (
             <>
               <LuLoaderCircle className="animate-spin text-base" />
-              Enviando...
+              {t("contact.sending")}
             </>
           ) : (
             <>
-              Enviar mensagem
+              {t("contact.send")}
               <LuSend className="text-base transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </>
           )}
@@ -166,7 +175,7 @@ function ContactForm() {
                     <LuCheck className="text-xs" />
                   </span>
                 )}
-                {state.message}
+                {t(state.message)}
               </motion.p>
             )}
           </AnimatePresence>
@@ -177,6 +186,8 @@ function ContactForm() {
 }
 
 function ContactContent() {
+  const { t } = useTranslation();
+
   return (
     // @container: duas colunas quando HÁ largura (seção 2D), uma quando não há
     // (painel do hub 3D, celular) — o mesmo bloco serve aos dois.
@@ -195,18 +206,17 @@ function ContactContent() {
             variants={fadeUp}
             className="text-3xl font-semibold tracking-tight text-balance text-neutral-900 sm:text-4xl dark:text-white"
           >
-            Vamos construir algo{" "}
+            {t("contact.headingStart")}{" "}
             <span className="bg-linear-to-r from-teal-500 to-violet-500 bg-clip-text text-transparent dark:from-teal-300 dark:to-violet-400">
-              incrível
+              {t("contact.headingHighlight")}
             </span>{" "}
-            juntos?
+            {t("contact.headingEnd")}
           </motion.h2>
           <motion.p
             variants={fadeUp}
             className="mt-4 leading-relaxed text-neutral-600 dark:text-neutral-300"
           >
-            Mande uma mensagem pelo formulário ou fale comigo direto por um dos
-            canais.
+            {t("contact.intro")}
           </motion.p>
         </div>
 
@@ -237,7 +247,9 @@ function ContactContent() {
                     {channel.label}
                   </span>
                   <span className="block truncate text-sm text-neutral-800 dark:text-neutral-200">
-                    {channel.handle}
+                    {typeof channel.handle === "string"
+                      ? channel.handle
+                      : t(channel.handle.key)}
                   </span>
                 </span>
                 <LuArrowUpRight className="shrink-0 text-neutral-400 transition-all duration-300 group-hover/channel:translate-x-0.5 group-hover/channel:-translate-y-0.5 group-hover/channel:text-teal-400" />
@@ -263,6 +275,7 @@ export default function Contact({ embedded = false }: ContactProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.5 });
   const setContactVisible = useContactStore((state) => state.setContactVisible);
+  const { t } = useTranslation();
 
   // Esconde o SocialDock enquanto a seção de contato (que já lista os mesmos
   // canais) está na tela. Só faz sentido na página 2D.
@@ -282,7 +295,7 @@ export default function Contact({ embedded = false }: ContactProps) {
       className="relative flex min-h-screen scroll-mt-8 flex-col justify-center py-16 sm:py-24"
     >
       <p className="font-mono text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-        ~/contato
+        {t("paths.contact")}
       </p>
 
       <GlassPanel className="mt-8" contentClassName="p-6 sm:p-10 lg:p-14">
@@ -290,7 +303,7 @@ export default function Contact({ embedded = false }: ContactProps) {
       </GlassPanel>
 
       <p className="mt-16 text-center text-sm text-neutral-500 dark:text-neutral-400">
-        © 2026 Desenvolvido por Carlos Moises
+        {t("contact.footer")}
       </p>
     </section>
   );
