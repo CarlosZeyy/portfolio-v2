@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Project } from "@/lib/projectSchema";
+import {
+  localizeProject,
+  projectFromRow,
+  type ProjectRow,
+} from "@/lib/projectLocale";
+import { getRequestLocale } from "@/i18n/server";
 import { createServerSupabase } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import ProjectClient from "@/components/ProjectClient";
@@ -26,12 +31,18 @@ export async function generateMetadata({
     };
   }
 
+  // <title> e Open Graph no idioma do visitante (cookie ou Accept-Language).
+  const project = localizeProject(
+    projectFromRow(projectInfo as ProjectRow),
+    await getRequestLocale(),
+  );
+
   return {
-    title: `${projectInfo.title} | Carlos Moises`,
-    description: projectInfo.description,
+    title: `${project.title} | Carlos Moises`,
+    description: project.description,
     openGraph: {
-      title: projectInfo.title,
-      description: projectInfo.description,
+      title: project.title,
+      description: project.description,
       images: [projectInfo.thumbnail_url || "/fallback-thumb.jpeg"],
     },
   };
@@ -54,21 +65,7 @@ export default async function ProjectPage({
     notFound();
   }
 
-  const project: Project = {
-    id: projectInfo.id,
-    title: projectInfo.title,
-    description: projectInfo.description,
-    thumbnail: projectInfo.thumbnail_url,
-    stacks: projectInfo.stacks,
-    repoUrl: projectInfo.repo_url,
-    deployUrl: projectInfo.deploy_url,
-    videoUrl: projectInfo.video_url,
-    isFeatured: projectInfo.is_featured,
-    problemDescription: projectInfo.problem_description,
-    solutionDescription: projectInfo.solution_description,
-    technicalChallenges: projectInfo.technical_challenges,
-    galleryUrls: projectInfo.gallery_urls,
-  };
+  const project = projectFromRow(projectInfo as ProjectRow);
 
   return <ProjectClient project={project} />;
 }

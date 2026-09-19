@@ -9,6 +9,7 @@ import { FaArrowRight, FaArrowUpRightFromSquare, FaGithub } from "react-icons/fa
 import { LuX } from "react-icons/lu";
 import Link from "next/link";
 import { StackChip } from "./StackChip";
+import { useLocalizedProject } from "@/i18n/useLocalizedProject";
 import { useTranslation } from "react-i18next";
 
 // Só o que NÃO é elemento compartilhado entra com fade: o que tem layoutId
@@ -26,13 +27,14 @@ const SECONDARY_ACTION =
   "flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-neutral-200 transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400/40 hover:bg-white/10";
 
 export function ProjectModal({
-  project,
+  project: rawProject,
   onClose,
 }: {
   project: Project;
   onClose: () => void;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const project = useLocalizedProject(rawProject);
   const stacks = project.stacks ?? [];
   const { t } = useTranslation();
 

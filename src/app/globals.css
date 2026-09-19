@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/*
+ * `dark:` continua seguindo o tema do sistema (prefers-color-scheme), mas passa
+ * a valer TAMBÉM dentro de um elemento .force-dark. O painel admin vive sobre
+ * um canvas WebGL preto: ali tudo tem que ser escuro mesmo que o sistema do
+ * usuário esteja no tema claro — senão os painéis de vidro ficam brancos por
+ * cima da supernova.
+ */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+  &:where(.force-dark, .force-dark *) {
+    @slot;
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

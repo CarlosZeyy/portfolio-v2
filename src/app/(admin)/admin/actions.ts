@@ -1,280 +1,188 @@
 "use server";
 
-import { projectSchema } from "@/lib/projectSchema";
-import { createServerSupabase } from "@/lib/supabase-server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth";
+import type { ProjectFormState } from "@/lib/projectFormState";
+import { projectSchema } from "@/lib/projectSchema";
+import { createServerSupabase } from "@/lib/supabase-server";
 
-export async function addProject(formData: FormData) {
-  const supabase = await createServerSupabase();
+const BUCKET = "portfolio-media";
 
-  const title = formData.get("title") as string;
-  const desc = formData.get("description") as string;
-  const imageFile = formData.get("thumbnail_url") as File;
-  const stacks = formData.get("stacks") as string;
-  const repoUrl = formData.get("repo_url") as string;
-  const deployUrl = formData.get("deploy_url") as string;
-  const videoUrl = formData.get("video_url") as string;
-  const isFeatured = formData.get("is_featured") === "on";
-  const problemDescription = formData.get("problem_description") as string;
-  const solutionDescription = formData.get("solution_description") as string;
-  const technicalChallenges = formData.get("technical_challenges") as string;
-  const galleryFiles = formData.getAll("gallery_files") as File[];
+// Campo do schema (camelCase) -> name do input no formulário. É o que permite
+// devolver o erro de validação colado no campo certo.
+const FORM_FIELD: Record<string, string> = {
+  title: "title",
+  description: "description",
+  thumbnail: "thumbnail_url",
+  stacks: "stacks",
+  repoUrl: "repo_url",
+  deployUrl: "deploy_url",
+  videoUrl: "video_url",
+};
 
-  const stacksList: string[] = stacks
-    ? stacks
-        .split(",")
-        .map((stack) => stack.trim())
-        .filter(Boolean)
-    : [];
+const text = (formData: FormData, name: string) =>
+  String(formData.get(name) ?? "").trim();
 
-  if (!imageFile || imageFile.size === 0) {
-    console.error("Erro: Nenhum arquivo foi recebido no backend");
-    return;
-  }
+const files = (formData: FormData, name: string) =>
+  formData.getAll(name).filter((entry): entry is File => entry instanceof File && entry.size > 0);
 
-  const fileBuffer = await imageFile.arrayBuffer();
+/** Sobe um arquivo e devolve a URL pública; lança em caso de falha. */
+async function upload(supabase: SupabaseClient, file: File) {
+  // Nome do arquivo vem do usuário: tira tudo que não é seguro num caminho.
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeName}`;
 
-  const uniqueName = `${Date.now()}-${imageFile.name}`;
-
-  const { data: uploadData, error: uploadError } = await supabase.storage
-    .from("portfolio-media")
-    .upload(uniqueName, fileBuffer, {
-      contentType: imageFile.type,
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, await file.arrayBuffer(), {
+      contentType: file.type,
       upsert: false,
     });
+  if (error) throw new Error(`Upload de "${file.name}" falhou: ${error.message}`);
 
-  if (uploadError) {
-    console.error("Erro ao fazer upload da imagem: ", uploadError.message);
-    return;
-  }
-
-  const { data: publicUrlData } = supabase.storage
-    .from("portfolio-media")
-    .getPublicUrl(uniqueName);
-
-  const finalImageUrl = publicUrlData.publicUrl;
-
-  const validGalleryFiles = galleryFiles.filter((file) => file.size > 0);
-  let uploadedGalleryFiles: string[] = [];
-
-  for (const file of validGalleryFiles) {
-    const uniqueName = `${Date.now()}-${file.name}`;
-    const fileBuffer = await file.arrayBuffer();
-
-    const { error: loopError } = await supabase.storage
-      .from("portfolio-media")
-      .upload(uniqueName, fileBuffer, {
-        contentType: file.type,
-      });
-
-    if (loopError) {
-      console.error("Erro ao carregar imagens: ", loopError.message);
-      continue;
-    }
-
-    const { data: loopUrlData } = supabase.storage
-      .from("portfolio-media")
-      .getPublicUrl(uniqueName);
-
-    uploadedGalleryFiles.push(loopUrlData.publicUrl);
-  }
-
-  const schema = projectSchema.safeParse({
-    title: title,
-    description: desc,
-    thumbnail: finalImageUrl,
-    stacks: stacksList,
-    repoUrl: repoUrl,
-    deployUrl: deployUrl ? deployUrl : undefined,
-    videoUrl: videoUrl ? videoUrl : undefined,
-    isFeatured: isFeatured,
-    problemDescription: problemDescription,
-    solutionDescription: solutionDescription,
-    technicalChallenges: technicalChallenges,
-    galleryUrls: uploadedGalleryFiles,
-  });
-
-  if (!schema.success) {
-    console.error(schema.error);
-    return;
-  }
-
-  if (isFeatured) {
-    await supabase
-      .from("projects")
-      .update({
-        is_featured: false,
-      })
-      .eq("is_featured", true);
-  }
-
-  await supabase.from("projects").insert({
-    title: schema.data?.title,
-    description: schema.data?.description,
-    thumbnail_url: schema.data?.thumbnail,
-    stacks: schema.data?.stacks,
-    repo_url: schema.data?.repoUrl,
-    deploy_url: schema.data?.deployUrl,
-    video_url: schema.data?.videoUrl,
-    is_featured: schema.data?.isFeatured,
-    problem_description: problemDescription,
-    solution_description: solutionDescription,
-    technical_challenges: technicalChallenges,
-    gallery_urls: schema.data?.galleryUrls,
-  });
-
-  revalidatePath("/admin");
-
-  return redirect("/admin");
+  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
-export async function updateProject(formData: FormData) {
+async function saveProject(
+  formData: FormData,
+  mode: "create" | "update",
+): Promise<ProjectFormState> {
+  // Server Action é um endpoint HTTP público: qualquer um pode chamá-la com um
+  // POST, sem abrir o /admin. A checagem tem que estar AQUI, não só na página.
+  await requireAdmin();
   const supabase = await createServerSupabase();
 
-  const id = formData.get("id") as string;
-  const title = formData.get("title") as string;
-  const desc = formData.get("description") as string;
-  const imageFile = formData.get("thumbnail_url") as File | null;
-  const existingThumb = formData.get("existing_thumbnail") as string;
-  const stacks = formData.get("stacks") as string;
-  const repoUrl = formData.get("repo_url") as string;
-  const deployUrl = formData.get("deploy_url") as string;
-  const videoUrl = formData.get("video_url") as string;
-  const isFeatured = formData.get("is_featured") === "on";
-  const remainingGalleryString = formData.get("remaining_gallery") as string;
-  const remainingGallery = remainingGalleryString
-    ? JSON.parse(remainingGalleryString)
-    : [];
-  const newGalleryFiles = formData.getAll("new_gallery_files") as File[];
-  const problemDescription = formData.get("problem_description") as string;
-  const solutionDescription = formData.get("solution_description") as string;
-  const technicalChallenges = formData.get("technical_challenges") as string;
+  const id = text(formData, "id");
+  if (mode === "update" && !id) return { error: "Projeto sem ID." };
 
-  const stacksList: string[] = stacks
-    ? stacks
+  try {
+    const [newThumbnail] = files(formData, "thumbnail_url");
+    const thumbnail = newThumbnail
+      ? await upload(supabase, newThumbnail)
+      : text(formData, "existing_thumbnail");
+
+    const keptGallery: string[] = JSON.parse(
+      text(formData, "remaining_gallery") || "[]",
+    );
+    const newGallery = await Promise.all(
+      files(formData, "gallery_files").map((file) => upload(supabase, file)),
+    );
+
+    const parsed = projectSchema.safeParse({
+      title: text(formData, "title"),
+      description: text(formData, "description"),
+      thumbnail,
+      stacks: text(formData, "stacks")
         .split(",")
         .map((stack) => stack.trim())
-        .filter(Boolean)
-    : [];
+        .filter(Boolean),
+      repoUrl: text(formData, "repo_url"),
+      deployUrl: text(formData, "deploy_url") || undefined,
+      videoUrl: text(formData, "video_url") || undefined,
+      isFeatured: formData.get("is_featured") === "on",
+      problemDescription: text(formData, "problem_description"),
+      solutionDescription: text(formData, "solution_description"),
+      technicalChallenges: text(formData, "technical_challenges"),
+      galleryUrls: [...keptGallery, ...newGallery],
+      titleEn: text(formData, "title_en"),
+      descriptionEn: text(formData, "description_en"),
+      problemDescriptionEn: text(formData, "problem_description_en"),
+      solutionDescriptionEn: text(formData, "solution_description_en"),
+      technicalChallengesEn: text(formData, "technical_challenges_en"),
+    });
 
-  let finalImageUrl = existingThumb;
-
-  if (!imageFile || imageFile.size === 0) {
-    console.error("Erro: Nenhum arquivo foi recebido no backend");
-  }
-
-  if (imageFile && imageFile.size > 0) {
-    const fileBuffer = await imageFile.arrayBuffer();
-    const uniqueName = `${Date.now()}-${imageFile.name}`;
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("portfolio-media")
-      .upload(uniqueName, fileBuffer, {
-        contentType: imageFile.type,
-        upsert: false,
-      });
-
-    if (uploadError) {
-      console.error("Erro ao fazer upload da imagem: ", uploadError.message);
-      return;
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const field = FORM_FIELD[String(issue.path[0])];
+        if (field && !fieldErrors[field]) fieldErrors[field] = issue.message;
+      }
+      return { error: "Revise os campos destacados.", fieldErrors };
     }
 
-    const { data: publicUrlData } = supabase.storage
-      .from("portfolio-media")
-      .getPublicUrl(uniqueName);
+    const project = parsed.data;
+    // `?? null`: no UPDATE, undefined é "não mexa na coluna". Para APAGAR uma
+    // tradução (campo esvaziado no formulário) o valor tem que ser null.
+    const row = {
+      title: project.title,
+      description: project.description,
+      thumbnail_url: project.thumbnail,
+      stacks: project.stacks,
+      repo_url: project.repoUrl,
+      deploy_url: project.deployUrl ?? null,
+      video_url: project.videoUrl ?? null,
+      is_featured: project.isFeatured ?? false,
+      problem_description: project.problemDescription ?? null,
+      solution_description: project.solutionDescription ?? null,
+      technical_challenges: project.technicalChallenges ?? null,
+      gallery_urls: project.galleryUrls ?? [],
+      title_en: project.titleEn ?? null,
+      description_en: project.descriptionEn ?? null,
+      problem_description_en: project.problemDescriptionEn ?? null,
+      solution_description_en: project.solutionDescriptionEn ?? null,
+      technical_challenges_en: project.technicalChallengesEn ?? null,
+    };
 
-    finalImageUrl = publicUrlData.publicUrl;
-  }
-
-  const validGalleryFiles = newGalleryFiles.filter((file) => file.size > 0);
-  let uploadedGalleryFiles: string[] = [];
-
-  for (const file of validGalleryFiles) {
-    const uniqueName = `${Date.now()}-${file.name}`;
-    const fileBuffer = await file.arrayBuffer();
-
-    const { error: loopError } = await supabase.storage
-      .from("portfolio-media")
-      .upload(uniqueName, fileBuffer, {
-        contentType: file.type,
-      });
-
-    if (loopError) {
-      console.error("Erro ao carregar imagens: ", loopError.message);
-      continue;
+    // Só um projeto em destaque por vez.
+    if (row.is_featured) {
+      const others = supabase.from("projects").update({ is_featured: false });
+      await (mode === "update" ? others.neq("id", id) : others.eq("is_featured", true));
     }
 
-    const { data: loopUrlData } = supabase.storage
-      .from("portfolio-media")
-      .getPublicUrl(uniqueName);
+    const { error } =
+      mode === "update"
+        ? await supabase.from("projects").update(row).eq("id", id)
+        : await supabase.from("projects").insert(row);
 
-    uploadedGalleryFiles.push(loopUrlData.publicUrl);
+    if (error) {
+      // PGRST204 = coluna inexistente: a migração do Lote 5 ainda não rodou.
+      const hint =
+        error.code === "PGRST204"
+          ? " Rode supabase/lote5.sql para criar as colunas em inglês."
+          : "";
+      return { error: `O banco recusou a gravação: ${error.message}.${hint}` };
+    }
+  } catch (cause) {
+    console.error("[admin] saveProject:", cause);
+    return {
+      error: cause instanceof Error ? cause.message : "Erro inesperado ao salvar.",
+    };
   }
-
-  const schema = projectSchema.safeParse({
-    title: title,
-    description: desc,
-    thumbnail: finalImageUrl,
-    stacks: stacksList,
-    repoUrl: repoUrl,
-    deployUrl: deployUrl ? deployUrl : undefined,
-    videoUrl: videoUrl ? videoUrl : undefined,
-    isFeatured: isFeatured,
-    galleryUrls: [...remainingGallery, ...uploadedGalleryFiles],
-    problemDescription: problemDescription,
-    solutionDescription: solutionDescription,
-    technicalChallenges: technicalChallenges,
-  });
-
-  if (!schema.success) {
-    console.error(schema.error);
-    return;
-  }
-
-  if (isFeatured) {
-    await supabase
-      .from("projects")
-      .update({
-        is_featured: false,
-      })
-      .neq("id", id);
-  }
-
-  await supabase
-    .from("projects")
-    .update({
-      title: schema.data?.title,
-      description: schema.data?.description,
-      thumbnail_url: schema.data?.thumbnail,
-      stacks: schema.data?.stacks,
-      repo_url: schema.data?.repoUrl,
-      deploy_url: schema.data?.deployUrl,
-      video_url: schema.data?.videoUrl,
-      is_featured: schema.data?.isFeatured,
-      gallery_urls: schema.data?.galleryUrls,
-      problem_description:schema.data?.problemDescription,
-      solution_description:schema.data?.solutionDescription,
-      technical_challenges:schema.data?.technicalChallenges,
-    })
-    .eq("id", id);
 
   revalidatePath("/admin");
+  revalidatePath("/");
+  if (id) revalidatePath(`/project/${id}`);
+  // redirect() lança por design — tem que ficar FORA do try/catch acima, senão
+  // o catch engoliria o redirecionamento como se fosse erro.
+  redirect("/admin");
+}
 
-  return redirect("/admin");
+export async function addProject(
+  _previous: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
+  return saveProject(formData, "create");
+}
+
+export async function updateProject(
+  _previous: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
+  return saveProject(formData, "update");
 }
 
 export async function deleteProject(formData: FormData) {
+  await requireAdmin();
   const supabase = await createServerSupabase();
 
-  const id = formData.get("id") as string;
+  const id = text(formData, "id");
+  if (!id) return;
 
-  if (!id) {
-    console.error("Id not found");
-    return;
-  }
-
-  await supabase.from("projects").delete().eq("id", id);
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+  if (error) console.error("[admin] deleteProject:", error.message);
 
   revalidatePath("/admin");
+  revalidatePath("/");
 }

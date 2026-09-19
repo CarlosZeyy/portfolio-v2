@@ -7,9 +7,16 @@ import { LOCALE_COOKIE, STORAGE_KEY, isLocale, type Locale } from "./settings";
 
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
+const writeCookie = (locale: string) => {
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${ONE_YEAR_SECONDS}; samesite=lax`;
+};
+
+const cookieHolds = (locale: string) =>
+  document.cookie.split("; ").includes(`${LOCALE_COOKIE}=${locale}`);
+
 function persist(locale: string) {
   document.documentElement.lang = locale;
-  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${ONE_YEAR_SECONDS}; samesite=lax`;
+  writeCookie(locale);
   try {
     window.localStorage.setItem(STORAGE_KEY, locale);
   } catch {
@@ -50,6 +57,19 @@ export function I18nProvider({ locale, children }: I18nProviderProps) {
     }
 
     if (isLocale(stored) && stored !== i18n.language) {
+      // Trocar o idioma AQUI reabriria o erro de hidratação: a página ainda
+      // está hidratando em pedaços (streaming) e os pedaços tardios sairiam
+      // num idioma diferente do HTML. O caminho sem risco é regravar o cookie
+      // e recarregar UMA vez — o servidor já responde no idioma certo e os
+      // dois lados voltam a bater. Sem laço: depois do reload o cookie e o
+      // localStorage concordam, e este ramo não roda de novo.
+      writeCookie(stored);
+      if (cookieHolds(stored)) {
+        window.location.reload();
+        return;
+      }
+      // Cookies bloqueados: recarregar daria no mesmo lugar (e em laço).
+      // Troca no lugar e aceita o aviso de hidratação.
       i18n.changeLanguage(stored);
     } else {
       persist(i18n.language); // 1ª visita: fixa o idioma detectado

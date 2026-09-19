@@ -19,6 +19,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GlassPanel } from "./GlassPanel";
 import { StackChip } from "./StackChip";
+import { useLocalizedProject } from "@/i18n/useLocalizedProject";
 import { useTranslation } from "react-i18next";
 
 // Título: cada palavra sobe de trás de uma máscara (overflow-hidden), em
@@ -167,13 +168,18 @@ function Gallery({ images, title }: { images: string[]; title: string }) {
   );
 }
 
-export default function ProjectClient({ project }: { project: Project }) {
+export default function ProjectClient({
+  project: rawProject,
+}: {
+  project: Project;
+}) {
+  const project = useLocalizedProject(rawProject);
   const stacks = project.stacks ?? [];
   const gallery = project.galleryUrls ?? [];
   const { t } = useTranslation();
   // `id` é a chave estável (React key + ramo do dicionário); o rótulo exibido
-  // vem de projects.narrative.<id>. O TEXTO de cada capítulo vem do banco e
-  // fica no idioma em que foi cadastrado.
+  // vem de projects.narrative.<id>. O TEXTO de cada capítulo vem do banco, já
+  // no idioma ativo quando existe tradução (useLocalizedProject).
   const caseStudy = (
     [
       { id: "problem", content: project.problemDescription },

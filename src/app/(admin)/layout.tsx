@@ -29,7 +29,8 @@ export default function AdminLayout({
           Component — e usePathname só existe no cliente. A escolha da cena
           (buraco negro em /login, supernova no resto) mora no AdminBackground. */}
       <AdminBackground />
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* force-dark: ver o @custom-variant dark no globals.css. */}
+      <div className="force-dark min-h-screen flex flex-col lg:flex-row">
         <main className="flex-1 z-10 relative">{children}</main>
       </div>
     </>

@@ -6,6 +6,7 @@ create table if not exists public.messages (
   name text not null check (char_length(name) between 2 and 80),
   email text not null check (char_length(email) <= 160),
   message text not null check (char_length(message) between 10 and 2000),
+  is_read boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -31,3 +32,20 @@ create policy "admin le mensagens"
   on public.messages for select
   to authenticated
   using ((auth.jwt() ->> 'email') = 'carlosmoisesdev@gmail.com');
+
+-- Marcar como lida e deletar (Inbox do /admin/messages). Sem estas policies o
+-- Postgres não devolve erro: o UPDATE/DELETE simplesmente afeta 0 linhas.
+drop policy if exists "admin atualiza mensagens" on public.messages;
+create policy "admin atualiza mensagens"
+  on public.messages for update
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'carlosmoisesdev@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'carlosmoisesdev@gmail.com');
+
+drop policy if exists "admin deleta mensagens" on public.messages;
+create policy "admin deleta mensagens"
+  on public.messages for delete
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'carlosmoisesdev@gmail.com');
+
+-- Banco que JÁ existe: use supabase/lote5.sql (ALTER TABLE idempotente).

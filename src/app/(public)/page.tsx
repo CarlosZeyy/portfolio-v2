@@ -1,5 +1,6 @@
 import { createServerSupabase } from "@/lib/supabase-server";
 import { Project } from "@/lib/projectSchema";
+import { projectFromRow, type ProjectRow } from "@/lib/projectLocale";
 import { Hero } from "@/components/Hero";
 import { ProjectText } from "@/components/ProjectText";
 import { SpaceBackground } from "@/components/SpaceBackground";
@@ -18,18 +19,9 @@ export default async function Home() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  const projects: Project[] =
-    rawProjects?.map((p) => ({
-      id: p.id,
-      title: p.title,
-      description: p.description,
-      thumbnail: p.thumbnail_url,
-      stacks: p.stacks,
-      repoUrl: p.repo_url,
-      deployUrl: p.deploy_url,
-      videoUrl: p.video_url,
-      isFeatured: p.is_featured,
-    })) || [];
+  const projects: Project[] = ((rawProjects ?? []) as ProjectRow[]).map(
+    projectFromRow,
+  );
 
   const hasProjects = projects.length > 0;
 

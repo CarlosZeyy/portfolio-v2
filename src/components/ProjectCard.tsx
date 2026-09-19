@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa6";
 import { Project } from "@/lib/projectSchema";
 import { StackChip } from "./StackChip";
+import { useLocalizedProject } from "@/i18n/useLocalizedProject";
 import { useTranslation } from "react-i18next";
 
 const EXPAND_DELAY_MS = 3000;
@@ -106,7 +107,7 @@ function NeonBeam({ active }: { active: boolean }) {
 }
 
 export function ProjectCard({
-  project,
+  project: rawProject,
   index,
   onExpand,
 }: {
@@ -114,6 +115,8 @@ export function ProjectCard({
   index: number;
   onExpand: () => void;
 }) {
+  // Títulos/descrições no idioma ativo (cai no português sem tradução).
+  const project = useLocalizedProject(rawProject);
   const stacks = project.stacks ?? [];
   const hiddenStacks = stacks.length - MAX_VISIBLE_STACKS;
   const detailsHref = project.id ? `/project/${project.id}` : null;
