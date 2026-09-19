@@ -13,11 +13,11 @@ import {
   motion,
   useScroll,
   useSpring,
-  useTransform,
   type Variants,
 } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GlassPanel } from "./GlassPanel";
+import { ProjectStage } from "./ProjectStage";
 import { StackChip } from "./StackChip";
 import { useLocalizedProject } from "@/i18n/useLocalizedProject";
 import { useTranslation } from "react-i18next";
@@ -192,15 +192,6 @@ export default function ProjectClient({
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
 
-  // Parallax da mídia principal: enquanto ela atravessa a tela, a imagem
-  // desliza dentro da moldura — dá profundidade sem mexer no layout.
-  const mediaRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: mediaProgress } = useScroll({
-    target: mediaRef,
-    offset: ["start end", "end start"],
-  });
-  const mediaY = useTransform(mediaProgress, [0, 1], ["-6%", "6%"]);
-
   return (
     <div className="relative min-h-screen overflow-hidden font-sans">
       <SpaceBackground hub={false} />
@@ -308,45 +299,9 @@ export default function ProjectClient({
           )}
         </motion.header>
 
-        {(project.videoUrl || project.thumbnail) && (
-          <motion.div
-            ref={mediaRef}
-            initial={{ opacity: 0, y: 60, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.1, delay: 0.5, ease: EASE_OUT_EXPO }}
-            className="relative mt-16"
-          >
-            <div
-              aria-hidden
-              className="absolute -inset-8 rounded-[3rem] bg-linear-to-br from-teal-500/20 via-transparent to-violet-500/25 blur-3xl"
-            />
-            <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-neutral-950 shadow-2xl shadow-black/50">
-              {/* scale-112: folga para o parallax de ±6% nunca mostrar a borda. */}
-              <motion.div style={{ y: mediaY }} className="h-full w-full scale-112">
-                {project.videoUrl ? (
-                  <video
-                    src={project.videoUrl}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    poster={project.thumbnail || undefined}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <img
-                    src={project.thumbnail || "/fallback-thumb.jpeg"}
-                    alt={t("projects.previewAlt", { title: project.title })}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </motion.div>
-              <div
-                aria-hidden
-                className="glass-ring pointer-events-none absolute inset-0 rounded-[inherit]"
-              />
-            </div>
-          </motion.div>
+        {/* Palco da mídia: play/pause + seletor Desktop / Mobile (ProjectStage). */}
+        {(project.videoUrl || project.videoMobileUrl || project.thumbnail) && (
+          <ProjectStage project={project} />
         )}
 
         {caseStudy.length > 0 && (

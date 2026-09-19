@@ -34,7 +34,9 @@ alter table public.projects
   add column if not exists description_en text,
   add column if not exists problem_description_en text,
   add column if not exists solution_description_en text,
-  add column if not exists technical_challenges_en text;
+  add column if not exists technical_challenges_en text,
+  -- Gravação vertical (9:16) para o seletor Desktop / Mobile do case study.
+  add column if not exists video_mobile_url text;
 
 -- A Inbox lista "não lidas primeiro, mais recentes no topo".
 create index if not exists messages_inbox_idx

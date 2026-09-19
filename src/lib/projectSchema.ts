@@ -18,6 +18,9 @@ export const projectSchema = z.object({
   repoUrl: z.string().url("Informe uma URL válida para o repositório"),
   deployUrl: z.string().url("URL do deploy inválida").optional(),
   videoUrl: z.string().url("URL do vídeo inválida").optional(),
+  // Gravação vertical (9:16) do projeto rodando no celular. No case study ela
+  // aparece num mockup de telefone, alternável com o vídeo desktop.
+  videoMobileUrl: z.string().url("URL do vídeo mobile inválida").optional(),
   isFeatured: z.boolean().default(false).optional(),
   problemDescription: optionalText,
   solutionDescription: optionalText,

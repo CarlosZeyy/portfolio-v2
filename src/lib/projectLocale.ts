@@ -23,6 +23,7 @@ export interface ProjectRow {
   repo_url: string;
   deploy_url: string | null;
   video_url: string | null;
+  video_mobile_url?: string | null;
   is_featured: boolean | null;
   problem_description: string | null;
   solution_description: string | null;
@@ -48,6 +49,7 @@ export function projectFromRow(row: ProjectRow): Project {
     repoUrl: row.repo_url,
     deployUrl: row.deploy_url ?? undefined,
     videoUrl: row.video_url ?? undefined,
+    videoMobileUrl: row.video_mobile_url ?? undefined,
     isFeatured: row.is_featured ?? false,
     problemDescription: row.problem_description ?? undefined,
     solutionDescription: row.solution_description ?? undefined,

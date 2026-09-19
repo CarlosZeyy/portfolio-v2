@@ -20,6 +20,7 @@ const FORM_FIELD: Record<string, string> = {
   repoUrl: "repo_url",
   deployUrl: "deploy_url",
   videoUrl: "video_url",
+  videoMobileUrl: "video_mobile_url",
 };
 
 const text = (formData: FormData, name: string) =>
@@ -81,6 +82,7 @@ async function saveProject(
       repoUrl: text(formData, "repo_url"),
       deployUrl: text(formData, "deploy_url") || undefined,
       videoUrl: text(formData, "video_url") || undefined,
+      videoMobileUrl: text(formData, "video_mobile_url") || undefined,
       isFeatured: formData.get("is_featured") === "on",
       problemDescription: text(formData, "problem_description"),
       solutionDescription: text(formData, "solution_description"),
@@ -113,6 +115,7 @@ async function saveProject(
       repo_url: project.repoUrl,
       deploy_url: project.deployUrl ?? null,
       video_url: project.videoUrl ?? null,
+      video_mobile_url: project.videoMobileUrl ?? null,
       is_featured: project.isFeatured ?? false,
       problem_description: project.problemDescription ?? null,
       solution_description: project.solutionDescription ?? null,

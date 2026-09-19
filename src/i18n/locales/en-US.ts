@@ -105,6 +105,13 @@ const enUS: Dictionary = {
     back: "Back to projects",
     viewDeploy: "View deploy",
     sourceCode: "Source code",
+    play: "Play video",
+    pause: "Pause video",
+    device: {
+      label: "Video version",
+      desktop: "Desktop",
+      mobile: "Mobile",
+    },
     narrative: {
       problem: { key: "problem", title: "The Problem" },
       solution: { key: "solution", title: "The Solution" },

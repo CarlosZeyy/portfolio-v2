@@ -101,6 +101,13 @@ const ptBR = {
     back: "Voltar aos projetos",
     viewDeploy: "Ver deploy",
     sourceCode: "Código-fonte",
+    play: "Reproduzir vídeo",
+    pause: "Pausar vídeo",
+    device: {
+      label: "Versão do vídeo",
+      desktop: "Desktop",
+      mobile: "Mobile",
+    },
     narrative: {
       problem: { key: "problema", title: "O Problema" },
       solution: { key: "solução", title: "A Solução" },

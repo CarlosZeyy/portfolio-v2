@@ -9,6 +9,7 @@ import { FaArrowRight, FaArrowUpRightFromSquare, FaGithub } from "react-icons/fa
 import { LuX } from "react-icons/lu";
 import Link from "next/link";
 import { StackChip } from "./StackChip";
+import { PlayPauseButton, usePlayback } from "./VideoPlayback";
 import { useLocalizedProject } from "@/i18n/useLocalizedProject";
 import { useTranslation } from "react-i18next";
 
@@ -37,6 +38,7 @@ export function ProjectModal({
   const project = useLocalizedProject(rawProject);
   const stacks = project.stacks ?? [];
   const { t } = useTranslation();
+  const { videoRef, isPlaying, toggle, hasVideo } = usePlayback();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -102,9 +104,18 @@ export function ProjectModal({
             layoutId só escala — não distorce a imagem no caminho. */}
         <div className="grid grid-cols-1 gap-2 p-2 lg:grid-cols-12 lg:items-center">
           <div className="relative lg:col-span-7">
-            <div className="relative aspect-video w-full overflow-hidden rounded-[22px] bg-neutral-900">
+            {/* group/media: o botão de play/pause reage ao hover do palco.
+                Clicar na própria mídia também alterna (alvo grande, como em
+                qualquer player). */}
+            <div
+              onClick={hasVideo ? toggle : undefined}
+              className={`group/media relative aspect-video w-full overflow-hidden rounded-[22px] bg-neutral-900 ${
+                hasVideo ? "cursor-pointer" : ""
+              }`}
+            >
               {project.videoUrl ? (
                 <motion.video
+                  ref={videoRef}
                   layoutId={`image-${project.id}`}
                   src={project.videoUrl}
                   poster={project.thumbnail || "/fallback-thumb.jpeg"}
@@ -136,6 +147,13 @@ export function ProjectModal({
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08),inset_0_-80px_80px_-40px_rgb(0_0_0/0.6)]"
               />
+              {hasVideo && (
+                <PlayPauseButton
+                  isPlaying={isPlaying}
+                  onToggle={toggle}
+                  className="absolute right-4 bottom-4 z-10"
+                />
+              )}
             </div>
           </div>
 

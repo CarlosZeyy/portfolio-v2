@@ -268,12 +268,18 @@ export function ProjectForm({ mode, action, project }: ProjectFormProps) {
             <TextInput id={`${formId}-repo`} type="url" name="repo_url" defaultValue={project?.repoUrl ?? ""} placeholder="https://github.com/..." invalid={Boolean(errors.repo_url)} />
           </Field>
 
+          <Field label="Deploy" htmlFor={`${formId}-deploy`} optional error={errors.deploy_url}>
+            <TextInput id={`${formId}-deploy`} type="url" name="deploy_url" defaultValue={project?.deployUrl ?? ""} placeholder="https://..." invalid={Boolean(errors.deploy_url)} />
+          </Field>
+
+          {/* Os dois vídeos lado a lado: são o par Desktop / Mobile que o
+              visitante alterna no case study. */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <Field label="Deploy" htmlFor={`${formId}-deploy`} optional error={errors.deploy_url}>
-              <TextInput id={`${formId}-deploy`} type="url" name="deploy_url" defaultValue={project?.deployUrl ?? ""} placeholder="https://..." invalid={Boolean(errors.deploy_url)} />
-            </Field>
-            <Field label="Vídeo" htmlFor={`${formId}-video`} optional error={errors.video_url} hint="MP4 ou WebM. Toca sozinho no card em destaque.">
+            <Field label="Vídeo desktop" htmlFor={`${formId}-video`} optional error={errors.video_url} hint="Horizontal (16:9), MP4 ou WebM. Toca sozinho no card em destaque.">
               <TextInput id={`${formId}-video`} type="url" name="video_url" defaultValue={project?.videoUrl ?? ""} placeholder="https://..." invalid={Boolean(errors.video_url)} />
+            </Field>
+            <Field label="Vídeo mobile" htmlFor={`${formId}-video-mobile`} optional error={errors.video_mobile_url} hint="Vertical (9:16). Se preenchido, o case study ganha o seletor Desktop / Mobile.">
+              <TextInput id={`${formId}-video-mobile`} type="url" name="video_mobile_url" defaultValue={project?.videoMobileUrl ?? ""} placeholder="https://..." invalid={Boolean(errors.video_mobile_url)} />
             </Field>
           </div>
 
