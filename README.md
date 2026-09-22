@@ -405,3 +405,7 @@ O favicon (`src/app/icon.svg`, `favicon.ico` e `apple-icon.png`) é o monograma 
 - Currículo: [`public/cv/Carlos_Moises`](public/cv/CV_Carlos_Moises_Desenvolvedor_FullStack.pdf)
 
 O código é aberto para leitura e estudo. Se algo aqui te ajudou, uma estrela no repositório é bem-vinda.
+
+## Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
