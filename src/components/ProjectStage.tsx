@@ -216,9 +216,9 @@ export function ProjectStage({ project }: { project: Project }) {
               animate={{ opacity: 1, transition: { delay: 0.5 } }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
             >
-              <span className="absolute top-28 -left-[3px] h-8 w-[3px] rounded-l bg-neutral-700" />
-              <span className="absolute top-40 -left-[3px] h-14 w-[3px] rounded-l bg-neutral-700" />
-              <span className="absolute top-36 -right-[3px] h-20 w-[3px] rounded-r bg-neutral-700" />
+              <span className="absolute top-28 -left-0.75 h-8 w-0.75 rounded-l bg-neutral-700" />
+              <span className="absolute top-40 -left-0.75 h-14 w-0.75 rounded-l bg-neutral-700" />
+              <span className="absolute top-36 -right-0.75 h-20 w-0.75 rounded-r bg-neutral-700" />
             </motion.div>
           )}
         </AnimatePresence>
