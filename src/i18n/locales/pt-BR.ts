@@ -46,7 +46,7 @@ const ptBR = {
     description:
       "Desenvolvedor full stack e Analista de Sistemas na Systelos — do banco de dados à interface. Trabalho com React, Next.js e Node.js no dia a dia, além de Java com Spring Boot e Docker quando o projeto pede.",
     viewProjects: "Ver projetos",
-    viewGithub: "Ver código no GitHub",
+    viewGithub: "Veja meu perfil no GitHub",
   },
 
   about: {
@@ -98,6 +98,7 @@ const ptBR = {
     },
     kinds: {
       work: "Trabalho",
+      freelance: "Freelancer",
       project: "Projeto próprio",
       trade: "Ofício",
       education: "Formação",
@@ -105,7 +106,7 @@ const ptBR = {
     },
     items: {
       systelos: {
-        period: "2026 — atual",
+        period: "set 2026 — atual",
         title: "Analista de Sistemas",
         organization: "Systelos",
         description:
@@ -123,7 +124,7 @@ const ptBR = {
         title: "Enfermex",
         organization: "Sistema de gestão de pacientes",
         description:
-          "Gestão completa de pacientes em um só sistema, idealizado e desenvolvido por mim.",
+          "Gestão completa de pacientes em um só sistema, desenvolvido por mim como freelancer.",
       },
       glazier: {
         period: "Antes do código",
@@ -213,7 +214,7 @@ const ptBR = {
     messagePlaceholder: "Conte sobre o projeto, a vaga ou a ideia...",
     send: "Enviar mensagem",
     sending: "Enviando...",
-    footer: "© 2026 Desenvolvido por Carlos Moises",
+    footer: "© 2026 Carlos Moises. Todos os direitos reservados.",
     status: {
       success: "Mensagem enviada! Respondo em breve.",
       successMock:

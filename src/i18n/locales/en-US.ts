@@ -50,7 +50,7 @@ const enUS: Dictionary = {
     description:
       "Full stack developer and Systems Analyst at Systelos — from the database to the interface. I work with React, Next.js and Node.js day to day, plus Java with Spring Boot and Docker when the project calls for it.",
     viewProjects: "View projects",
-    viewGithub: "View code on GitHub",
+    viewGithub: "View my GitHub profile",
   },
 
   about: {
@@ -99,6 +99,7 @@ const enUS: Dictionary = {
     },
     kinds: {
       work: "Work",
+      freelance: "Freelance",
       project: "Own project",
       trade: "Trade",
       education: "Education",
@@ -106,7 +107,7 @@ const enUS: Dictionary = {
     },
     items: {
       systelos: {
-        period: "2026 — present",
+        period: "Sep 2026 — present",
         title: "Systems Analyst",
         organization: "Systelos",
         description:
@@ -124,7 +125,7 @@ const enUS: Dictionary = {
         title: "Enfermex",
         organization: "Patient management system",
         description:
-          "End-to-end patient management in a single system, designed and built by me.",
+          "End-to-end patient management in a single system, built by me as a freelancer.",
       },
       glazier: {
         period: "Before code",
@@ -214,7 +215,7 @@ const enUS: Dictionary = {
     messagePlaceholder: "Tell me about the project, the role or the idea...",
     send: "Send message",
     sending: "Sending...",
-    footer: "© 2026 Built by Carlos Moises",
+    footer: "© 2026 Carlos Moises. All rights reserved.",
     status: {
       success: "Message sent! I'll get back to you soon.",
       successMock: "Message sent! (mock mode: the messages table doesn't exist yet)",

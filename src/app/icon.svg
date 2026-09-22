@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2DD4BF" stop-opacity=".7"/>
+      <stop offset=".45" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity=".7"/>
+    </linearGradient>
+    <radialGradient id="glowT" cx=".2" cy=".15" r=".7">
+      <stop offset="0" stop-color="#2DD4BF" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowV" cx=".85" cy=".9" r=".7">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- fundo: espaço escuro do site com a nébula teal/violeta -->
+  <rect width="64" height="64" rx="14" fill="#0B0E14"/>
+  <rect width="64" height="64" rx="14" fill="url(#glowT)"/>
+  <rect width="64" height="64" rx="14" fill="url(#glowV)"/>
+  <!-- anel de vidro (mesmo degradê do glass-ring) -->
+  <rect x=".75" y=".75" width="62.5" height="62.5" rx="13.5" fill="none" stroke="url(#ring)" stroke-width="1.5"/>
+  <!-- estrelinhas -->
+  <circle cx="51" cy="13" r="1.2" fill="#fff" fill-opacity=".85"/>
+  <circle cx="12" cy="50" r=".8" fill="#fff" fill-opacity=".55"/>
+  <!-- CM -->
+  <g fill="none" stroke="url(#ink)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 27.92 24.58 A 10.5 10.5 0 1 0 27.92 39.42"/>
+    <path d="M 36 42.5 V 21.5 L 45 34 L 54 21.5 V 42.5"/>
+  </g>
+</svg>

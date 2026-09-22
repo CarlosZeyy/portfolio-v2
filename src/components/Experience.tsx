@@ -8,12 +8,19 @@ import {
   LuGraduationCap,
   LuHammer,
   LuHeartHandshake,
+  LuLaptop,
 } from "react-icons/lu";
 import { EASE_OUT_EXPO, revealOnce, staggerContainer } from "@/lib/motion";
 import { GlassPanel } from "./GlassPanel";
 import { useTranslation } from "react-i18next";
 
-type ExperienceKind = "work" | "project" | "trade" | "education" | "volunteer";
+type ExperienceKind =
+  | "work"
+  | "freelance"
+  | "project"
+  | "trade"
+  | "education"
+  | "volunteer";
 
 interface ExperienceItem {
   /**
@@ -39,6 +46,7 @@ interface ExperienceItem {
 
 const KIND_ICONS: Record<ExperienceKind, IconType> = {
   work: LuBriefcaseBusiness,
+  freelance: LuLaptop,
   project: LuCodeXml,
   trade: LuHammer,
   education: LuGraduationCap,
@@ -57,7 +65,7 @@ const BLOCKS = [
     items: [
       { id: "systelos", kind: "work", ongoing: true },
       { id: "quotes", kind: "project" },
-      { id: "enfermex", kind: "project" },
+      { id: "enfermex", kind: "freelance" },
       { id: "glazier", kind: "trade" },
     ],
   },

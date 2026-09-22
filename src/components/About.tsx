@@ -28,11 +28,18 @@ const HARD_SKILLS = [
     group: "creative",
     stacks: ["Three.js", "React Three Fiber", "GSAP", "Framer Motion"],
   },
-  { group: "backend", stacks: ["Node.js", "Express.js", "Java", "Spring Boot"] },
+  {
+    group: "backend",
+    stacks: ["Node.js", "Express.js", "Java", "Spring Boot"],
+  },
   { group: "data", stacks: ["PostgreSQL", "Supabase", "MySQL", "MongoDB"] },
   {
     group: "tooling",
     stacks: ["Docker", "Git", "GitHub Actions", "Jest", "Jira"],
+  },
+  {
+    group: "ai code",
+    stacks: ["Claude", "Gemini", "Codex"],
   },
 ].map(({ group, stacks }) => ({
   group,
@@ -70,7 +77,7 @@ function CvButton({ className = "" }: { className?: string }) {
   return (
     <motion.a
       variants={fadeUp}
-      href="/cv/Carlos_Moises_Mariano_Lopes_Ferreira_Desenvolvedor_Fullstack.pdf"
+      href="/cv/CV_Carlos_Moises_Desenvolvedor_FullStack.pdf"
       download="Curriculo_Carlos_Moises_Desenvolvedor_Fullstack.pdf"
       target="_blank"
       rel="noopener noreferrer"
@@ -152,7 +159,10 @@ function AboutOrbit() {
       initial="hidden"
       animate="visible"
     >
-      <motion.p variants={fadeUp} className={`${HEADLINE} text-2xl sm:text-3xl`}>
+      <motion.p
+        variants={fadeUp}
+        className={`${HEADLINE} text-2xl sm:text-3xl`}
+      >
         {t("about.headline")}
       </motion.p>
 
