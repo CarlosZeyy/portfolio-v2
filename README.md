@@ -41,6 +41,7 @@
 - [Segurança](#segurança)
 - [Rodando localmente](#rodando-localmente)
 - [Configurando o Supabase](#configurando-o-supabase)
+- [Testes](#testes)
 - [Docker e deploy](#docker-e-deploy)
 - [Identidade visual](#identidade-visual)
 - [Autor](#autor)
@@ -312,6 +313,12 @@ O arquivo `src/lib/envSchema.ts` valida as duas primeiras com Zod no boot: sem e
 | `npm run build` | Build de produção (gera `.next/standalone`) |
 | `npm run start` | Serve o build |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | `next typegen` + `tsc --noEmit` |
+| `npm test` | Testes unitários e de componente (Vitest) |
+| `npm run test:watch` | Idem, reexecutando ao salvar |
+| `npm run test:coverage` | Idem, com relatório em `coverage/` |
+| `npm run test:e2e` | Testes end-to-end (Playwright); rode `npm run build` antes |
+| `npm run test:e2e:ui` | Idem, com a interface visual do Playwright |
 | `npm run docker:up` | Builda a imagem e sobe o container |
 | `npm run docker:logs` | Acompanha os logs do container |
 | `npm run docker:down` | Derruba o container |
@@ -358,6 +365,25 @@ O arquivo `src/lib/envSchema.ts` valida as duas primeiras com Zod no boot: sem e
 
 ---
 
+## Testes
+
+Três camadas, todas executadas no CI antes de qualquer deploy:
+
+| Camada | Ferramenta | O que cobre |
+|---|---|---|
+| Unitária | Vitest | Schemas (contato, projeto, env), formatação, `mailto:` seguro, gerador determinístico, i18n no servidor, store do hub 3D, Server Action de contato, rota de health |
+| Componente | Vitest + Testing Library | `StackChip`, `ConfirmButton`, `LanguageToggle` |
+| End-to-end | Playwright | Health, 404, idioma pelo Accept-Language e pelo cookie, `/login`, redirect de `/admin` |
+
+```bash
+npm test              # unitários + componente
+npm run build && npm run test:e2e
+```
+
+Cada teste está explicado em [docs/testes.md](docs/testes.md).
+
+---
+
 ## Docker e deploy
 
 ```bash
@@ -377,6 +403,15 @@ Numa VPS, renomeie `.env.local` para `.env` e rode `docker compose up -d --build
 Mudou uma variável pública? Precisa rebuildar (`docker:up` já faz isso). Mudou `ADMIN_EMAILS`? Basta `docker compose up -d`, sem rebuild.
 
 O healthcheck não toca no Supabase de propósito: se dependesse do banco, uma instabilidade externa faria o orquestrador reiniciar um container saudável em laço.
+
+### CI/CD
+
+O site roda em [carlosmoises.dev](https://carlosmoises.dev), numa VPS gerenciada pelo Coolify. Todo push na `main` roda lint, typecheck, Vitest, build da imagem Docker e Playwright contra essa imagem; só se tudo passar o workflow pede ao Coolify, pela API, que faça o deploy, espera terminar e confere o `/api/health` em produção. Pull requests rodam só os testes.
+
+- [.github/workflows/ci.yml](.github/workflows/ci.yml): testes.
+- [.github/workflows/deploy.yml](.github/workflows/deploy.yml): disparo e acompanhamento do deploy no Coolify.
+
+Secrets necessários, ajustes no Coolify e rollback: [docs/ci-cd.md](docs/ci-cd.md).
 
 ---
 

@@ -47,3 +47,17 @@ supabase
 README.md
 *.md
 .vercel
+
+# --- testes: rodam no CI, não fazem parte da imagem -----------------------------
+e2e
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+src/test
+vitest.config.*
+playwright.config.ts
+playwright-report
+test-results
+
+# --- scripts de setup (rodam na sua máquina / na VPS, não na imagem) ----------
+scripts

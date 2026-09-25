@@ -1,0 +1,139 @@
+# =============================================================================
+# CI — roda em todo pull request e em todo push que NÃO seja na main.
+# Na main quem chama este arquivo é o deploy.yml (via workflow_call): o deploy
+# só acontece se TODOS os jobs daqui passarem.
+#
+# Jobs:
+#   quality  -> lint + typecheck + testes unitários/componente (Vitest)
+#   e2e      -> builda a imagem Docker (a MESMA que vai para a VPS), sobe o
+#               container, espera o healthcheck e roda o Playwright contra ele
+# =============================================================================
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+    # Chamado pelo deploy.yml; os secrets vêm com `secrets: inherit`.
+
+# Um push novo no mesmo branch cancela a execução anterior (economiza minutos).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  # ---------------------------------------------------------------------------
+  quality:
+    name: Lint, typecheck e testes unitários
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js (mesma major do Dockerfile)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências (npm ci = exatamente o lockfile)
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Typecheck (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: Testes unitários e de componente (Vitest) com cobertura
+        run: npm run test:coverage
+
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  e2e:
+    name: Build da imagem Docker + testes E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Builda SEM push, carregando a imagem no Docker local do runner. O cache
+      # (type=gha) é compartilhado com o deploy.yml: na main, o job de deploy
+      # reaproveita as camadas daqui e o push é quase instantâneo.
+      - name: Build da imagem
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: portfolio-via-lactea:ci
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_PUBLIC_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLIC_ANON_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Subir o container
+        run: |
+          docker run -d --name portfolio -p 3000:3000 \
+            -e ADMIN_EMAILS="${{ secrets.ADMIN_EMAILS }}" \
+            portfolio-via-lactea:ci
+
+      - name: Esperar o healthcheck do container
+        run: |
+          for i in $(seq 1 30); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' portfolio)
+            echo "tentativa $i: $status"
+            [ "$status" = "healthy" ] && exit 0
+            sleep 3
+          done
+          echo "::error::container não ficou healthy"
+          docker logs portfolio
+          exit 1
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar o Chromium do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes E2E contra o container
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+        run: npm run test:e2e
+
+      - name: Logs do container (se algo falhou)
+        if: failure()
+        run: docker logs portfolio
+
+      - name: Publicar relatório do Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

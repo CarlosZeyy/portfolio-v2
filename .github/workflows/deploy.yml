@@ -1,0 +1,125 @@
+# =============================================================================
+# DEPLOY — todo push na main:
+#
+#   1. tests   -> reaproveita o ci.yml inteiro (lint, typecheck, Vitest, build
+#                 da imagem Docker, Playwright contra o container). Falhou? Para.
+#   2. deploy  -> pede ao COOLIFY (que já roda na VPS e serve carlosmoises.dev
+#                 com HTTPS pelo proxy dele) para fazer o deploy do app, espera
+#                 terminar e confere o /api/health em produção.
+#
+# O Coolify continua sendo quem builda e sobe o container na VPS, exatamente
+# como hoje. A diferença é que ELE NÃO DEVE MAIS reagir ao push sozinho
+# (desligue "Auto Deploy" no app, em Source) — senão um commit com teste
+# quebrado iria ao ar antes de o CI terminar. Quem dispara é este workflow,
+# depois dos testes.
+#
+# SECRETS necessários (Settings -> Secrets and variables -> Actions):
+#   NEXT_PUBLIC_SUPABASE_URL              usados pelo job e2e do ci.yml
+#   NEXT_PUBLIC_SUPABASE_PUBLIC_ANON_KEY
+#   ADMIN_EMAILS
+#   COOLIFY_URL        URL do painel do Coolify, sem barra no fim
+#                      (ex.: https://coolify.carlosmoises.dev ou http://2.24.109.11:8000)
+#   COOLIFY_TOKEN      Keys & Tokens -> API tokens -> Create (permissão "deploy")
+#   COOLIFY_APP_UUID   está na URL do app no painel: /project/.../application/<uuid>
+#   PRODUCTION_URL     (opcional) padrão https://carlosmoises.dev
+# Ver docs/ci-cd.md para o passo a passo.
+# =============================================================================
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # Botão "Run workflow" na aba Actions, para redeployar sem commit novo.
+  workflow_dispatch:
+
+# Dois pushes seguidos: o segundo espera o primeiro terminar (nunca cancela
+# um deploy no meio).
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  tests:
+    name: Testes
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    permissions:
+      contents: read
+
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy via Coolify
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    environment:
+      name: production
+      # `secrets` não é permitido aqui; o valor real do health check vem do env abaixo.
+      url: https://carlosmoises.dev
+    env:
+      COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+      COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL || 'https://carlosmoises.dev' }}
+    steps:
+      - name: Conferir secrets
+        run: |
+          missing=0
+          for v in COOLIFY_URL COOLIFY_TOKEN COOLIFY_APP_UUID; do
+            if [ -z "${!v}" ]; then echo "::error::secret $v não configurado"; missing=1; fi
+          done
+          [ "$missing" -eq 0 ]
+
+      - name: Disparar o deploy no Coolify
+        id: trigger
+        run: |
+          # force=false: o Coolify reaproveita o cache de build quando pode.
+          response=$(curl -sS --fail-with-body \
+            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
+            -H "Accept: application/json" \
+            "${COOLIFY_URL%/}/api/v1/deploy?uuid=${COOLIFY_APP_UUID}&force=false")
+          echo "$response"
+          deployment=$(echo "$response" | jq -r '.deployments[0].deployment_uuid // empty')
+          if [ -z "$deployment" ]; then
+            echo "::error::o Coolify não devolveu deployment_uuid (API desligada? token sem permissão? uuid errado?)"
+            exit 1
+          fi
+          echo "deployment=$deployment" >> "$GITHUB_OUTPUT"
+          echo "Deployment: $deployment"
+
+      - name: Esperar o Coolify terminar
+        run: |
+          deployment="${{ steps.trigger.outputs.deployment }}"
+          # Até 25 min (build do Next com Three.js na VPS pode levar alguns minutos).
+          for i in $(seq 1 150); do
+            status=$(curl -sS \
+              -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
+              -H "Accept: application/json" \
+              "${COOLIFY_URL%/}/api/v1/deployments/${deployment}" | jq -r '.status // "unknown"')
+            echo "tentativa $i: $status"
+            case "$status" in
+              finished) echo "==> Deploy concluído"; exit 0 ;;
+              failed|cancelled*|cancelled-by-user)
+                echo "::error::deploy terminou com status '$status' — veja os logs no painel do Coolify"
+                exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "::error::deploy não terminou em 25 minutos"
+          exit 1
+
+      - name: Conferir o /api/health em produção
+        run: |
+          for i in $(seq 1 20); do
+            if curl -sSf "${PRODUCTION_URL%/}/api/health" | grep -q '"ok"'; then
+              echo "==> ${PRODUCTION_URL} está saudável"
+              exit 0
+            fi
+            echo "tentativa $i: ainda não respondeu ok"
+            sleep 6
+          done
+          echo "::error::${PRODUCTION_URL}/api/health não respondeu ok após o deploy"
+          exit 1
